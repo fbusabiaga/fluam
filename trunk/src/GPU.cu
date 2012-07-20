@@ -35,7 +35,6 @@
 #include "texturesCells.cu"
 #include "initGhostIndexGPU.cu"
 #include "pressureGPU.cu"
-#include "mersennetwister.cu"
 
 
 static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){

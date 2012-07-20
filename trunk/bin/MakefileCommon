@@ -307,7 +307,7 @@ saveFunctionsSchemeThermostat.cu saveFunctionsSchemeBoundary.cu \
 saveFunctionsSchemeRK3Ghost.cu gpuToHostRK3.cu kernelFeedGhostCellsRK3.cu \
 runSchemeBinaryMixture.cu kernelDpBinaryMixture.cu kernelFeedGhostCellsBinaryMixture.cu \
 gpuToHostBinaryMixture.cu saveFunctionsSchemeBinaryMixture.cu initializeFluidBinaryMixtureGPU.cu \
-freeCellsBinaryMixtureGPU.cu createCellsBinaryMixtureGPU.cu mersennetwister.cu runSchemeBinaryMixtureWall.cu \
+freeCellsBinaryMixtureGPU.cu createCellsBinaryMixtureGPU.cu runSchemeBinaryMixtureWall.cu \
 kernelFeedGhostCellsBinaryMixtureWall.cu copyToGPUBinaryMixtureWall.cu runSchemeGiantFluctuations.cu \
 kernelDpGiantFluctuations.cu kernelFeedGhostCellsGiantFluctuations.cu copyToGPUGiantFluctuations.cu \
 runSchemeContinuousGradient.cu kernelDpContinuousGradient.cu randomNumbers.cu createBoundariesGPU.cu \
