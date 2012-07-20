@@ -1,0 +1,149 @@
+\documentclass[aps,prl]{revtex4}
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+\newcommand{\bd}{\boldsymbol}
+
+\begin{document}
+\setlength{\parindent}{0cm}
+
+\title{ Gblob Manual}
+
+
+\section{Fluctuating hydrodynamics on GPUs}
+\subsection{Compile}
+Edit the two firsts lines in the makefile, and type make. Note, this code needs the
+``HydroGrid'' code from Donev to calculate the structure factors.
+\subsection{How to run}
+Type the executable name following with the input file \\ \\
+\emph{mainstandard inputfile} \\ \\
+If a input file is not provided the code will search the file data.main.
+
+\subsection{Input File}
+The input file (data.main by default) contains the parameters for the 
+simulation. The program doesn't use internal units, if the parameters are coherent the results
+should be fine. The input file should/might contain the following:
+
+$\bullet$ Comments: start with the character \#. \\
+
+$\bullet$ Scheme: the code supports several schemes, chose only one between \\
+RK3: RK3, without thermostat or concentration. Use \\
+\emph{}\#nothing because RK3 is the default scheme \\ \\
+thermostat: RK3 with thermostat, without concentration. Use \\
+\emph{thermostat} \\ \\
+ghost: RK3 without thermostat or concentration. It's 
+implemented using ghost cells and it's slower than the
+scheme RK3. Use \\
+\emph{ghost} \\ \\
+binaryMixture: RK3 with thermostat and concentration. It's 
+implemented using ghost cells. Use \\
+\emph{binaryMixture} \\ \\
+binaryMixtureWall: like binaryMixture but with a hard wall in 
+the planes y=0 and y=ly. Use \\
+\emph{binaryMixtureWall} \\ \\
+giantFluctuations: it's like binaryMixtureWall but with a different boundary conditions and
+the term $\nabla (\rho D cS_T \nabla T)$ in the concentration equation. \\
+\emph{giantFluctuations} \\ \\
+continuousGradient: it's like binaryMixture but with the additional term 
+$\frac{1}{2}(v_{\bd{i}+\bd{y}/2}^y+v_{\bd{i}-\bd{y}/2}^y)\rho_{\bd{i}}\overline{\nabla c}$
+in the equation for the density of the species 1. Provide
+the constant gradient in the input file with the parameter \emph{gradTemperature}. \\
+\emph{continuousGradient} \\
+
+
+$\bullet$ Fluid density \\
+\emph{densfluid               0.632} \\ \\
+
+$\bullet$ shearviscosity \\
+\emph{shearviscosity          53.71} \\ \\
+$\bullet$ bulkviscosity. Note that the term in grad(div(v)) is (bulkviscosity+shearviscosity/3) \\
+\emph{bulkviscosity           127.05} \\ \\
+$\bullet$ Pressure. In the code the pressure is a second order polynomial of the density
+$p = a0 + a1*\rho + a2*\rho^2$. Give the parameters a0, a1 and a2 \\
+\emph{\#pressureparameters a0 a1 a2} \\ 
+\emph{pressureparameters 231.091   -947.837   920.671} \\ \\
+$\bullet$ Temperature. The temperature is in fact ($k_BT$) with the appropiate units of 
+energy \\
+\emph{temperature} 249.4 \\ \\
+$\bullet$ Number of time steps \\
+\emph{numsteps                1000} \\ \\
+$\bullet$ Number of time step in which the code won't save data. \\
+\emph{numstepsRelaxation	0} \\ \\
+$\bullet$ Time step \\
+\emph{dt                     	3.408} \\\\
+$\bullet$ Sample frequency \\
+\emph{samplefreq              1} \\\\
+$\bullet$ Initialize fluid \\
+\emph{initfluid option} \\
+with \\
+option=0: fluid at rest, vx=vy=vz=0 and $\rho=cte$ \\
+option=1: close to thermal equilibrium, $<v_i(\mathbf{r})>=0$, 
+$<v_i(\mathbf{r}) v_j(\mathbf{s})>=(k_BT/\rho V_{cell}) \delta_{ij} \delta_{rs}$ and $\rho=cte$ \\
+In the simulation with concentration this initializes like $<concentration(y)>_{thermal equilibrium}$ \\ \\
+
+$\bullet$ Output name. The output files created by the code start with ``outputname''. It's
+possible indicate the directory \\
+\emph{outputname		../data/run1} \\\\
+
+$\bullet$ Number of cells mx my mz \\
+\emph{cells			32	32	32} \\\\
+
+$\bullet$ Size system lx ly lz \\
+\emph{celldimension		8000	8000	8000} \\\\
+
+
+$\bullet$ Random number seed. Default seed=time(0), that means that the code takes a seed from the
+computer's clock, but you can provide your own seed \\
+\emph{seed			4} \\ \\
+
+$\bullet$ Set device, In general it's better don't use this option. \\
+\emph{setDevice                 numberDevice} \\
+\emph{setDevice                 1} \\
+
+$\bullet$ Background velocity \\
+\emph{backgroundvelocity vx0 vy0 vz0} \\
+
+The following options are only relevant for the binaryMixture or binaryMixtureWall schemes. \\
+
+$\bullet$ Diffusion. For a ideal gas the diffusion is diffusion=A/$\rho$. Here you have to
+provide A \\
+\emph{diffusion	     3.66} \\ \\
+
+$\bullet$ Mass species 0 \\
+\emph{massSpecies0	18}\\\\
+$\bullet$ Mass species 1 \\
+\emph{massSpecies1	18}\\\\
+$\bullet$ Concentration for the species 1 \\
+\emph{concentration 	0.5}\\\\
+
+The following options are only relevant for the binaryMixtureWall scheme. \\
+$\bullet$ Concentration in the walls y=0 and y=ly \\
+\emph{concentrationWall           0.55     0.45} \\ \\
+$\bullet$ Velocities in the walls y=0 and y=ly \\
+\emph{vxWall			0 	0}\\\\
+\emph{vzWall			0	0}\\\\
+
+The following options are only relevant for the giantFluctuations scheme. \\
+$\bullet$ Soret coefficient \\
+\emph{soretCoefficient        0.06486} \\ \\
+$\bullet$ Temperature gradient \\
+\emph{gradTemperature         174}\\\\
+
+
+\subsection{Tips to modify the code}
+$\bullet$ Use the cuda compiler ``nvcc''. \\
+
+$\bullet$ Take a look at the file main.cpp and follow the flow for one scheme, in the
+most part they are similar. \\
+
+$\bullet$ The variables (i.e. vx, vy...) are duplicate, one copy resides in the CPU and the
+other in the GPU. They are not synchronize, you have to copy explicitly the variable
+from the CPU to the GPU or viceversa. The copy process is slow try to avoid copies. \\
+
+$\bullet$ If different cuda functions (``kernels'') use the same variable they and the variable 
+must be declare in the same file. Take a look at the file GPU.cu.
+
+
+
+
+\end{document}
