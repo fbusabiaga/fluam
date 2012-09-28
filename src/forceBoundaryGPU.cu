@@ -21,7 +21,7 @@
 __global__ void countToZero(particlesincell* pc){
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   
-  if(i<ncellsGPU){
+  if(i<ncellstGPU){
     pc->countparticlesincellX[i] = 0;
     pc->countparticlesincellY[i] = 0;
     pc->countparticlesincellZ[i] = 0;
