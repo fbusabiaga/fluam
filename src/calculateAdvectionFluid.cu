@@ -101,6 +101,7 @@ __global__ void calculateAdvectionFluid(double* vxPredictionGPU,
   advZ  = 0.25 * dtGPU * advZ;
   
 
+  //24-10-2012, we should not add the particle kinetic stress twice!
   //vxPredictionGPU[i] = advX;
   //vyPredictionGPU[i] = advY;
   //vzPredictionGPU[i] = advZ;

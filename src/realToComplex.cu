@@ -588,3 +588,20 @@ __global__ void setArrayToZeroInput(double* vxboundaryPredictionGPU,
   vzboundaryPredictionGPU[i] = 0;//input;
 
 }
+
+
+
+__global__ void setFieldToZeroInput(double* vxGPU,
+				    double* vyGPU,
+				    double* vzGPU){
+
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=ncellsGPU) return;   
+
+  vxGPU[i] = 0;//input;
+  vyGPU[i] = 0;//input;
+  vzGPU[i] = 0;//input;
+
+}
+
+

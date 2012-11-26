@@ -111,9 +111,9 @@ __global__ void kernelConstructWQuasiNeutrallyBuoyant(double *vxPredictionGPU,
   wz  = 0.5 * dtGPU * (shearviscosityGPU/densfluidGPU) * wz;
 
   //Previous Velocity
-  wx += vx;// - 1.1444091796875e-06 * dtGPU;
-  wy += vy;
-  wz += vz;
+  wx += vx ;//- pressurea1GPU * 0.267261241912424385 * dtGPU;
+  wy += vy ;//- pressurea1GPU * 0.534522483824848769 * dtGPU;
+  wz += vz ;//- pressurea1GPU * 0.801783725737273154 * dtGPU;
   
   //Advection part
   double advX, advY, advZ;
@@ -132,9 +132,10 @@ __global__ void kernelConstructWQuasiNeutrallyBuoyant(double *vxPredictionGPU,
   
   //advX=0; advY=0; advZ=0;
   //Add particle's advection
-  advX += vxPredictionGPU[i];
-  advY += vyPredictionGPU[i];
-  advZ += vzPredictionGPU[i];
+  //24-10-2012, we should not add the particle kinetic stress twice!
+  //advX += vxPredictionGPU[i];
+  //advY += vyPredictionGPU[i];
+  //advZ += vzPredictionGPU[i];
   
 
   //NOISE part
@@ -772,9 +773,9 @@ __global__ void kernelConstructWQuasiNeutrallyBuoyantTEST5_2(double *vxPredictio
   wz  = 0.5 * dtGPU * (shearviscosityGPU/densfluidGPU) * wz;
   
   //Previous Velocity
-  wx += vx;// - 1.1444091796875e-06 * dtGPU;
-  wy += vy;
-  wz += vz;
+  wx += vx ;//- pressurea1GPU * 0.267261241912424385 * dtGPU;
+  wy += vy ;//- pressurea1GPU * 0.534522483824848769 * dtGPU;
+  wz += vz ;//- pressurea1GPU * 0.801783725737273154 * dtGPU;
   
   //Advection part
   double advX, advY, advZ;
@@ -792,9 +793,13 @@ __global__ void kernelConstructWQuasiNeutrallyBuoyantTEST5_2(double *vxPredictio
   //advZ  = 0.25 * dtGPU * advZ;
 
   //Advection at mid-point
-  advX = vxPredictionGPU[i];
-  advY = vyPredictionGPU[i];
-  advZ = vzPredictionGPU[i];
+  //24-10-2012, we should not add the particle kinetic stress twice!
+  //advX = vxPredictionGPU[i];
+  //advY = vyPredictionGPU[i];
+  //advZ = vzPredictionGPU[i];
+  advX = WxZ[i].x;
+  advY = WyZ[i].x;
+  advZ = WzZ[i].x;
 
   //TEST 24-2-2011
   //advX=0; advY=0; advZ=0;////////////
@@ -1446,9 +1451,9 @@ __global__ void kernelConstructWQuasiNeutrallyBuoyantTEST5_3(double *vxPredictio
   wz  = 0.5 * dtGPU * (shearviscosityGPU/densfluidGPU) * wz;
 
   //Previous Velocity
-  wx += vx;// - 1.1444091796875e-06 * dtGPU;
-  wy += vy;
-  wz += vz;
+  wx += vx ;//- pressurea1GPU * 0.267261241912424385 * dtGPU;
+  wy += vy ;//- pressurea1GPU * 0.534522483824848769 * dtGPU;
+  wz += vz ;//- pressurea1GPU * 0.801783725737273154 * dtGPU;
   
   //Advection part
   double advX, advY, advZ;
@@ -1466,9 +1471,10 @@ __global__ void kernelConstructWQuasiNeutrallyBuoyantTEST5_3(double *vxPredictio
   advZ  = 0.25 * dtGPU * advZ;
 
   //Add particle's advection
-  advX += vxPredictionGPU[i];
-  advY += vyPredictionGPU[i];
-  advZ += vzPredictionGPU[i];
+  //24-10-2012, we should not add the particle kinetic stress twice!
+  //advX += vxPredictionGPU[i];
+  //advY += vyPredictionGPU[i];
+  //advZ += vzPredictionGPU[i];
 
   //advX=0; advY=0; advZ=0;
   //NOISE part

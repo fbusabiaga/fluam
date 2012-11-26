@@ -246,6 +246,9 @@ bool runSchemeParticlesWall();
 //////
 bool temperatureParticlesWall2(int index);
      
-
-
+//SchemeTestJPS
+bool schemeTestJPS();
+bool freeMemoryTestJPS();
+bool saveFunctionsSchemeTestJPS(int index, long long step);
+bool runSchemeTestJPS();
 
