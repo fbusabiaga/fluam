@@ -1,5 +1,5 @@
 #To compile the GPU code you need also the
-#code "HydroGrid". Open the fie 
+#code "HydroGrid". Open the file 
 #gpuFH/bin/makefile 
 #and modify lines 1 and 2.
 
@@ -44,7 +44,7 @@ incompressibleBinaryMixture
 
 #indicate number of cells in each direction
 #mx my mz
-cells 128  32 128
+cells 128	32	1
 
 
 #indicate size of the simulation box
@@ -52,7 +52,7 @@ cells 128  32 128
 #IMPORTANT: this notation is confusing, this is
 #the size of the simulation box NOT the size of a
 #single cell
-celldimension		0.4	0.1	0.4
+celldimension		0.4	0.1	0.00625
 
 
 #indicate a seed for the random numbers.
@@ -75,7 +75,7 @@ temperature             4.1828e-14
 
 
 #indicate concentration for the species 0
-concentration 	0.5
+concentration 	0.01
 
 
 #indicate mass diffusion
@@ -109,20 +109,20 @@ numsteps                1000
 
 #indicate with which frequency the code
 #should call HydriGrid for average
-samplefreq		10
+samplefreq		5
 
 
 #indicate with which frequency the code
 #HydorGrid should save data.
 #IMPORTANT, savefreq should be a multiple
 #of samplefreq
-savefreq		0
+savefreq		5
 
 
 #how initialize the fluid
 #0=fluid with homogeneous velocity
 #  and concentration
-initfluid 0
+initfluid 5
 
 
 #indicate a constant background velocity
@@ -134,7 +134,7 @@ backgroundvelocity 0  0	    0
 #indicate name for the output files
 #IMPORTANT, the directory you are using should
 #exist before you call the code
-outputname		/home/floren/gblob/data/incompressibleBinaryMixture/run4
+outputname		/home/floren/gblob/data/run1
 
 
 #if you want to load a previous configuration
