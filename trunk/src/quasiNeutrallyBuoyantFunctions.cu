@@ -4653,7 +4653,9 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyantTEST4_2(particlesincel
 
   
   rxboundaryGPU[i] = rxboundaryGPU[i] + dtGPU * v;
-  
+  //r = rxboundaryGPU[i] + dtGPU * v;
+  //rxboundaryGPU[i] =  r - int(r*invlxGPU + 0.5*((r>0)-(r<0)))*lxGPU;
+
 
   //VELOCITY IN THE Y DIRECTION
   vecino0 = tex1Dfetch(texvecino0GPU, icely);
@@ -4754,6 +4756,8 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyantTEST4_2(particlesincel
   
 
   ryboundaryGPU[i] = ryboundaryGPU[i] + dtGPU * v;
+  //r = ryboundaryGPU[i] + dtGPU * v;
+  //ryboundaryGPU[i] =  r - int(r*invlyGPU + 0.5*((r>0)-(r<0)))*lyGPU;
  
   //VELOCITY IN THE Z DIRECTION
   vecino0 = tex1Dfetch(texvecino0GPU, icelz);
@@ -4854,6 +4858,8 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyantTEST4_2(particlesincel
 
 
   rzboundaryGPU[i] = rzboundaryGPU[i] + dtGPU * v;
+  //r = rzboundaryGPU[i] + dtGPU * v;
+  //rzboundaryGPU[i] =  r - int(r*invlzGPU + 0.5*((r>0)-(r<0)))*lzGPU;
   
 
 }

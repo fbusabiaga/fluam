@@ -24,8 +24,9 @@
 #include "boundary.h"
 
 
-bool schemeQuasiNeutrallyBuoyant(){
-  
+bool schemeTestJPS(){
+
+
   //Create fluid cells
   if(!createCells()) return 0;
   
@@ -38,8 +39,8 @@ bool schemeQuasiNeutrallyBuoyant(){
     if(!createParticles()) return 0;
 
   //New bonded forces
-  if(bondedForces)
-    if(!initializeBondedForces()) return 0;
+  //if(bondedForces)
+  //if(!initializeBondedForces()) return 0;
 
   //Initialize the fluid
   if(!initializeFluid()) return 0;
@@ -54,26 +55,25 @@ bool schemeQuasiNeutrallyBuoyant(){
   if(!createBoundariesRK2GPU()) return 0;
  
   //New bonded forces
-  if(bondedForces)
-    if(!createBondedForcesGPU()) return 0;
+  //if(bondedForces)
+  //if(!createBondedForcesGPU()) return 0;
 
   //Initialize save functions
-  if(!saveFunctionsSchemeIncompressibleBoundary(0,0)) return 0;
-
-
+  if(!saveFunctionsSchemeTestJPS(0,0)) return 0;
+            
   //Run the simulation
-  if(!runSchemeQuasiNeutrallyBuoyant()) return 0;
+  if(!runSchemeTestJPS()) return 0;
   
   //Close save functions
-  if(!saveFunctionsSchemeIncompressibleBoundary(2,0)) return 0;
-
+  if(!saveFunctionsSchemeTestJPS(2,0)) return 0;
+      
   //New bonded forces
-  if(bondedForces)
-    if(!freeBondedForcesGPU()) return 0;
+  //if(bondedForces)
+  //if(!freeBondedForcesGPU()) return 0;
 
   //NEW bonded forces
-  if(bondedForces)
-    if(!freeBondedForces()) return 0;
+  //if(bondedForces)
+  //if(!freeBondedForces()) return 0;
 
   //Free Memory GPU
   if(!freeCellsIncompressibleGPU()) return 0;
@@ -90,12 +90,12 @@ bool schemeQuasiNeutrallyBuoyant(){
     if(!freeParticles()) return 0;
 
   //Free memory
-  if(!freeMemoryQuasiNeutrallyBuoyant()) return 0;
+  if(!freeMemoryTestJPS()) return 0;
   
   return 1;
 }
 
-bool freeMemoryQuasiNeutrallyBuoyant(){
+bool freeMemoryTestJPS(){
 
   delete[] cvx;
   delete[] cvy;

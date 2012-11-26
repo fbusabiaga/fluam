@@ -20,7 +20,7 @@
 
 float functionForceNonBonded1(double r){
   float sigma, epsilon;
-  sigma = 20.;
+  sigma = 2.;
   epsilon = 0.1;
   return 48. * epsilon * (pow(sigma/r,12) - 0.5*pow(sigma/r,6))/r;
   //return epsilon * ( (82.8 * pow(sigma/r,36) - 36 * pow(sigma/r,6))/r +

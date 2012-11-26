@@ -86,3 +86,7 @@ EXTERN_OTHER_FLUID_V bool incompressibleBinaryMixtureMidPoint;
 //particlesWall Begins
 EXTERN_OTHER_FLUID_V bool particlesWall;
 //particlesWall Ends
+
+//testJPS Begins
+EXTERN_OTHER_FLUID_V int testJPS;
+//testJPS Ends

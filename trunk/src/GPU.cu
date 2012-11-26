@@ -157,6 +157,7 @@ static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
 #include "createBoundariesRK2GPU.cu"
 #include "freeBoundariesRK2GPU.cu"
 #include "quasiNeutrallyBuoyantFunctions.cu"
+#include "quasiNeutrallyBuoyantFunctions2.cu"
 #include "calculateAdvectionFluid.cu"
 #include "interpolateField.cu"
 #include "gpuToHostIncompressibleBoundaryRK2.cu"
@@ -195,4 +196,9 @@ static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
 #include "boundaryParticlesFunctionParticlesWall.cu"
 #include "runSchemeParticlesWall.cu"
 
+
+//SchemeTestJPS
+#include "saveFunctionsSchemeTestJPS.cu"
+#include "JPS.cu"
+#include "runSchemeTestJPS.cu"
 
