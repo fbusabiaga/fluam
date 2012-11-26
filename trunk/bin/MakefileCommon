@@ -38,6 +38,7 @@ schemeIncompressibleBinaryMixture.o \
 schemeIncompressibleBinaryMixtureMidPoint.o \
 schemeIncompressibleBoundary.o \
 schemeQuasiNeutrallyBuoyant.o \
+schemeTestJPS.o \
 createCells.o \
 initializeFluid.o \
 initializeFluidParticlesWall.o \
@@ -168,6 +169,10 @@ $(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  -c $<
 schemeQuasiNeutrallyBuoyant.o: schemeQuasiNeutrallyBuoyant.cu header.h cells.h \
 boundary.h particles.h headerOtherFluidVariables.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  -c $<
+
+schemeTestJPS.o: schemeTestJPS.cu header.h cells.h \
+boundary.h particles.h headerOtherFluidVariables.h ; \
+$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
 createCells.o: createCells.cpp header.h cells.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  -c $<
@@ -332,7 +337,8 @@ saveFunctionsSchemeIncompressibleBinaryMixture.cu saveFunctionsSchemeParticlesWa
 runSchemeParticlesWall.cu initGhostIndexParticlesWallGPU.cu kernelFeedGhostCellsParticlesWall.cu \
 initializeVecinosGPU.cu kernelDpParticlesWall.cu boundaryParticlesFunctionParticlesWall.cu \
 saveFunctionsSchemeIncompressibleBinaryMixture.cu createBondedForcesGPU.cu \
-freeBondedForcesGPU.cu forceBondedGPU.cu ; \
+freeBondedForcesGPU.cu forceBondedGPU.cu saveFunctionsSchemeTestJPS.cu runSchemeTestJPS.cu \
+quasiNeutrallyBuoyantFunctions2.cu JPS.cu ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  -c $<
 
 
