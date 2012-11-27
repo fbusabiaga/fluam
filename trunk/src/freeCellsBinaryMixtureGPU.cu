@@ -19,37 +19,37 @@
 
 
 bool freeCellsBinaryMixtureGPU(){
-  cutilSafeCall(cudaFree(densityGPU));
-  cutilSafeCall(cudaUnbindTexture(texVxGPU));
-  cutilSafeCall(cudaUnbindTexture(texVyGPU));
-  cutilSafeCall(cudaUnbindTexture(texVzGPU));    
-  cutilSafeCall(cudaFree(vxGPU));
-  cutilSafeCall(cudaFree(vyGPU));
-  cutilSafeCall(cudaFree(vzGPU));
-  cutilSafeCall(cudaFree(densityPredictionGPU));
-  cutilSafeCall(cudaFree(vxPredictionGPU));
-  cutilSafeCall(cudaFree(vyPredictionGPU));
-  cutilSafeCall(cudaFree(vzPredictionGPU));
+  cudaFree(densityGPU);
+  cudaUnbindTexture(texVxGPU);
+  cudaUnbindTexture(texVyGPU);
+  cudaUnbindTexture(texVzGPU);    
+  cudaFree(vxGPU);
+  cudaFree(vyGPU);
+  cudaFree(vzGPU);
+  cudaFree(densityPredictionGPU);
+  cudaFree(vxPredictionGPU);
+  cudaFree(vyPredictionGPU);
+  cudaFree(vzPredictionGPU);
 
-  cutilSafeCall(cudaFree(cGPU));
-  cutilSafeCall(cudaFree(cPredictionGPU));
-  cutilSafeCall(cudaFree(dcGPU));
+  cudaFree(cGPU);
+  cudaFree(cPredictionGPU);
+  cudaFree(dcGPU);
 
-  cutilSafeCall(cudaFree(dmGPU));
-  cutilSafeCall(cudaFree(dpxGPU));
-  cutilSafeCall(cudaFree(dpyGPU));
-  cutilSafeCall(cudaFree(dpzGPU));
+  cudaFree(dmGPU);
+  cudaFree(dpxGPU);
+  cudaFree(dpyGPU);
+  cudaFree(dpzGPU);
 
-  cutilSafeCall(cudaFree(rxcellGPU));
-  cutilSafeCall(cudaFree(rycellGPU));
-  cutilSafeCall(cudaFree(rzcellGPU));
+  cudaFree(rxcellGPU);
+  cudaFree(rycellGPU);
+  cudaFree(rzcellGPU);
 
-  cutilSafeCall(cudaFree(ghostIndexGPU));
-  cutilSafeCall(cudaFree(realIndexGPU));
-  cutilSafeCall(cudaFree(ghostToPIGPU));
-  cutilSafeCall(cudaFree(ghostToGhostGPU));
+  cudaFree(ghostIndexGPU);
+  cudaFree(realIndexGPU);
+  cudaFree(ghostToPIGPU);
+  cudaFree(ghostToGhostGPU);
 
-  cutilSafeCall(cudaFree(stepGPU));
+  cudaFree(stepGPU);
 
   cout << "FREE MEMORY GPU :               DONE" << endl; 
 

@@ -21,23 +21,23 @@
 bool freeBondedForcesGPU(){
 
   
-  cutilSafeCall(cudaFree(bondsParticleParticleGPU));
-  cutilSafeCall(cudaFree(bondsParticleParticleOffsetGPU));
-  cutilSafeCall(cudaFree(bondsIndexParticleParticleGPU));
-  cutilSafeCall(cudaFree(r0ParticleParticleGPU));
-  cutilSafeCall(cudaFree(kSpringParticleParticleGPU));
+  cudaFree(bondsParticleParticleGPU);
+  cudaFree(bondsParticleParticleOffsetGPU);
+  cudaFree(bondsIndexParticleParticleGPU);
+  cudaFree(r0ParticleParticleGPU);
+  cudaFree(kSpringParticleParticleGPU);
 
 
-  cutilSafeCall(cudaFree(bondsParticleFixedPointGPU));
-  cutilSafeCall(cudaFree(bondsParticleFixedPointOffsetGPU));
-  //cutilSafeCall(cudaFree(bondsIndexParticleFixedPointGPU));
-  cutilSafeCall(cudaFree(r0ParticleFixedPointGPU));
-  cutilSafeCall(cudaFree(kSpringParticleFixedPointGPU));
-  cutilSafeCall(cudaFree(rxFixedPointGPU));
-  cutilSafeCall(cudaFree(ryFixedPointGPU));
-  cutilSafeCall(cudaFree(rzFixedPointGPU));
+  cudaFree(bondsParticleFixedPointGPU);
+  cudaFree(bondsParticleFixedPointOffsetGPU);
+  //cudaFree(bondsIndexParticleFixedPointGPU);
+  cudaFree(r0ParticleFixedPointGPU);
+  cudaFree(kSpringParticleFixedPointGPU);
+  cudaFree(rxFixedPointGPU);
+  cudaFree(ryFixedPointGPU);
+  cudaFree(rzFixedPointGPU);
 
-  cutilSafeCall(cudaFree(bFV));
+  cudaFree(bFV);
     
   return 1;
 }

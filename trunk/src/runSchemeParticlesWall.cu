@@ -239,9 +239,9 @@ bool runSchemeParticlesWall(){
 								       ghostIndexGPU, 
 								       realIndexGPU);
     
-    cutilSafeCall( cudaBindTexture(0,texVxGPU,vxPredictionGPU,ncellst*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVyGPU,vyPredictionGPU,ncellst*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVzGPU,vzPredictionGPU,ncellst*sizeof(double)));
+    cudaBindTexture(0,texVxGPU,vxPredictionGPU,ncellst*sizeof(double));
+    cudaBindTexture(0,texVyGPU,vyPredictionGPU,ncellst*sizeof(double));
+    cudaBindTexture(0,texVzGPU,vzPredictionGPU,ncellst*sizeof(double));
 
     //Provide data to ghost cells
     /*kernelFeedGhostCellsParticlesWall<<<numBlocksGhost,threadsPerBlockGhost>>>
@@ -366,9 +366,9 @@ bool runSchemeParticlesWall(){
 								       ghostIndexGPU, 
 								       realIndexGPU);
 
-    cutilSafeCall( cudaBindTexture(0,texVxGPU,vxGPU,ncellst*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVyGPU,vyGPU,ncellst*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVzGPU,vzGPU,ncellst*sizeof(double)));
+    cudaBindTexture(0,texVxGPU,vxGPU,ncellst*sizeof(double));
+    cudaBindTexture(0,texVyGPU,vyGPU,ncellst*sizeof(double));
+    cudaBindTexture(0,texVzGPU,vzGPU,ncellst*sizeof(double));
 
 
     //Boundaries and particles part start

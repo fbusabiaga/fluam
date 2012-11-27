@@ -171,9 +171,9 @@ bool runSchemeQuasiNeutrallyBuoyant(){
        vzGPU);
 
     //Load textures with particles position q^{n+1/2}
-    cutilSafeCall( cudaBindTexture(0,texrxboundaryGPU,rxboundaryPredictionGPU,(nboundary+np)*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texryboundaryGPU,ryboundaryPredictionGPU,(nboundary+np)*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texrzboundaryGPU,rzboundaryPredictionGPU,(nboundary+np)*sizeof(double)));
+    cudaBindTexture(0,texrxboundaryGPU,rxboundaryPredictionGPU,(nboundary+np)*sizeof(double));
+    cudaBindTexture(0,texryboundaryGPU,ryboundaryPredictionGPU,(nboundary+np)*sizeof(double));
+    cudaBindTexture(0,texrzboundaryGPU,rzboundaryPredictionGPU,(nboundary+np)*sizeof(double));
 
 
 
@@ -257,9 +257,9 @@ bool runSchemeQuasiNeutrallyBuoyant(){
 								    vzPredictionGPU);
     
     //Load textures with velocity prediction "\tilde{v}^{n+1}"
-    cutilSafeCall( cudaBindTexture(0,texVxGPU,vxPredictionGPU,ncells*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVyGPU,vyPredictionGPU,ncells*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVzGPU,vzPredictionGPU,ncells*sizeof(double)));
+    cudaBindTexture(0,texVxGPU,vxPredictionGPU,ncells*sizeof(double));
+    cudaBindTexture(0,texVyGPU,vyPredictionGPU,ncells*sizeof(double));
+    cudaBindTexture(0,texVzGPU,vzPredictionGPU,ncells*sizeof(double));
 
 
 
@@ -562,9 +562,9 @@ bool runSchemeQuasiNeutrallyBuoyant(){
 
 
     //Load textures with particles position q^{n}
-    cutilSafeCall( cudaBindTexture(0,texrxboundaryGPU,rxboundaryGPU,(nboundary+np)*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texryboundaryGPU,ryboundaryGPU,(nboundary+np)*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texrzboundaryGPU,rzboundaryGPU,(nboundary+np)*sizeof(double)));
+    cudaBindTexture(0,texrxboundaryGPU,rxboundaryGPU,(nboundary+np)*sizeof(double));
+    cudaBindTexture(0,texryboundaryGPU,ryboundaryGPU,(nboundary+np)*sizeof(double));
+    cudaBindTexture(0,texrzboundaryGPU,rzboundaryGPU,(nboundary+np)*sizeof(double));
 
 
 
@@ -597,9 +597,9 @@ bool runSchemeQuasiNeutrallyBuoyant(){
     }
 
     //Load textures with velocity prediction "\tilde{v}^{n+1}"
-    cutilSafeCall( cudaBindTexture(0,texVxGPU,vxGPU,ncells*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVyGPU,vyGPU,ncells*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVzGPU,vzGPU,ncells*sizeof(double)));
+    cudaBindTexture(0,texVxGPU,vxGPU,ncells*sizeof(double));
+    cudaBindTexture(0,texVyGPU,vyGPU,ncells*sizeof(double));
+    cudaBindTexture(0,texVzGPU,vzGPU,ncells*sizeof(double));
 
 
 

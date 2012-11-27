@@ -20,9 +20,9 @@
 
 bool freeMemoryRK3GPU(){
   cudaFree(densityGPU);
-  cutilSafeCall(cudaUnbindTexture(texVxGPU));
-  cutilSafeCall(cudaUnbindTexture(texVyGPU));
-  cutilSafeCall(cudaUnbindTexture(texVzGPU));    
+  cudaUnbindTexture(texVxGPU);
+  cudaUnbindTexture(texVyGPU);
+  cudaUnbindTexture(texVzGPU);    
   cudaFree(vxGPU);
   cudaFree(vyGPU);
   cudaFree(vzGPU);
@@ -41,32 +41,32 @@ bool freeMemoryRK3GPU(){
   cudaFree(rzcellGPU);
 
   
-  cutilSafeCall(cudaUnbindTexture(texvecino0GPU));
-  cutilSafeCall(cudaUnbindTexture(texvecino1GPU));
-  cutilSafeCall(cudaUnbindTexture(texvecino2GPU));
-  cutilSafeCall(cudaUnbindTexture(texvecino3GPU));
-  cutilSafeCall(cudaUnbindTexture(texvecino4GPU));
-  cutilSafeCall(cudaUnbindTexture(texvecino5GPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinopxpyGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinopxmyGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinopxpzGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinopxmzGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinomxpyGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinomxmyGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinomxpzGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinomxmzGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinopypzGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinopymzGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinomypzGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinomymzGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinopxpypzGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinopxpymzGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinopxmypzGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinopxmymzGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinomxpypzGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinomxpymzGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinomxmypzGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinomxmymzGPU));
+  cudaUnbindTexture(texvecino0GPU);
+  cudaUnbindTexture(texvecino1GPU);
+  cudaUnbindTexture(texvecino2GPU);
+  cudaUnbindTexture(texvecino3GPU);
+  cudaUnbindTexture(texvecino4GPU);
+  cudaUnbindTexture(texvecino5GPU);
+  cudaUnbindTexture(texvecinopxpyGPU);
+  cudaUnbindTexture(texvecinopxmyGPU);
+  cudaUnbindTexture(texvecinopxpzGPU);
+  cudaUnbindTexture(texvecinopxmzGPU);
+  cudaUnbindTexture(texvecinomxpyGPU);
+  cudaUnbindTexture(texvecinomxmyGPU);
+  cudaUnbindTexture(texvecinomxpzGPU);
+  cudaUnbindTexture(texvecinomxmzGPU);
+  cudaUnbindTexture(texvecinopypzGPU);
+  cudaUnbindTexture(texvecinopymzGPU);
+  cudaUnbindTexture(texvecinomypzGPU);
+  cudaUnbindTexture(texvecinomymzGPU);
+  cudaUnbindTexture(texvecinopxpypzGPU);
+  cudaUnbindTexture(texvecinopxpymzGPU);
+  cudaUnbindTexture(texvecinopxmypzGPU);
+  cudaUnbindTexture(texvecinopxmymzGPU);
+  cudaUnbindTexture(texvecinomxpypzGPU);
+  cudaUnbindTexture(texvecinomxpymzGPU);
+  cudaUnbindTexture(texvecinomxmypzGPU);
+  cudaUnbindTexture(texvecinomxmymzGPU);
 
   cudaFree(vecino0GPU);
   cudaFree(vecino1GPU);

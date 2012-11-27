@@ -78,9 +78,9 @@ bool runSchemeRK3Ghost(){
 						      ghostIndexGPU,
 						      realIndexGPU);
 
-    cutilSafeCall( cudaBindTexture(0,texVxGPU,vxPredictionGPU,ncellst*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVyGPU,vyPredictionGPU,ncellst*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVzGPU,vzPredictionGPU,ncellst*sizeof(double)));
+    cudaBindTexture(0,texVxGPU,vxPredictionGPU,ncellst*sizeof(double));
+    cudaBindTexture(0,texVyGPU,vyPredictionGPU,ncellst*sizeof(double));
+    cudaBindTexture(0,texVzGPU,vzPredictionGPU,ncellst*sizeof(double));
 
     //Provide data to ghost cells
     kernelFeedGhostCellsRK3<<<numBlocksGhost,threadsPerBlockGhost>>>(ghostToPIGPU,
@@ -156,9 +156,9 @@ bool runSchemeRK3Ghost(){
 						      ghostIndexGPU,
 						      realIndexGPU);
 
-    cutilSafeCall( cudaBindTexture(0,texVxGPU,vxGPU,ncellst*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVyGPU,vyGPU,ncellst*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVzGPU,vzGPU,ncellst*sizeof(double)));
+    cudaBindTexture(0,texVxGPU,vxGPU,ncellst*sizeof(double));
+    cudaBindTexture(0,texVyGPU,vyGPU,ncellst*sizeof(double));
+    cudaBindTexture(0,texVzGPU,vzGPU,ncellst*sizeof(double));
     
     
     step++;

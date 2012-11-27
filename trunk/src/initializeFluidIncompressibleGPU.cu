@@ -20,16 +20,16 @@
 
 bool initializeFluidIncompressibleGPU(){
   
-  cutilSafeCall(cudaMemcpy(vxGPU,cvx,ncells*sizeof(double),cudaMemcpyHostToDevice));
-  cutilSafeCall(cudaMemcpy(vyGPU,cvy,ncells*sizeof(double),cudaMemcpyHostToDevice));
-  cutilSafeCall(cudaMemcpy(vzGPU,cvz,ncells*sizeof(double),cudaMemcpyHostToDevice));
+  cudaMemcpy(vxGPU,cvx,ncells*sizeof(double),cudaMemcpyHostToDevice);
+  cudaMemcpy(vyGPU,cvy,ncells*sizeof(double),cudaMemcpyHostToDevice);
+  cudaMemcpy(vzGPU,cvz,ncells*sizeof(double),cudaMemcpyHostToDevice);
 
-  cutilSafeCall(cudaMemcpy(rxcellGPU,crx,ncells*sizeof(double),cudaMemcpyHostToDevice));
-  cutilSafeCall(cudaMemcpy(rycellGPU,cry,ncells*sizeof(double),cudaMemcpyHostToDevice));
-  cutilSafeCall(cudaMemcpy(rzcellGPU,crz,ncells*sizeof(double),cudaMemcpyHostToDevice));
+  cudaMemcpy(rxcellGPU,crx,ncells*sizeof(double),cudaMemcpyHostToDevice);
+  cudaMemcpy(rycellGPU,cry,ncells*sizeof(double),cudaMemcpyHostToDevice);
+  cudaMemcpy(rzcellGPU,crz,ncells*sizeof(double),cudaMemcpyHostToDevice);
 
   if(incompressibleBinaryMixture || incompressibleBinaryMixtureMidPoint)
-    cutilSafeCall(cudaMemcpy(cGPU,c,ncells*sizeof(double),cudaMemcpyHostToDevice));
+    cudaMemcpy(cGPU,c,ncells*sizeof(double),cudaMemcpyHostToDevice);
 
   
   cout << "INITIALIZE FLUID GPU :          DONE" << endl;

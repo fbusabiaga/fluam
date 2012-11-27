@@ -82,9 +82,9 @@ bool runSchemeThermostat(){
 							vxPredictionGPU,vyPredictionGPU,vzPredictionGPU,
 							dmGPU,
 							dpxGPU,dpyGPU,dpzGPU);
-    cutilSafeCall( cudaBindTexture(0,texVxGPU,vxPredictionGPU,ncells*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVyGPU,vyPredictionGPU,ncells*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVzGPU,vzPredictionGPU,ncells*sizeof(double)));
+    cudaBindTexture(0,texVxGPU,vxPredictionGPU,ncells*sizeof(double));
+    cudaBindTexture(0,texVyGPU,vyPredictionGPU,ncells*sizeof(double));
+    cudaBindTexture(0,texVzGPU,vzPredictionGPU,ncells*sizeof(double));
     //Second substep RK3
     kernelDpThermostat_1<<<numBlocks,threadsPerBlock>>>(densityPredictionGPU,densityGPU,
 							vxGPU,vyGPU,vzGPU,
@@ -107,9 +107,9 @@ bool runSchemeThermostat(){
 							vxGPU,vyGPU,vzGPU,
 							dmGPU,
 							dpxGPU,dpyGPU,dpzGPU);
-    cutilSafeCall( cudaBindTexture(0,texVxGPU,vxGPU,ncells*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVyGPU,vyGPU,ncells*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVzGPU,vzGPU,ncells*sizeof(double)));
+    cudaBindTexture(0,texVxGPU,vxGPU,ncells*sizeof(double));
+    cudaBindTexture(0,texVyGPU,vyGPU,ncells*sizeof(double));
+    cudaBindTexture(0,texVzGPU,vzGPU,ncells*sizeof(double));
     
     
     step++;

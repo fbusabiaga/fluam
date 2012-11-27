@@ -19,12 +19,12 @@
 
 
 bool gpuToHostIncompressible(){
-  cutilSafeCall(cudaMemcpy(cvx,vxGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
-  cutilSafeCall(cudaMemcpy(cvy,vyGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
-  cutilSafeCall(cudaMemcpy(cvz,vzGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
+  cudaMemcpy(cvx,vxGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
+  cudaMemcpy(cvy,vyGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
+  cudaMemcpy(cvz,vzGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
 
   if(incompressibleBinaryMixture || incompressibleBinaryMixtureMidPoint)
-    cutilSafeCall(cudaMemcpy(c,cGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
+    cudaMemcpy(c,cGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
   
   return 1;
 }
