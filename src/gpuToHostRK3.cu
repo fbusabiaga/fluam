@@ -19,9 +19,9 @@
 
 
 bool gpuToHostRK3(){
-  cutilSafeCall(cudaMemcpy(cDensity,densityGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
-  cutilSafeCall(cudaMemcpy(cvx,vxGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
-  cutilSafeCall(cudaMemcpy(cvy,vyGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
-  cutilSafeCall(cudaMemcpy(cvz,vzGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
+  cudaMemcpy(cDensity,densityGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
+  cudaMemcpy(cvx,vxGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
+  cudaMemcpy(cvy,vyGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
+  cudaMemcpy(cvz,vzGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
   return 1;
 }

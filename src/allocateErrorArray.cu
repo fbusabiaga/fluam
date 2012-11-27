@@ -24,16 +24,16 @@ void allocateErrorArray(){
   //if(setparticles==1) size++;
   //if((setparticles==1) || (setboundary==1)) size +=3;
   size = 5;
-
-  cutilSafeCall(cudaMalloc((void**)&errorKernel,size*sizeof(int)));
+  
+  cudaMalloc((void**)&errorKernel,size*sizeof(int));
   int aux[size];
   for(int i=0;i<size;i++) aux[i] = 0;
 
-  cutilSafeCall(cudaMemcpy(errorKernel,aux,size*sizeof(int),cudaMemcpyHostToDevice));
+  cudaMemcpy(errorKernel,aux,size*sizeof(int),cudaMemcpyHostToDevice);
 
 }
 
 
 void freeErrorArray(){
-  cutilSafeCall(cudaFree(errorKernel));
+  cudaFree(errorKernel);
 }

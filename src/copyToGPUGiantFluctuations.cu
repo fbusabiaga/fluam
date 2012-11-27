@@ -19,18 +19,18 @@
 
 
 bool copyToGPUGiantFluctuations(){
-  cutilSafeCall(cudaMemcpyToSymbol(cWall0GPU,&cWall0,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(cWall1GPU,&cWall1,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(densityWall0GPU,&densityWall0,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(densityWall1GPU,&densityWall1,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(vxWall0GPU,&vxWall0,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(vxWall1GPU,&vxWall1,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(vyWall0GPU,&vyWall0,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(vyWall1GPU,&vyWall1,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(vzWall0GPU,&vzWall0,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(vzWall1GPU,&vzWall1,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(soretCoefficientGPU,&soretCoefficient,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(gradTemperatureGPU,&gradTemperature,sizeof(double)));
+  cudaMemcpyToSymbol(cWall0GPU,&cWall0,sizeof(double));
+  cudaMemcpyToSymbol(cWall1GPU,&cWall1,sizeof(double));
+  cudaMemcpyToSymbol(densityWall0GPU,&densityWall0,sizeof(double));
+  cudaMemcpyToSymbol(densityWall1GPU,&densityWall1,sizeof(double));
+  cudaMemcpyToSymbol(vxWall0GPU,&vxWall0,sizeof(double));
+  cudaMemcpyToSymbol(vxWall1GPU,&vxWall1,sizeof(double));
+  cudaMemcpyToSymbol(vyWall0GPU,&vyWall0,sizeof(double));
+  cudaMemcpyToSymbol(vyWall1GPU,&vyWall1,sizeof(double));
+  cudaMemcpyToSymbol(vzWall0GPU,&vzWall0,sizeof(double));
+  cudaMemcpyToSymbol(vzWall1GPU,&vzWall1,sizeof(double));
+  cudaMemcpyToSymbol(soretCoefficientGPU,&soretCoefficient,sizeof(double));
+  cudaMemcpyToSymbol(gradTemperatureGPU,&gradTemperature,sizeof(double));
 
   cout << "COPY TO GPU :                   DONE" << endl;
 

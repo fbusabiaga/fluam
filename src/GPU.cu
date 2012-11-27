@@ -27,7 +27,8 @@
 #include "hydroAnalysis.h"
 
 //GPU staff
-#include <cutil_inline.h>
+//#include <cutil_inline.h>
+#include <cufft.h>
 #include "curand.h"
 #include "curand_kernel.h"
 #include "gpuVariables.cu"
@@ -131,7 +132,6 @@ static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
 #include "runSchemeContinuousGradient.cu"
 
 //SchemeIncompressible
-#include <cufft.h>
 #include "saveFunctionsSchemeIncompressible.cu"
 #include "createCellsIncompressibleGPU.cu"
 #include "initializePrefactorFourierSpace.cu"

@@ -144,9 +144,9 @@ bool runSchemeCompressibleParticles(){
 							dpyGPU,
 							dpzGPU);
 
-    cutilSafeCall( cudaBindTexture(0,texVxGPU,vxPredictionGPU,ncells*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVyGPU,vyPredictionGPU,ncells*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVzGPU,vzPredictionGPU,ncells*sizeof(double)));
+    cudaBindTexture(0,texVxGPU,vxPredictionGPU,ncells*sizeof(double));
+    cudaBindTexture(0,texVyGPU,vyPredictionGPU,ncells*sizeof(double));
+    cudaBindTexture(0,texVzGPU,vzPredictionGPU,ncells*sizeof(double));
 
     //Second substep RK3
     kernelDpCompressibleParticles<<<numBlocks,threadsPerBlock>>>(densityPredictionGPU,
@@ -208,9 +208,9 @@ bool runSchemeCompressibleParticles(){
 							dpyGPU,
 							dpzGPU);
 
-    cutilSafeCall( cudaBindTexture(0,texVxGPU,vxGPU,ncells*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVyGPU,vyGPU,ncells*sizeof(double)));
-    cutilSafeCall( cudaBindTexture(0,texVzGPU,vzGPU,ncells*sizeof(double)));
+    cudaBindTexture(0,texVxGPU,vxGPU,ncells*sizeof(double));
+    cudaBindTexture(0,texVyGPU,vyGPU,ncells*sizeof(double));
+    cudaBindTexture(0,texVzGPU,vzGPU,ncells*sizeof(double));
 
 
     //Boundaries and particles part start

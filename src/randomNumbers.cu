@@ -27,8 +27,8 @@ bool initializeRandomNumbersGPU(size_t numberRandom, int seed){
 
   curandCreateGenerator(&gen,CURAND_RNG_PSEUDO_DEFAULT);
   curandSetPseudoRandomGeneratorSeed(gen,seedLong);
-
-  cutilSafeCall(cudaMalloc((void**)&dRand,numberRandom*sizeof(double)));
+  
+  cudaMalloc((void**)&dRand,numberRandom*sizeof(double));
 
   return 1;
 }
@@ -41,7 +41,7 @@ bool generateRandomNumbers(size_t numberRandom){
 
 
 bool freeRandomNumbersGPU(){
-  cutilSafeCall(cudaFree(dRand));
+  cudaFree(dRand);
   curandDestroyGenerator(gen);
   return 1;
 }

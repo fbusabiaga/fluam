@@ -21,7 +21,7 @@
 bool gpuToHostIncompressibleBoundaryRK2(int numBlocksParticles, int threadsPerBlockParticles){
 
   int auxb[5];
-  cutilSafeCall(cudaMemcpy(auxb,errorKernel,5*sizeof(int),cudaMemcpyDeviceToHost));
+  cudaMemcpy(auxb,errorKernel,5*sizeof(int),cudaMemcpyDeviceToHost);
   if(auxb[0] == 1){
     for(int i=0;i<5;i++){
       cout << "ERROR IN KERNEL " << i << " " << auxb[i] << endl;
@@ -29,17 +29,17 @@ bool gpuToHostIncompressibleBoundaryRK2(int numBlocksParticles, int threadsPerBl
     return 0;
   }
 
-  cutilSafeCall(cudaMemcpy(cvx,vxGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
-  cutilSafeCall(cudaMemcpy(cvy,vyGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
-  cutilSafeCall(cudaMemcpy(cvz,vzGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
+  cudaMemcpy(cvx,vxGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
+  cudaMemcpy(cvy,vyGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
+  cudaMemcpy(cvz,vzGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
 
   if(setparticles){
-    cutilSafeCall(cudaMemcpy(rxParticle,&rxboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
-    cutilSafeCall(cudaMemcpy(ryParticle,&ryboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
-    cutilSafeCall(cudaMemcpy(rzParticle,&rzboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
-    cutilSafeCall(cudaMemcpy(vxParticle,&vxboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
-    cutilSafeCall(cudaMemcpy(vyParticle,&vyboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
-    cutilSafeCall(cudaMemcpy(vzParticle,&vzboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
+    cudaMemcpy(rxParticle,&rxboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
+    cudaMemcpy(ryParticle,&ryboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
+    cudaMemcpy(rzParticle,&rzboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
+    cudaMemcpy(vxParticle,&vxboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
+    cudaMemcpy(vyParticle,&vyboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
+    cudaMemcpy(vzParticle,&vzboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
 
     //Interpolate fluid velocity to particle position
     interpolateField<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
@@ -55,12 +55,12 @@ bool gpuToHostIncompressibleBoundaryRK2(int numBlocksParticles, int threadsPerBl
 								      ryboundaryPredictionGPU,
 								      rzboundaryPredictionGPU);
     
-    cutilSafeCall(cudaMemcpy(vxParticleI,&rxboundaryPredictionGPU[nboundary],
-			     np*sizeof(double),cudaMemcpyDeviceToHost));
-    cutilSafeCall(cudaMemcpy(vyParticleI,&ryboundaryPredictionGPU[nboundary],
-			     np*sizeof(double),cudaMemcpyDeviceToHost));
-    cutilSafeCall(cudaMemcpy(vzParticleI,&rzboundaryPredictionGPU[nboundary],
-			     np*sizeof(double),cudaMemcpyDeviceToHost));
+    cudaMemcpy(vxParticleI,&rxboundaryPredictionGPU[nboundary],
+			     np*sizeof(double),cudaMemcpyDeviceToHost);
+    cudaMemcpy(vyParticleI,&ryboundaryPredictionGPU[nboundary],
+			     np*sizeof(double),cudaMemcpyDeviceToHost);
+    cudaMemcpy(vzParticleI,&rzboundaryPredictionGPU[nboundary],
+			     np*sizeof(double),cudaMemcpyDeviceToHost);
   }
 
   return 1;

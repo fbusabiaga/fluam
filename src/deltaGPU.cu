@@ -59,9 +59,9 @@ void initDelta(){
   }
   h_data[size-1] = 0.;
   cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc(32, 0, 0, 0, cudaChannelFormatKindFloat);
-  cutilSafeCall( cudaMallocArray( &cuArrayDelta, &channelDesc, size, 1 )); 
-  cutilSafeCall( cudaMemcpyToArray( cuArrayDelta, 0, 0, h_data, size*sizeof(float), cudaMemcpyHostToDevice));
-  cutilSafeCall( cudaBindTextureToArray( texDelta, cuArrayDelta, channelDesc));
+  cudaMallocArray( &cuArrayDelta, &channelDesc, size, 1 ); 
+  cudaMemcpyToArray( cuArrayDelta, 0, 0, h_data, size*sizeof(float), cudaMemcpyHostToDevice);
+  cudaBindTextureToArray( texDelta, cuArrayDelta, channelDesc);
   delete[] h_data;
   //cutilSafeCall( cudaUnbindTexture(texDelta) );
   //cutilSafeCall( cudaFreeArray(cuArrayDelta) );
@@ -69,8 +69,8 @@ void initDelta(){
 }
 
 bool freeDelta(){
-  cutilSafeCall( cudaUnbindTexture(texDelta) );
-  cutilSafeCall( cudaFreeArray(cuArrayDelta) );
+  cudaUnbindTexture(texDelta) ;
+  cudaFreeArray(cuArrayDelta) ;
   cout << "FREE MEMORY DELTA FUNCTION" << endl;
   return 1;
 }

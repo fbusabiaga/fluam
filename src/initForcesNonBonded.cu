@@ -46,9 +46,9 @@ bool initForcesNonBonded(){
   h_data[size-1] = 0.;
   h_data[0] = 0.;
   cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc(32, 0, 0, 0, cudaChannelFormatKindFloat);
-  cutilSafeCall( cudaMallocArray( &forceNonBonded1, &channelDesc, size, 1 )); 
-  cutilSafeCall( cudaMemcpyToArray( forceNonBonded1, 0, 0, h_data, size*sizeof(float), cudaMemcpyHostToDevice));
-  cutilSafeCall( cudaBindTextureToArray( texforceNonBonded1, forceNonBonded1, channelDesc));
+  cudaMallocArray( &forceNonBonded1, &channelDesc, size, 1 ); 
+  cudaMemcpyToArray( forceNonBonded1, 0, 0, h_data, size*sizeof(float), cudaMemcpyHostToDevice);
+  cudaBindTextureToArray( texforceNonBonded1, forceNonBonded1, channelDesc);
 
 
   /*r = 0.5 * dr;

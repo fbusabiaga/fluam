@@ -20,9 +20,9 @@
 
 bool freeBinaryMixtureGPU(){
   
-  cutilSafeCall(cudaFree(cGPU));
-  cutilSafeCall(cudaFree(cPredictionGPU));
-  cutilSafeCall(cudaFree(dcGPU));
+  cudaFree(cGPU);
+  cudaFree(cPredictionGPU);
+  cudaFree(dcGPU);
 
 
   cout << "FREE BINARY MIXTURE GPU :       DONE"  << endl;
