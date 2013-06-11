@@ -21,10 +21,16 @@ FC = gfortran
 NVCC = nvcc
 #NVCC = cuda-gdb
 
+
+#
+#
+#Some libraries may be required
+#CUDALIB=-L/usr/local/cuda-5.0/lib64 -lcurand
+
 #
 #
 #Cuda flags
-NVCCFLAGS = -O -arch=sm_13 --compiler-bindir /usr/bin/gcc 
+NVCCFLAGS = -O -arch=sm_20 --compiler-bindir /usr/bin/gcc $(CUDALIB)
 
 #
 #
@@ -57,7 +63,8 @@ NVCCINCLS = -I./ -I$(SRC_FLUAM)
 #Includes for fluam, path to cutil.h file
 #We assume NVIDIA_GPU_Computing_SDK is in the user HOME
 #NVIDIA_GPU_Computing_SDK is needed for the cutil.h files
-NVCCINCLS += -I$(HOME)/NVIDIA_GPU_Computing_SDK/C/common/inc/
+#NVCCINCLS += -I$(HOME)/NVIDIA_GPU_Computing_SDK/C/common/inc/
+NVCCINCLS +=
 
 #
 #

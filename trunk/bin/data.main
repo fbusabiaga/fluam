@@ -1,5 +1,5 @@
-#In general it's better don't use this option
-setDevice 0
+#In general it's better not to use this option
+#setDevice 0
 
 #
 #These values are for water at 300K, the units are
@@ -23,14 +23,18 @@ thermostat
 #particlesWall
 #incompressibleBinaryMixtureMidPoint
 #incompressibleBinaryMixture
+#freeEnergyCompressibleParticles
+#semiImplicitCompressibleParticles
+
 
 identity_prefactor	0.0
 
 volumeboundaryconst	8
 
-numberparticles		1
+numberparticles		1000
 volumeParticle		8000
-mass			0
+mass			8000
+omega0			384000
 
 
 cutoff                  22.4492409662
@@ -53,9 +57,9 @@ bulkviscosity           .1110534
 
 temperature             0.1
 numstepsRelaxation	0
-numsteps                10000
+numsteps                1000
 
-dt			0.5
+dt			0.25
 
 samplefreq              50
 savefreq		0
@@ -71,17 +75,17 @@ pressureparameters 0	16	0
 
 #checkVelocity	   	kk.coor
 
-outputname		/home/floren/gblob/data/run1
+outputname		../data/run1
 
 
 #saveVTK		0
 
 
-cells			16	16	16
-celldimension		160	160	160
+cells			32	32	32
+celldimension		320	320	320
 #seed			1
 
-loadparticles		1
+loadparticles		0
 coordinates		/home/floren/gpuFH/bin/kk.coor
 #velocities		/home/floren/gpuFH/bin/reynolds.vel
 
