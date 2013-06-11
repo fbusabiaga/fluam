@@ -1,6 +1,6 @@
 // Filename: interpolateField.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -422,6 +422,209 @@ __global__ void interpolateField(double* rxcellGPU,
   vzboundaryPredictionGPU[nboundaryGPU+i] = v ;
 
 
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+__global__ void interpolateDensity(double* rxcellGPU,
+				   double* rycellGPU,
+				   double* rzcellGPU,
+				   double* densityGPU,
+				   double* rxboundaryGPU,
+				   double* ryboundaryGPU,
+				   double* rzboundaryGPU,
+				   double* rxboundaryPredictionGPU){
+
+
+
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=(npGPU)) return;   
+
+  double rx = fetch_double(texrxboundaryGPU,nboundaryGPU+i);
+  double ry = fetch_double(texryboundaryGPU,nboundaryGPU+i);
+  double rz = fetch_double(texrzboundaryGPU,nboundaryGPU+i);
+    
+  int vecino0, vecino1, vecino2, vecino3, vecino4, vecino5;
+  int vecinopxpy, vecinopxmy, vecinopxpz, vecinopxmz;
+  int vecinomxpy, vecinomxmy, vecinomxpz, vecinomxmz;
+  int vecinopypz, vecinopymz, vecinomypz, vecinomymz;
+  int vecinopxpypz, vecinopxpymz, vecinopxmypz, vecinopxmymz;
+  int vecinomxpypz, vecinomxpymz, vecinomxmypz, vecinomxmymz;
+
+  double r, rp, rm;
+  double auxdx = invdxGPU/1.5;
+  double auxdy = invdyGPU/1.5;
+  double auxdz = invdzGPU/1.5;
+  double dlx, dlxp, dlxm;
+  double dly, dlyp, dlym;
+  double dlz, dlzp, dlzm;
+
+  int icel;
+
+  {
+    int mxmy = mxGPU * myGPU;
+    r = rx;
+    r = r - (int(r*invlxGPU + 0.5*((r>0)-(r<0)))) * lxGPU;
+    int jx   = int(r * invdxGPU + 0.5*mxGPU) % mxGPU;
+    //r = rx - 0.5*dxGPU;
+    //r = r - (int(r*invlxGPU + 0.5*((r>0)-(r<0)))) * lxGPU;
+    //int jxdx = int(r * invdxGPU + 0.5*mxGPU) % mxGPU;
+
+    r = ry;
+    r = r - (int(r*invlyGPU + 0.5*((r>0)-(r<0)))) * lyGPU;
+    int jy   = int(r * invdyGPU + 0.5*myGPU) % myGPU;
+    //r = ry - 0.5*dyGPU;
+    //r = r - (int(r*invlyGPU + 0.5*((r>0)-(r<0)))) * lyGPU;
+    //int jydy = int(r * invdyGPU + 0.5*myGPU) % myGPU;
+
+    r = rz;
+    r = r - (int(r*invlzGPU + 0.5*((r>0)-(r<0)))) * lzGPU;
+    int jz   = int(r * invdzGPU + 0.5*mzGPU) % mzGPU;
+    //r = rz - 0.5*dzGPU;
+    //r = r - (int(r*invlzGPU + 0.5*((r>0)-(r<0)))) * lzGPU;
+    //int jzdz = int(r * invdzGPU + 0.5*mzGPU) % mzGPU;
+
+    icel  = jx;
+    icel += jy * mxGPU;
+    icel += jz * mxmy;
+
+  }
+  
+  //Density
+  vecino0 = tex1Dfetch(texvecino0GPU, icel);
+  vecino1 = tex1Dfetch(texvecino1GPU, icel);
+  vecino2 = tex1Dfetch(texvecino2GPU, icel);
+  vecino3 = tex1Dfetch(texvecino3GPU, icel);
+  vecino4 = tex1Dfetch(texvecino4GPU, icel);
+  vecino5 = tex1Dfetch(texvecino5GPU, icel);
+  vecinopxpy = tex1Dfetch(texvecinopxpyGPU, icel);
+  vecinopxmy = tex1Dfetch(texvecinopxmyGPU, icel);
+  vecinopxpz = tex1Dfetch(texvecinopxpzGPU, icel);
+  vecinopxmz = tex1Dfetch(texvecinopxmzGPU, icel);
+  vecinomxpy = tex1Dfetch(texvecinomxpyGPU, icel);
+  vecinomxmy = tex1Dfetch(texvecinomxmyGPU, icel);
+  vecinomxpz = tex1Dfetch(texvecinomxpzGPU, icel);
+  vecinomxmz = tex1Dfetch(texvecinomxmzGPU, icel);
+  vecinopypz = tex1Dfetch(texvecinopypzGPU, icel);
+  vecinopymz = tex1Dfetch(texvecinopymzGPU, icel);
+  vecinomypz = tex1Dfetch(texvecinomypzGPU, icel);
+  vecinomymz = tex1Dfetch(texvecinomymzGPU, icel);
+  vecinopxpypz = tex1Dfetch(texvecinopxpypzGPU, icel);
+  vecinopxpymz = tex1Dfetch(texvecinopxpymzGPU, icel);
+  vecinopxmypz = tex1Dfetch(texvecinopxmypzGPU, icel);
+  vecinopxmymz = tex1Dfetch(texvecinopxmymzGPU, icel);
+  vecinomxpypz = tex1Dfetch(texvecinomxpypzGPU, icel);
+  vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icel);
+  vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icel);
+  vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icel);
+  int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
+  int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
+  int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
+  int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
+  int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
+  int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
+  int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
+  int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
+  int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
+  
+  r =  (rx - rxcellGPU[icel] );
+  rp = (rx - rxcellGPU[vecino3] );
+  rm = (rx - rxcellGPU[vecino2] );
+  r =  auxdx * (r - int(r*invlxGPU + 0.5*((r>0)-(r<0)))*lxGPU);
+  rm = auxdx * (rm - int(rm*invlxGPU + 0.5*((rm>0)-(rm<0)))*lxGPU);
+  rp = auxdx * (rp - int(rp*invlxGPU + 0.5*((rp>0)-(rp<0)))*lxGPU);
+  //dlx = tex1D(texDelta, fabs(r));
+  //dlxp = tex1D(texDelta, fabs(rp));
+  //dlxm = tex1D(texDelta, fabs(rm));
+  dlx = delta(1.5*r);
+  dlxp = delta(1.5*rp);
+  dlxm = delta(1.5*rm);
+
+  r =  (ry - rycellGPU[icel]);
+  rp = (ry - rycellGPU[vecino4]);
+  rm = (ry - rycellGPU[vecino1]); 
+  r =  auxdy * (r - int(r*invlyGPU + 0.5*((r>0)-(r<0)))*lyGPU);
+  rp = auxdy * (rp - int(rp*invlyGPU + 0.5*((rp>0)-(rp<0)))*lyGPU);
+  rm = auxdy * (rm - int(rm*invlyGPU + 0.5*((rm>0)-(rm<0)))*lyGPU);
+  //dly = tex1D(texDelta, fabs(r));
+  //dlyp = tex1D(texDelta, fabs(rp));
+  //dlym = tex1D(texDelta, fabs(rm));
+  dly = delta(1.5*r);
+  dlyp = delta(1.5*rp);
+  dlym = delta(1.5*rm);
+
+  r =  (rz - rzcellGPU[icel]);
+  rp = (rz - rzcellGPU[vecino5]);
+  rm = (rz - rzcellGPU[vecino0]);
+  r = auxdz * (r - int(r*invlzGPU + 0.5*((r>0)-(r<0)))*lzGPU);
+  rp = auxdz * (rp - int(rp*invlzGPU + 0.5*((rp>0)-(rp<0)))*lzGPU);
+  rm = auxdz * (rm - int(rm*invlzGPU + 0.5*((rm>0)-(rm<0)))*lzGPU);
+  //dlz = tex1D(texDelta, fabs(r));
+  //dlzp = tex1D(texDelta, fabs(rp));
+  //dlzm = tex1D(texDelta, fabs(rm));
+  dlz = delta(1.5*r);
+  dlzp = delta(1.5*rp);
+  dlzm = delta(1.5*rm);
+  
+  double v = dlxm * dlym * dlzm * densityGPU[vecinomxmymz] +
+    dlxm * dlym * dlz  * densityGPU[vecinomxmy] +
+    dlxm * dlym * dlzp * densityGPU[vecinomxmypz] +
+    dlxm * dly  * dlzm * densityGPU[vecinomxmz] + 
+    dlxm * dly  * dlz  * densityGPU[vecino2] +
+    dlxm * dly  * dlzp * densityGPU[vecinomxpz] +
+    dlxm * dlyp * dlzm * densityGPU[vecinomxpymz] +
+    dlxm * dlyp * dlz  * densityGPU[vecinomxpy] +
+    dlxm * dlyp * dlzp * densityGPU[vecinomxpypz] +
+    dlx  * dlym * dlzm * densityGPU[vecinomymz] +
+    dlx  * dlym * dlz  * densityGPU[vecino1] +
+    dlx  * dlym * dlzp * densityGPU[vecinomypz] + 
+    dlx  * dly  * dlzm * densityGPU[vecino0] + 
+    dlx  * dly  * dlz  * densityGPU[icel] + 
+    dlx  * dly  * dlzp * densityGPU[vecino5] + 
+    dlx  * dlyp * dlzm * densityGPU[vecinopymz] + 
+    dlx  * dlyp * dlz  * densityGPU[vecino4] + 
+    dlx  * dlyp * dlzp * densityGPU[vecinopypz] + 
+    dlxp * dlym * dlzm * densityGPU[vecinopxmymz] + 
+    dlxp * dlym * dlz  * densityGPU[vecinopxmy] + 
+    dlxp * dlym * dlzp * densityGPU[vecinopxmypz] +
+    dlxp * dly  * dlzm * densityGPU[vecinopxmz] + 
+    dlxp * dly  * dlz  * densityGPU[vecino3] +
+    dlxp * dly  * dlzp * densityGPU[vecinopxpz] +
+    dlxp * dlyp * dlzm * densityGPU[vecinopxpymz] +
+    dlxp * dlyp * dlz  * densityGPU[vecinopxpy] +
+    dlxp * dlyp * dlzp * densityGPU[vecinopxpypz];
+  
+
+  rxboundaryPredictionGPU[nboundaryGPU+i] = v ;
+      
 
 }
 

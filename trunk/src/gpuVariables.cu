@@ -1,6 +1,6 @@
 // Filename: gpuVariables.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -95,6 +95,9 @@ typedef struct{
   int* partincellZ;
   int* countPartInCellNonBonded;
   int* partInCellNonBonded;
+  //freeEnergyCompressibleParticles
+  int* countparticlesincell;
+  int* partincell;
 } particlesincell;
 
 typedef struct{
@@ -133,6 +136,7 @@ __device__ double *dmGPU;
 __device__ double *dpxGPU, *dpyGPU, *dpzGPU;
 __device__ double *rxcellGPU, *rycellGPU, *rzcellGPU;
 __device__ double *advXGPU, *advYGPU, *advZGPU;
+__device__ double *omegaGPU;
 
 //IMEXRK
 __device__ double *vx2GPU, *vy2GPU, *vz2GPU;
@@ -144,7 +148,7 @@ __device__ double *vxboundary3GPU, *vyboundary3GPU, *vzboundary3GPU;
 __device__ double *fx2GPU, *fy2GPU, *fz2GPU;
 __device__ double *fx3GPU, *fy3GPU, *fz3GPU;
 
-__constant__ double omega1, omega2, omega3, omega4, omega5;
+//__constant__ double omega1, omega2, omega3, omega4, omega5;
 
 
 //Binary Mixture
@@ -172,6 +176,7 @@ __constant__ double soretCoefficientGPU, gradTemperatureGPU;
 __device__ double *rxboundaryGPU, *ryboundaryGPU, *rzboundaryGPU;
 __device__ double *vxboundaryGPU, *vyboundaryGPU, *vzboundaryGPU;
 __device__ double *fxboundaryGPU, *fyboundaryGPU, *fzboundaryGPU;
+__device__ double *fboundaryOmega;
 __device__ double *volumeboundaryGPU;
 __device__ double *fbcell;
 
@@ -180,6 +185,7 @@ __device__ double *fbcell;
 __constant__ double massParticleGPU, volumeParticleGPU;
 __constant__ int npGPU;
 __constant__ bool setparticlesGPU, setboundaryGPU;
+__constant__ double omega0GPU;
 /*__device__ double *fb0, *fb1, *fb2, *fb3, *fb4, *fb5;
 __device__ double *fbpxpy, *fbpxmy, *fbpxpz, *fbpxmz;
 __device__ double *fbmxpy, *fbmxmy, *fbmxpz, *fbmxmz;
@@ -213,6 +219,7 @@ __constant__ int mxNeighborsGPU, myNeighborsGPU, mzNeighborsGPU, mNeighborsGPU;
 __device__ int *partincellX, *partincellY, *partincellZ;
 __device__ int *countparticlesincellX, *countparticlesincellY, *countparticlesincellZ;
 __device__ int *partInCellNonBonded, *countPartInCellNonBonded;
+__device__ int *countparticlesincell, *partincell;
 __constant__ int maxNumberPartInCellGPU, maxNumberPartInCellNonBondedGPU;
 __device__ int *errorKernel;
 __constant__ double cutoffGPU, invcutoffGPU, invcutoff2GPU;
@@ -221,7 +228,7 @@ __constant__ double *saveForceX, *saveForceY, *saveForceZ;
 
 //WAVE SOURCE
 __device__ long long *stepGPU;
-__constant__ double densityConstGPU, dDensityGPU, omegaGPU;
+__constant__ double densityConstGPU, dDensityGPU;
 
 __device__ vecinos *vec;
 __device__ fvec *fb;
@@ -366,5 +373,5 @@ __device__ double *rxFixedPointGPU;
 __device__ double *ryFixedPointGPU;
 __device__ double *rzFixedPointGPU;
 __constant__ bool particlesWallGPU;
-
+__constant__ bool computeNonBondedForcesGPU;
 

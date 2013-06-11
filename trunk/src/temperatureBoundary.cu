@@ -1,6 +1,6 @@
 // Filename: temperatureBoundary.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -148,7 +148,7 @@ bool temperatureBoundary(int index){
     cout.precision(15);
     cout << "PX " << px << endl;
     cout << "PY " << py << endl;
-    cout << "PZ " << pz << endl << endl;;
+    cout << "PZ " << pz << endl << endl;
 
     cout.precision(6);
   }

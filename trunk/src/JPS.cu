@@ -1,6 +1,6 @@
 // Filename: JPS.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -36,7 +36,7 @@ __global__ void spreadVector(double rx, //Point
   if(i>=(ncellsGPU)) return;   
 
 
-  double r, rp, rm;
+  double r;
   double dlx;
   double dly;
   double dlz;
@@ -491,33 +491,33 @@ __global__ void interpolateField2(double* rxcellGPU,
   dlzm = delta(rm);
 
 
-  v = dlxm * dlym * dlzm * vzZ[texVzGPU,vecinomxmymz].x +
-    dlxm * dlym * dlz  * vzZ[texVzGPU,vecinomxmy].x +
-    dlxm * dlym * dlzp * vzZ[texVzGPU,vecinomxmypz].x +
-    dlxm * dly  * dlzm * vzZ[texVzGPU,vecinomxmz].x + 
-    dlxm * dly  * dlz  * vzZ[texVzGPU,vecino2].x +
-    dlxm * dly  * dlzp * vzZ[texVzGPU,vecinomxpz].x +
-    dlxm * dlyp * dlzm * vzZ[texVzGPU,vecinomxpymz].x +
-    dlxm * dlyp * dlz  * vzZ[texVzGPU,vecinomxpy].x +
-    dlxm * dlyp * dlzp * vzZ[texVzGPU,vecinomxpypz].x +
-    dlx  * dlym * dlzm * vzZ[texVzGPU,vecinomymz].x +
-    dlx  * dlym * dlz  * vzZ[texVzGPU,vecino1].x +
-    dlx  * dlym * dlzp * vzZ[texVzGPU,vecinomypz].x + 
-    dlx  * dly  * dlzm * vzZ[texVzGPU,vecino0].x + 
-    dlx  * dly  * dlz  * vzZ[texVzGPU,icelz].x + 
-    dlx  * dly  * dlzp * vzZ[texVzGPU,vecino5].x + 
-    dlx  * dlyp * dlzm * vzZ[texVzGPU,vecinopymz].x + 
-    dlx  * dlyp * dlz  * vzZ[texVzGPU,vecino4].x + 
-    dlx  * dlyp * dlzp * vzZ[texVzGPU,vecinopypz].x + 
-    dlxp * dlym * dlzm * vzZ[texVzGPU,vecinopxmymz].x + 
-    dlxp * dlym * dlz  * vzZ[texVzGPU,vecinopxmy].x + 
-    dlxp * dlym * dlzp * vzZ[texVzGPU,vecinopxmypz].x +
-    dlxp * dly  * dlzm * vzZ[texVzGPU,vecinopxmz].x + 
-    dlxp * dly  * dlz  * vzZ[texVzGPU,vecino3].x +
-    dlxp * dly  * dlzp * vzZ[texVzGPU,vecinopxpz].x +
-    dlxp * dlyp * dlzm * vzZ[texVzGPU,vecinopxpymz].x +
-    dlxp * dlyp * dlz  * vzZ[texVzGPU,vecinopxpy].x +
-    dlxp * dlyp * dlzp * vzZ[texVzGPU,vecinopxpypz].x;
+  v = dlxm * dlym * dlzm * vzZ[vecinomxmymz].x +
+    dlxm * dlym * dlz  * vzZ[vecinomxmy].x +
+    dlxm * dlym * dlzp * vzZ[vecinomxmypz].x +
+    dlxm * dly  * dlzm * vzZ[vecinomxmz].x + 
+    dlxm * dly  * dlz  * vzZ[vecino2].x +
+    dlxm * dly  * dlzp * vzZ[vecinomxpz].x +
+    dlxm * dlyp * dlzm * vzZ[vecinomxpymz].x +
+    dlxm * dlyp * dlz  * vzZ[vecinomxpy].x +
+    dlxm * dlyp * dlzp * vzZ[vecinomxpypz].x +
+    dlx  * dlym * dlzm * vzZ[vecinomymz].x +
+    dlx  * dlym * dlz  * vzZ[vecino1].x +
+    dlx  * dlym * dlzp * vzZ[vecinomypz].x + 
+    dlx  * dly  * dlzm * vzZ[vecino0].x + 
+    dlx  * dly  * dlz  * vzZ[icelz].x + 
+    dlx  * dly  * dlzp * vzZ[vecino5].x + 
+    dlx  * dlyp * dlzm * vzZ[vecinopymz].x + 
+    dlx  * dlyp * dlz  * vzZ[vecino4].x + 
+    dlx  * dlyp * dlzp * vzZ[vecinopypz].x + 
+    dlxp * dlym * dlzm * vzZ[vecinopxmymz].x + 
+    dlxp * dlym * dlz  * vzZ[vecinopxmy].x + 
+    dlxp * dlym * dlzp * vzZ[vecinopxmypz].x +
+    dlxp * dly  * dlzm * vzZ[vecinopxmz].x + 
+    dlxp * dly  * dlz  * vzZ[vecino3].x +
+    dlxp * dly  * dlzp * vzZ[vecinopxpz].x +
+    dlxp * dlyp * dlzm * vzZ[vecinopxpymz].x +
+    dlxp * dlyp * dlz  * vzZ[vecinopxpy].x +
+    dlxp * dlyp * dlzp * vzZ[vecinopxpypz].x;
   
   
   vzboundaryGPU[nboundaryGPU+i] = v / ncellsGPU * volumeParticleGPU ;

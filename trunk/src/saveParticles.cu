@@ -1,6 +1,6 @@
 // Filename: saveParticles.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -61,7 +61,8 @@ bool saveParticles(int option, long long step){
       file << rxParticle[i] << " " << ryParticle[i] << " " << rzParticle[i] << endl;
       fileVelocity << vxParticle[i] << " " << vyParticle[i] << " " << vzParticle[i] << endl;
       //This is for the interpolate velocit
-      fileVelocityI << vxParticleI[i] << " " << vyParticleI[i] << " " << vzParticleI[i] << endl;
+      if(quasiNeutrallyBuoyant || quasiNeutrallyBuoyant2D) 
+	fileVelocityI << vxParticleI[i] << " " << vyParticleI[i] << " " << vzParticleI[i] << endl;
     }
   }
   else if(option == 2){

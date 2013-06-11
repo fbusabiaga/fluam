@@ -1,6 +1,6 @@
 // Filename: forceBondedGPU.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -18,14 +18,14 @@
 // along with Fluam. If not, see <http://www.gnu.org/licenses/>.
 
 
-__device__ void forceBondedParticleParticleGPU(int i,
+__device__ void forceBondedParticleParticleGPU(const int i,
 					       double& fx, //Pass by reference
 					       double& fy,
 					       double& fz,
-					       double rx,
-					       double ry,
-					       double rz,
-					       bondedForcesVariables* bFV){	
+					       const double rx,
+					       const double ry,
+					       const double rz,
+					       const bondedForcesVariables* bFV){	
 
   double x, y, z;
   double r, r0;
@@ -53,21 +53,21 @@ __device__ void forceBondedParticleParticleGPU(int i,
     
     //Equilibrium distance 
     r0 = bFV->r0ParticleParticleGPU[offset+j];
-
+    
     //Spring constant
     kSpring = bFV->kSpringParticleParticleGPU[offset+j];
-
+    
     if(r0==0){
-      fx = -kSpring * (rx - x);
-      fy = -kSpring * (ry - y);
-      fz = -kSpring * (rz - z);
+      fx += -kSpring * (rx - x);
+      fy += -kSpring * (ry - y);
+      fz += -kSpring * (rz - z);
     }  
     else{     //If r0!=0 calculate particle particle distance
       r = sqrt( (x-rx)*(x-rx) + (y-ry)*(y-ry) + (z-rz)*(z-rz) );
       if(r>0){//If r=0 -> f=0
-	fx = -kSpring * (1 - r0/r) * (rx - x);
-	fy = -kSpring * (1 - r0/r) * (ry - y);
-	fz = -kSpring * (1 - r0/r) * (rz - z);
+	fx += -kSpring * (1 - r0/r) * (rx - x);
+	fy += -kSpring * (1 - r0/r) * (ry - y);
+	fz += -kSpring * (1 - r0/r) * (rz - z);
       }
     }
   }

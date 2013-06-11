@@ -1,6 +1,6 @@
 // Filename: main.cpp
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -58,6 +58,15 @@ int main(int argc, char* argv[]){
   else if((setboundary || setparticles) && (thermostat)){
     if(!schemeCompressibleParticles()) return 0;
   }
+  else if(freeEnergyCompressibleParticles){
+    if(!schemeFreeEnergyCompressibleParticles()) return 0;
+  }
+  else if(semiImplicitCompressibleParticles){
+    if(!schemeSemiImplicitCompressibleParticles()) return 0;
+  }
+  else if(momentumCoupling){
+    if(!schemeMomentumCoupling()) return 0;
+  }
   else if(thermostat){
     if(!schemeThermostat()) return 0;
   }
@@ -75,6 +84,12 @@ int main(int argc, char* argv[]){
   }
   else if(quasiNeutrallyBuoyant){
     if(!schemeQuasiNeutrallyBuoyant()) return 0;
+  }
+  else if(quasiNeutrallyBuoyant2D){
+    if(!schemeQuasiNeutrallyBuoyant2D()) return 0;
+  }
+  else if(quasiNeutrallyBuoyant4pt2D){
+    if(!schemeQuasiNeutrallyBuoyant4pt2D()) return 0;
   }
   else if(setboundary || setparticles){
     if(!schemeBoundary()) return 0;

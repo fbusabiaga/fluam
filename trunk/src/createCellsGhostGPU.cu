@@ -1,6 +1,6 @@
 // Filename: createCellsGhostGPU.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -22,53 +22,53 @@
 
 
 bool createCellsGhostGPU(){
-  cudaMemcpyToSymbol(mxGPU,&mx,sizeof(int));
-  cudaMemcpyToSymbol(myGPU,&my,sizeof(int));
-  cudaMemcpyToSymbol(mzGPU,&mz,sizeof(int));
+  cutilSafeCall(cudaMemcpyToSymbol(mxGPU,&mx,sizeof(int)));
+  cutilSafeCall(cudaMemcpyToSymbol(myGPU,&my,sizeof(int)));
+  cutilSafeCall(cudaMemcpyToSymbol(mzGPU,&mz,sizeof(int)));
   int aux;
   aux = mx+2;
-  cudaMemcpyToSymbol(mxtGPU,&aux,sizeof(int));
+  cutilSafeCall(cudaMemcpyToSymbol(mxtGPU,&aux,sizeof(int)));
   aux = my+2;
-  cudaMemcpyToSymbol(mytGPU,&aux,sizeof(int));
+  cutilSafeCall(cudaMemcpyToSymbol(mytGPU,&aux,sizeof(int)));
   aux = mz+2;
-  cudaMemcpyToSymbol(mztGPU,&aux,sizeof(int));
+  cutilSafeCall(cudaMemcpyToSymbol(mztGPU,&aux,sizeof(int)));
   aux = (mx+2) * (my+2);
-  cudaMemcpyToSymbol(mxmytGPU,&aux,sizeof(int));
+  cutilSafeCall(cudaMemcpyToSymbol(mxmytGPU,&aux,sizeof(int)));
 
 
-  cudaMemcpyToSymbol(ncellsGPU,&ncells,sizeof(int));
-  cudaMemcpyToSymbol(ncellstGPU,&ncellst,sizeof(int));
-  cudaMemcpyToSymbol(lxGPU,&lx,sizeof(double));
-  cudaMemcpyToSymbol(lyGPU,&ly,sizeof(double));
-  cudaMemcpyToSymbol(lzGPU,&lz,sizeof(double));
-  cudaMemcpyToSymbol(dtGPU,&dt,sizeof(double));
-  cudaMemcpyToSymbol(volumeGPU,&cVolume,sizeof(double));
-  cudaMemcpyToSymbol(shearviscosityGPU,&shearviscosity,sizeof(double));
-  cudaMemcpyToSymbol(bulkviscosityGPU,&bulkviscosity,sizeof(double));
-  cudaMemcpyToSymbol(temperatureGPU,&temperature,sizeof(double));
-  cudaMemcpyToSymbol(pressurea0GPU,&pressurea0,sizeof(double));
-  cudaMemcpyToSymbol(pressurea1GPU,&pressurea1,sizeof(double));
-  cudaMemcpyToSymbol(pressurea2GPU,&pressurea2,sizeof(double));
-  cudaMemcpyToSymbol(thermostatGPU,&thermostat,sizeof(bool));
+  cutilSafeCall(cudaMemcpyToSymbol(ncellsGPU,&ncells,sizeof(int)));
+  cutilSafeCall(cudaMemcpyToSymbol(ncellstGPU,&ncellst,sizeof(int)));
+  cutilSafeCall(cudaMemcpyToSymbol(lxGPU,&lx,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(lyGPU,&ly,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(lzGPU,&lz,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(dtGPU,&dt,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(volumeGPU,&cVolume,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(shearviscosityGPU,&shearviscosity,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(bulkviscosityGPU,&bulkviscosity,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(temperatureGPU,&temperature,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(pressurea0GPU,&pressurea0,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(pressurea1GPU,&pressurea1,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(pressurea2GPU,&pressurea2,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(thermostatGPU,&thermostat,sizeof(bool)));
 
-  cudaMalloc((void**)&densityGPU,ncellst*sizeof(double));
-  cudaMalloc((void**)&vxGPU,ncellst*sizeof(double));
-  cudaMalloc((void**)&vyGPU,ncellst*sizeof(double));
-  cudaMalloc((void**)&vzGPU,ncellst*sizeof(double));
-  cudaMalloc((void**)&densityPredictionGPU,ncellst*sizeof(double));
-  cudaMalloc((void**)&vxPredictionGPU,ncellst*sizeof(double));
-  cudaMalloc((void**)&vyPredictionGPU,ncellst*sizeof(double));
-  cudaMalloc((void**)&vzPredictionGPU,ncellst*sizeof(double));
+  cutilSafeCall(cudaMalloc((void**)&densityGPU,ncellst*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&vxGPU,ncellst*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&vyGPU,ncellst*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&vzGPU,ncellst*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&densityPredictionGPU,ncellst*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&vxPredictionGPU,ncellst*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&vyPredictionGPU,ncellst*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&vzPredictionGPU,ncellst*sizeof(double)));
 
  
-  cudaMalloc((void**)&dmGPU,ncellst*sizeof(double));
-  cudaMalloc((void**)&dpxGPU,ncellst*sizeof(double));
-  cudaMalloc((void**)&dpyGPU,ncellst*sizeof(double));
-  cudaMalloc((void**)&dpzGPU,ncellst*sizeof(double));
+  cutilSafeCall(cudaMalloc((void**)&dmGPU,ncellst*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&dpxGPU,ncellst*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&dpyGPU,ncellst*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&dpzGPU,ncellst*sizeof(double)));
 
-  cudaMalloc((void**)&rxcellGPU,ncellst*sizeof(double));
-  cudaMalloc((void**)&rycellGPU,ncellst*sizeof(double));
-  cudaMalloc((void**)&rzcellGPU,ncellst*sizeof(double));
+  cutilSafeCall(cudaMalloc((void**)&rxcellGPU,ncellst*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&rycellGPU,ncellst*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&rzcellGPU,ncellst*sizeof(double)));
 
   double fact1 = sqrt((4.*temperature*shearviscosity)/(dt*cVolume));
   double fact2 = sqrt((2.*temperature*bulkviscosity)/(3.*dt*cVolume));
@@ -76,49 +76,49 @@ bool createCellsGhostGPU(){
   double fact4 = sqrt((2.*temperature*shearviscosity)/(dt*cVolume));
   double fact5 = sqrt(1./(dt*cVolume));
 
-  cudaMemcpyToSymbol(fact1GPU,&fact1,sizeof(double));
-  cudaMemcpyToSymbol(fact2GPU,&fact2,sizeof(double));
-  cudaMemcpyToSymbol(fact3GPU,&fact3,sizeof(double));
-  cudaMemcpyToSymbol(fact4GPU,&fact4,sizeof(double));
-  cudaMemcpyToSymbol(fact5GPU,&fact5,sizeof(double));
+  cutilSafeCall(cudaMemcpyToSymbol(fact1GPU,&fact1,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(fact2GPU,&fact2,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(fact3GPU,&fact3,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(fact4GPU,&fact4,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(fact5GPU,&fact5,sizeof(double)));
 
 
   fact1 = lx/double(mx);
   fact2 = ly/double(my);
   fact3 = lz/double(mz);
-  cudaMemcpyToSymbol(dxGPU,&fact1,sizeof(double));
-  cudaMemcpyToSymbol(dyGPU,&fact2,sizeof(double));
-  cudaMemcpyToSymbol(dzGPU,&fact3,sizeof(double));
+  cutilSafeCall(cudaMemcpyToSymbol(dxGPU,&fact1,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(dyGPU,&fact2,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(dzGPU,&fact3,sizeof(double)));
 
   fact1 = double(mx)/lx;
   fact2 = double(my)/ly;
   fact3 = double(mz)/lz;
-  cudaMemcpyToSymbol(invdxGPU,&fact1,sizeof(double));  
-  cudaMemcpyToSymbol(invdyGPU,&fact2,sizeof(double));  
-  cudaMemcpyToSymbol(invdzGPU,&fact3,sizeof(double));  
+  cutilSafeCall(cudaMemcpyToSymbol(invdxGPU,&fact1,sizeof(double)));  
+  cutilSafeCall(cudaMemcpyToSymbol(invdyGPU,&fact2,sizeof(double)));  
+  cutilSafeCall(cudaMemcpyToSymbol(invdzGPU,&fact3,sizeof(double)));  
   fact1 = 1./dt;
-  cudaMemcpyToSymbol(invdtGPU,&fact1,sizeof(double));
+  cutilSafeCall(cudaMemcpyToSymbol(invdtGPU,&fact1,sizeof(double)));
   fact1 = 1./lx;
   fact2 = 1./ly;
   fact3 = 1./lz;
-  cudaMemcpyToSymbol(invlxGPU,&fact1,sizeof(double));  
-  cudaMemcpyToSymbol(invlyGPU,&fact2,sizeof(double));  
-  cudaMemcpyToSymbol(invlzGPU,&fact3,sizeof(double));
+  cutilSafeCall(cudaMemcpyToSymbol(invlxGPU,&fact1,sizeof(double)));  
+  cutilSafeCall(cudaMemcpyToSymbol(invlyGPU,&fact2,sizeof(double)));  
+  cutilSafeCall(cudaMemcpyToSymbol(invlzGPU,&fact3,sizeof(double)));
 
   //
-  cudaMalloc((void**)&ghostIndexGPU,ncells*sizeof(int));
-  cudaMalloc((void**)&realIndexGPU,ncellst*sizeof(int));
-  cudaMalloc((void**)&ghostToPIGPU,(ncellst-ncells)*sizeof(int));
-  cudaMalloc((void**)&ghostToGhostGPU,(ncellst-ncells)*sizeof(int));
+  cutilSafeCall(cudaMalloc((void**)&ghostIndexGPU,ncells*sizeof(int)));
+  cutilSafeCall(cudaMalloc((void**)&realIndexGPU,ncellst*sizeof(int)));
+  cutilSafeCall(cudaMalloc((void**)&ghostToPIGPU,(ncellst-ncells)*sizeof(int)));
+  cutilSafeCall(cudaMalloc((void**)&ghostToGhostGPU,(ncellst-ncells)*sizeof(int)));
 
   bool auxbool = 0;
-  cudaMemcpyToSymbol(setparticlesGPU,&auxbool,sizeof(bool));
-  cudaMemcpyToSymbol(setboundaryGPU,&auxbool,sizeof(bool));
+  cutilSafeCall(cudaMemcpyToSymbol(setparticlesGPU,&auxbool,sizeof(bool)));
+  cutilSafeCall(cudaMemcpyToSymbol(setboundaryGPU,&auxbool,sizeof(bool)));
 
 
   long long auxulonglong = 0;
-  cudaMalloc((void**)&stepGPU,sizeof(long long));
-  cudaMemcpy(stepGPU,&auxulonglong,sizeof(long long),cudaMemcpyHostToDevice);
+  cutilSafeCall(cudaMalloc((void**)&stepGPU,sizeof(long long)));
+  cutilSafeCall(cudaMemcpy(stepGPU,&auxulonglong,sizeof(long long),cudaMemcpyHostToDevice));
 
 
 

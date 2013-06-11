@@ -1,6 +1,6 @@
 // Filename: createBondedForcesGPU.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -67,56 +67,56 @@ bool createBondedForcesGPU(){
   aux[i]=0;*/
 
   //Allocate memory
-  cudaMalloc((void**)&bFV,sizeof(bondedForcesVariables));
-  cudaMalloc((void**)&bondsParticleParticleGPU,np*sizeof(int));
-  cudaMalloc((void**)&bondsParticleParticleOffsetGPU,np*sizeof(int));
-  cudaMalloc((void**)&bondsIndexParticleParticleGPU,nbondsParticleParticle*sizeof(int));
-  cudaMalloc((void**)&r0ParticleParticleGPU,nbondsParticleParticle*sizeof(double));
-  cudaMalloc((void**)&kSpringParticleParticleGPU,nbondsParticleParticle*sizeof(double));
+  cutilSafeCall(cudaMalloc((void**)&bFV,sizeof(bondedForcesVariables)));
+  cutilSafeCall(cudaMalloc((void**)&bondsParticleParticleGPU,np*sizeof(int)));
+  cutilSafeCall(cudaMalloc((void**)&bondsParticleParticleOffsetGPU,np*sizeof(int)));
+  cutilSafeCall(cudaMalloc((void**)&bondsIndexParticleParticleGPU,nbondsParticleParticle*sizeof(int)));
+  cutilSafeCall(cudaMalloc((void**)&r0ParticleParticleGPU,nbondsParticleParticle*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&kSpringParticleParticleGPU,nbondsParticleParticle*sizeof(double)));
 
   //Copy global memory
-  cudaMemcpy(bondsParticleParticleGPU,bondsParticleParticle,
-			   np*sizeof(int),cudaMemcpyHostToDevice);
-  cudaMemcpy(bondsParticleParticleOffsetGPU,bondsParticleParticleOffset,
-			   np*sizeof(int),cudaMemcpyHostToDevice);
-  cudaMemcpy(bondsIndexParticleParticleGPU,bondsIndexParticleParticle,
-			   nbondsParticleParticle*sizeof(int),cudaMemcpyHostToDevice);
-  cudaMemcpy(r0ParticleParticleGPU,r0ParticleParticle,
-			   nbondsParticleParticle*sizeof(double),cudaMemcpyHostToDevice);
-  cudaMemcpy(kSpringParticleParticleGPU,kSpringParticleParticle,
-			   nbondsParticleParticle*sizeof(double),cudaMemcpyHostToDevice);
+  cutilSafeCall(cudaMemcpy(bondsParticleParticleGPU,bondsParticleParticle,
+			   np*sizeof(int),cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpy(bondsParticleParticleOffsetGPU,bondsParticleParticleOffset,
+			   np*sizeof(int),cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpy(bondsIndexParticleParticleGPU,bondsIndexParticleParticle,
+			   nbondsParticleParticle*sizeof(int),cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpy(r0ParticleParticleGPU,r0ParticleParticle,
+			   nbondsParticleParticle*sizeof(double),cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpy(kSpringParticleParticleGPU,kSpringParticleParticle,
+			   nbondsParticleParticle*sizeof(double),cudaMemcpyHostToDevice));
 
 
 
 
 
   //Allocate memory
-  cudaMalloc((void**)&bondsParticleFixedPointGPU,np*sizeof(int));
-  cudaMalloc((void**)&bondsParticleFixedPointOffsetGPU,np*sizeof(int));
-  //cudaMalloc((void**)&bondsIndexParticleFixedPointGPU,nbondsParticleFixedPoint*sizeof(int));
-  cudaMalloc((void**)&r0ParticleFixedPointGPU,nbondsParticleFixedPoint*sizeof(double));
-  cudaMalloc((void**)&kSpringParticleFixedPointGPU,nbondsParticleFixedPoint*sizeof(double));
-  cudaMalloc((void**)&rxFixedPointGPU,nbondsParticleFixedPoint*sizeof(double));
-  cudaMalloc((void**)&ryFixedPointGPU,nbondsParticleFixedPoint*sizeof(double));
-  cudaMalloc((void**)&rzFixedPointGPU,nbondsParticleFixedPoint*sizeof(double));
+  cutilSafeCall(cudaMalloc((void**)&bondsParticleFixedPointGPU,np*sizeof(int)));
+  cutilSafeCall(cudaMalloc((void**)&bondsParticleFixedPointOffsetGPU,np*sizeof(int)));
+  //cutilSafeCall(cudaMalloc((void**)&bondsIndexParticleFixedPointGPU,nbondsParticleFixedPoint*sizeof(int)));
+  cutilSafeCall(cudaMalloc((void**)&r0ParticleFixedPointGPU,nbondsParticleFixedPoint*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&kSpringParticleFixedPointGPU,nbondsParticleFixedPoint*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&rxFixedPointGPU,nbondsParticleFixedPoint*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&ryFixedPointGPU,nbondsParticleFixedPoint*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&rzFixedPointGPU,nbondsParticleFixedPoint*sizeof(double)));
 
   //Copy global memory
-  cudaMemcpy(bondsParticleFixedPointGPU,bondsParticleFixedPoint,
-			   np*sizeof(int),cudaMemcpyHostToDevice);
-  cudaMemcpy(bondsParticleFixedPointOffsetGPU,bondsParticleFixedPointOffset,
-			   np*sizeof(int),cudaMemcpyHostToDevice);
-  //cudaMemcpy(bondsIndexParticleFixedPointGPU,bondsIndexParticleFixedPoint,
-  //		   nbondsParticleFixedPoint*sizeof(int),cudaMemcpyHostToDevice);
-  cudaMemcpy(r0ParticleFixedPointGPU,r0ParticleFixedPoint,
-			   nbondsParticleFixedPoint*sizeof(double),cudaMemcpyHostToDevice);
-  cudaMemcpy(kSpringParticleFixedPointGPU,kSpringParticleFixedPoint,
-			   nbondsParticleFixedPoint*sizeof(double),cudaMemcpyHostToDevice);
-  cudaMemcpy(rxFixedPointGPU,rxFixedPoint,
-			   nbondsParticleFixedPoint*sizeof(double),cudaMemcpyHostToDevice);
-  cudaMemcpy(ryFixedPointGPU,ryFixedPoint,
-			   nbondsParticleFixedPoint*sizeof(double),cudaMemcpyHostToDevice);
-  cudaMemcpy(rzFixedPointGPU,rzFixedPoint,
-			   nbondsParticleFixedPoint*sizeof(double),cudaMemcpyHostToDevice);
+  cutilSafeCall(cudaMemcpy(bondsParticleFixedPointGPU,bondsParticleFixedPoint,
+			   np*sizeof(int),cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpy(bondsParticleFixedPointOffsetGPU,bondsParticleFixedPointOffset,
+			   np*sizeof(int),cudaMemcpyHostToDevice));
+  //cutilSafeCall(cudaMemcpy(bondsIndexParticleFixedPointGPU,bondsIndexParticleFixedPoint,
+  //		   nbondsParticleFixedPoint*sizeof(int),cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpy(r0ParticleFixedPointGPU,r0ParticleFixedPoint,
+			   nbondsParticleFixedPoint*sizeof(double),cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpy(kSpringParticleFixedPointGPU,kSpringParticleFixedPoint,
+			   nbondsParticleFixedPoint*sizeof(double),cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpy(rxFixedPointGPU,rxFixedPoint,
+			   nbondsParticleFixedPoint*sizeof(double),cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpy(ryFixedPointGPU,ryFixedPoint,
+			   nbondsParticleFixedPoint*sizeof(double),cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpy(rzFixedPointGPU,rzFixedPoint,
+			   nbondsParticleFixedPoint*sizeof(double),cudaMemcpyHostToDevice));
 
 
 

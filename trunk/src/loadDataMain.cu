@@ -1,6 +1,6 @@
 // Filename: loadDataMain.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -84,6 +84,7 @@ const string wCheckVelocity="checkVelocity";
 const string wsaveFluid="saveFluid";
 const string wsaveVTK="saveVTK";
 const string wbondedForces="bondedForces";
+const string wcomputeNonBondedForces="computeNonBondedForces";
 
 const string wGhost="ghost";
 //Other Fluid Variables
@@ -116,6 +117,12 @@ const string wincompressibleBoundaryRK2="incompressibleBoundaryRK2";
 //quasiNeutrallyBuoyant Begins
 const string wquasiNeutrallyBuoyant="quasiNeutrallyBuoyant";
 //quasiNeutrallyBuoyant Ends
+//quasiNeutrallyBuoyant2D Begins
+const string wquasiNeutrallyBuoyant2D="quasiNeutrallyBuoyant2D";
+//quasiNeutrallyBuoyant2D Ends
+const string wquasiNeutrallyBuoyant4pt2D="quasiNeutrallyBuoyant4pt2D";
+//quasiNeutrallyBuoyant4pt2D Ends
+//quasiNeutrallyBuoyant4pt2D Begins
 //IMEX-RK Begins
 const string wIMEXRK="IMEXRK";
 //IMEX-RK Ends
@@ -128,6 +135,17 @@ const string wincompressibleBinaryMixtureMidPoint="incompressibleBinaryMixtureMi
 //particlesWall Begins
 const string wparticlesWall="particlesWall";
 //particlesWall Ends
+//freeEnergyCompressibleParticles Begins
+const string wfreeEnergyCompressibleParticles="freeEnergyCompressibleParticles";
+const string womega0="omega0";
+//freeEnergyCompressibleParticles Ends
+//semiImplicitCompressibleParticles Begins
+const string wsemiImplicitCompressibleParticles="semiImplicitCompressibleParticles";
+//semiImplicitCompressibleParticles Ends
+//momentumCoupling Begins
+const string wmomentumCoupling="momentumCoupling";
+//momentumCoupling Ends
+
 
 bool loadDataMain(int argc, char* argv[]){
 
@@ -162,6 +180,7 @@ bool loadDataMain(int argc, char* argv[]){
   mass = 0;
   nboundary = 0;
   bondedForces=0;
+  computeNonBondedForces=1;
   //DEFAULT PARAMETERS 
 
   //OTHER FLUID VARIABLES
@@ -201,11 +220,33 @@ bool loadDataMain(int argc, char* argv[]){
   quasiNeutrallyBuoyant = 0;
   //quasiNeutrallyBuoyant Ends
 
+  //quasiNeutrallyBuoyant2D Begins
+  quasiNeutrallyBuoyant2D = 0;
+  //quasiNeutrallyBuoyant2D Ends
+
+  //quasiNeutrallyBuoyant4pt2D Begins
+  quasiNeutrallyBuoyant4pt2D = 0;
+  //quasiNeutrallyBuoyant4pt2D Ends
+
   //particlesWall Begins
   particlesWall = 0;
   //particlesWall Ends
 
- ifstream fileinput, fileoutput;
+  //freeEnergyCompressibleParticles Begins
+  freeEnergyCompressibleParticles = 0;
+  omega0 = 0;
+  //freeEnergyCompressibleParticles Ends
+
+  //semiImplicitCompressibleParticles Begins
+  semiImplicitCompressibleParticles = 0;
+  //semiImplicitCompressibleParticles Ends
+
+  //momentumCoupling Begins
+  momentumCoupling = 0;
+  //momentumCoupling Ends
+
+
+  ifstream fileinput, fileoutput;
   string fileinputname;
   if(argc!=1){
     fileinputname=argv[1];
@@ -380,6 +421,9 @@ bool loadDataMain(int argc, char* argv[]){
       bondedForces=1;
       fileinput >> bondedForcesFile;
     }
+    else if(word==wcomputeNonBondedForces){
+      fileinput >> computeNonBondedForces;
+    }
     //Other FLuid Variables
     //Binary Mixture Begins
     else if(word==wbinaryMixture){
@@ -443,6 +487,16 @@ bool loadDataMain(int argc, char* argv[]){
       quasiNeutrallyBuoyant=1;
     }
     //quasiNeutrallyBuoyant Ends
+    //quasiNeutrallyBuoyant2D Begins
+    else if(word==wquasiNeutrallyBuoyant2D){
+      quasiNeutrallyBuoyant2D=1;
+    }
+    //quasiNeutrallyBuoyant2D Ends
+    //quasiNeutrallyBuoyant4pt2D Begins
+    else if(word==wquasiNeutrallyBuoyant4pt2D){
+      quasiNeutrallyBuoyant4pt2D=1;
+    }
+    //quasiNeutrallyBuoyant4pt2D Ends
     //IMEXRK Begins
     else if(word==wIMEXRK){
       IMEXRK=1;
@@ -465,6 +519,27 @@ bool loadDataMain(int argc, char* argv[]){
       setparticles=1;
     }
     //particlesWall Ends
+    //freeEnergyCompressibleParticles Begins
+    else if(word==wfreeEnergyCompressibleParticles){
+      freeEnergyCompressibleParticles=1;
+      setparticles=1;
+    }
+    else if(word==womega0){
+      fileinput >> omega0;
+    }
+    //freeEnergyCompressibleParticles Ends
+    //semiImplicitCompressibleParticles Begins
+    else if(word==wsemiImplicitCompressibleParticles){
+      semiImplicitCompressibleParticles=1;
+      setparticles=1;
+    }
+    //semiImplicitCompressibleParticles Ends
+    //momentumCoupling Begins
+    else if(word==wmomentumCoupling){
+      momentumCoupling=1;
+      setparticles=1;
+    }
+    //momentumCouplings Ends
     else if(word.substr(0,1)==wnothing){
       getline(fileinput,word);
     }

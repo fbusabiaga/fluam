@@ -1,6 +1,6 @@
 // Filename: initializeFluidGPU.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -20,14 +20,14 @@
 
 bool initializeFluidGPU(){
   
-  cudaMemcpy(densityGPU,cDensity,ncellst*sizeof(double),cudaMemcpyHostToDevice);
-  cudaMemcpy(vxGPU,cvx,ncellst*sizeof(double),cudaMemcpyHostToDevice);
-  cudaMemcpy(vyGPU,cvy,ncellst*sizeof(double),cudaMemcpyHostToDevice);
-  cudaMemcpy(vzGPU,cvz,ncellst*sizeof(double),cudaMemcpyHostToDevice);
+  cutilSafeCall(cudaMemcpy(densityGPU,cDensity,ncellst*sizeof(double),cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpy(vxGPU,cvx,ncellst*sizeof(double),cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpy(vyGPU,cvy,ncellst*sizeof(double),cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpy(vzGPU,cvz,ncellst*sizeof(double),cudaMemcpyHostToDevice));
 
-  cudaMemcpy(rxcellGPU,crx,ncellst*sizeof(double),cudaMemcpyHostToDevice);
-  cudaMemcpy(rycellGPU,cry,ncellst*sizeof(double),cudaMemcpyHostToDevice);
-  cudaMemcpy(rzcellGPU,crz,ncellst*sizeof(double),cudaMemcpyHostToDevice);
+  cutilSafeCall(cudaMemcpy(rxcellGPU,crx,ncellst*sizeof(double),cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpy(rycellGPU,cry,ncellst*sizeof(double),cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpy(rzcellGPU,crz,ncellst*sizeof(double),cudaMemcpyHostToDevice));
   
 
   

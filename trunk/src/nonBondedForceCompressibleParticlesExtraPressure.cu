@@ -1,6 +1,6 @@
 // Filename: nonBondedForceCompressibleParticlesExtraPressure.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -18,13 +18,13 @@
 // along with Fluam. If not, see <http://www.gnu.org/licenses/>.
 
 
-__global__ void nonBondedForceCompressibleParticlesExtraPressure(double* rxcellGPU, 
-								 double* rycellGPU, 
-								 double* rzcellGPU,
+__global__ void nonBondedForceCompressibleParticlesExtraPressure(const double* rxcellGPU, 
+								 const double* rycellGPU, 
+								 const double* rzcellGPU,
 								 double* vxboundaryGPU, 
 								 double* vyboundaryGPU, 
 								 double* vzboundaryGPU,
-								 double* densityGPU,
+								 const double* densityGPU,
 								 double* fxboundaryGPU, 
 								 double* fyboundaryGPU, 
 								 double* fzboundaryGPU,

@@ -1,6 +1,6 @@
 // Filename: gpuToHostBinaryMixture.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -19,10 +19,10 @@
 
 
 bool gpuToHostBinaryMixture(){
-  cudaMemcpy(cDensity,densityGPU,ncellst*sizeof(double),cudaMemcpyDeviceToHost);
-  cudaMemcpy(cvx,vxGPU,ncellst*sizeof(double),cudaMemcpyDeviceToHost);
-  cudaMemcpy(cvy,vyGPU,ncellst*sizeof(double),cudaMemcpyDeviceToHost);
-  cudaMemcpy(cvz,vzGPU,ncellst*sizeof(double),cudaMemcpyDeviceToHost);
-  cudaMemcpy(c,cGPU,ncellst*sizeof(double),cudaMemcpyDeviceToHost);
+  cutilSafeCall(cudaMemcpy(cDensity,densityGPU,ncellst*sizeof(double),cudaMemcpyDeviceToHost));
+  cutilSafeCall(cudaMemcpy(cvx,vxGPU,ncellst*sizeof(double),cudaMemcpyDeviceToHost));
+  cutilSafeCall(cudaMemcpy(cvy,vyGPU,ncellst*sizeof(double),cudaMemcpyDeviceToHost));
+  cutilSafeCall(cudaMemcpy(cvz,vzGPU,ncellst*sizeof(double),cudaMemcpyDeviceToHost));
+  cutilSafeCall(cudaMemcpy(c,cGPU,ncellst*sizeof(double),cudaMemcpyDeviceToHost));
   return 1;
 }

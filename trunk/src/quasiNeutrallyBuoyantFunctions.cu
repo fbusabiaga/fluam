@@ -1,6 +1,6 @@
 // Filename: quasiNeutrallyBuoyantFunctions.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -191,15 +191,15 @@ __global__ void updateParticlesTest(double *rxcellGPU,
   vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelx);
   vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelx);
   vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelx);
-  int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
-  int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
-  int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
-  int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
-  int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
-  int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
-  int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
-  int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
-  int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
+  //int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
+  //int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
+  //int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
+  //int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
+  //int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
+  //int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
+  //int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
+  //int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
+  //int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
   
   r =  (rx - rxcellGPU[icelx] - dxGPU*0.5);
   rp = (rx - rxcellGPU[vecino3] - dxGPU*0.5);
@@ -609,15 +609,15 @@ __global__ void updateParticlesTest2(double *rxcellGPU,
   vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelx);
   vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelx);
   vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelx);
-  int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
-  int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
-  int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
-  int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
-  int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
-  int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
-  int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
-  int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
-  int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
+  //int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
+  //int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
+  //int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
+  //int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
+  //int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
+  //int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
+  //int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
+  //int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
+  //int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
   
   r =  (rx - rxcellGPU[icelx] - dxGPU*0.5);
   rp = (rx - rxcellGPU[vecino3] - dxGPU*0.5);
@@ -1035,15 +1035,15 @@ __global__ void kernelCorrectionVQuasiNeutrallyBuoyantSemiImplicit_1_TEST3(doubl
   vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelx);
   vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelx);
   vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelx);
-  int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
-  int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
-  int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
-  int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
-  int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
-  int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
-  int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
-  int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
-  int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
+  //int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
+  //int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
+  //int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
+  //int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
+  //int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
+  //int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
+  //int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
+  //int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
+  //int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
 
   r =  (rx - rxcellGPU[icelx] - dxGPU*0.5);
   rp = (rx - rxcellGPU[vecino3] - dxGPU*0.5);
@@ -1721,15 +1721,15 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyantTEST3_1(particlesincel
   vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelx);
   vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelx);
   vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelx);
-  int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
-  int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
-  int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
-  int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
-  int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
-  int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
-  int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
-  int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
-  int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
+  //int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
+  //int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
+  //int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
+  //int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
+  //int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
+  //int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
+  //int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
+  //int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
+  //int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
   
   r =  (rx - rxcellGPU[icelx] - dxGPU*0.5);
   rp = (rx - rxcellGPU[vecino3] - dxGPU*0.5);
@@ -2112,15 +2112,15 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyantTEST3_2(particlesincel
   vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelx);
   vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelx);
   vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelx);
-  int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
-  int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
-  int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
-  int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
-  int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
-  int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
-  int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
-  int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
-  int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
+  //int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
+  //int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
+  //int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
+  //int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
+  //int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
+  //int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
+  //int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
+  //int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
+  //int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
   
   r =  (rx - rxcellGPU[icelx] - dxGPU*0.5);
   rp = (rx - rxcellGPU[vecino3] - dxGPU*0.5);
@@ -2447,18 +2447,18 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyantTEST3_2(particlesincel
 
 __global__ void findNeighborParticlesQuasiNeutrallyBuoyant_1(particlesincell* pc, 
 							     int* errorKernel,
-							     double* rxcellGPU,
-							     double* rycellGPU,
-							     double* rzcellGPU,
-							     double* rxboundaryGPU,  //q^{n}
-							     double* ryboundaryGPU, 
-							     double* rzboundaryGPU,
+							     const double* rxcellGPU,
+							     const double* rycellGPU,
+							     const double* rzcellGPU,
+							     const double* rxboundaryGPU,  //q^{n}
+							     const double* ryboundaryGPU, 
+							     const double* rzboundaryGPU,
 							     double* rxboundaryPredictionGPU, //q^{n+1/2}
 							     double* ryboundaryPredictionGPU, 
 							     double* rzboundaryPredictionGPU,
-							     double* vxGPU, //v^n
-							     double* vyGPU, 
-							     double* vzGPU){
+							     const double* vxGPU, //v^n
+							     const double* vyGPU, 
+							     const double* vzGPU){
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if(i>=(npGPU)) return;   
 
@@ -2546,15 +2546,15 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyant_1(particlesincell* pc
   vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelx);
   vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelx);
   vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelx);
-  int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
-  int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
-  int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
-  int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
-  int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
-  int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
-  int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
-  int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
-  int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
+  //int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
+  //int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
+  //int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
+  //int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
+  //int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
+  //int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
+  //int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
+  //int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
+  //int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
   
   r =  (rx - rxcellGPU[icelx] - dxGPU*0.5);
   rp = (rx - rxcellGPU[vecino3] - dxGPU*0.5);
@@ -2616,7 +2616,6 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyant_1(particlesincell* pc
 
   
   double rxNew = rx + 0.5 * dtGPU * v;
-  
   rxboundaryPredictionGPU[nboundaryGPU+i] = rxNew;
 
 
@@ -2719,7 +2718,6 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyant_1(particlesincell* pc
   
 
   double ryNew = ry + 0.5 * dtGPU * v;
-  
 
   ryboundaryPredictionGPU[nboundaryGPU+i] = ryNew;
  
@@ -2823,8 +2821,6 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyant_1(particlesincell* pc
 
 
   double rzNew = rz + 0.5 * dtGPU * v;
-  
-
   rzboundaryPredictionGPU[nboundaryGPU+i] = rzNew;
 
 
@@ -2973,15 +2969,15 @@ __global__ void kernelCorrectionVQuasiNeutrallyBuoyantSemiImplicitTEST4_2(double
   vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelx);
   vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelx);
   vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelx);
-  int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
-  int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
-  int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
-  int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
-  int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
-  int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
-  int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
-  int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
-  int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
+  //int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
+  //int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
+  //int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
+  //int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
+  //int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
+  //int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
+  //int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
+  //int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
+  //int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
 
   r =  (rx - rxcellGPU[icelx] - dxGPU*0.5);
   rp = (rx - rxcellGPU[vecino3] - dxGPU*0.5);
@@ -3575,15 +3571,15 @@ __global__ void updateParticlesQuasiNeutrallyBuoyantSemiImplicitTEST4(particlesi
   vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelx);
   vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelx);
   vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelx);
-  int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
-  int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
-  int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
-  int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
-  int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
-  int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
-  int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
-  int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
-  int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
+  //int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
+  //int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
+  //int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
+  //int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
+  //int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
+  //int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
+  //int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
+  //int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
+  //int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
   
   r =  (rx - rxcellGPU[icelx] - dxGPU*0.5);
   rp = (rx - rxcellGPU[vecino3] - dxGPU*0.5);
@@ -4078,15 +4074,15 @@ __global__ void updateParticlesQuasiNeutrallyBuoyantSemiImplicitTEST4_2(particle
   vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelx);
   vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelx);
   vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelx);
-  int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
-  int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
-  int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
-  int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
-  int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
-  int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
-  int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
-  int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
-  int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
+  //int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
+  //int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
+  //int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
+  //int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
+  //int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
+  //int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
+  //int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
+  //int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
+  //int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
   
   r =  (rx - rxcellGPU[icelx] - dxGPU*0.5);
   rp = (rx - rxcellGPU[vecino3] - dxGPU*0.5);
@@ -4484,18 +4480,18 @@ __global__ void updateParticlesQuasiNeutrallyBuoyantSemiImplicitTEST4_2(particle
 
 __global__ void findNeighborParticlesQuasiNeutrallyBuoyantTEST4_2(particlesincell* pc, 
 								  int* errorKernel,
-								  double* rxcellGPU,
-								  double* rycellGPU,
-								  double* rzcellGPU,
+								  const double* rxcellGPU,
+								  const double* rycellGPU,
+								  const double* rzcellGPU,
 								  double* rxboundaryGPU,  //q^{n}
 								  double* ryboundaryGPU, 
 								  double* rzboundaryGPU,
-								  double* rxboundaryPredictionGPU, //q^{n+1/2}
-								  double* ryboundaryPredictionGPU, 
-								  double* rzboundaryPredictionGPU,
-								  double* vxGPU, //v^{n+1/2}
-								  double* vyGPU, 
-								  double* vzGPU){
+								  const double* rxboundaryPredictionGPU, //q^{n+1/2}
+								  const double* ryboundaryPredictionGPU, 
+								  const double* rzboundaryPredictionGPU,
+								  const double* vxGPU, //v^{n+1/2}
+								  const double* vyGPU, 
+								  const double* vzGPU){
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if(i>=(npGPU)) return;   
 
@@ -4583,15 +4579,15 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyantTEST4_2(particlesincel
   vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelx);
   vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelx);
   vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelx);
-  int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
-  int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
-  int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
-  int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
-  int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
-  int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
-  int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
-  int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
-  int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
+  //int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
+  //int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
+  //int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
+  //int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
+  //int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
+  //int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
+  //int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
+  //int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
+  //int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
   
   r =  (rx - rxcellGPU[icelx] - dxGPU*0.5);
   rp = (rx - rxcellGPU[vecino3] - dxGPU*0.5);
@@ -4974,15 +4970,15 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyantTEST4_3(particlesincel
   vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelx);
   vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelx);
   vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelx);
-  int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
-  int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
-  int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
-  int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
-  int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
-  int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
-  int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
-  int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
-  int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
+  //int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
+  //int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
+  //int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
+  //int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
+  //int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
+  //int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
+  //int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
+  //int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
+  //int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
   
   r =  (rx - rxcellGPU[icelx] - dxGPU*0.5);
   rp = (rx - rxcellGPU[vecino3] - dxGPU*0.5);
@@ -5044,7 +5040,7 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyantTEST4_3(particlesincel
 
   
   rxboundaryPredictionGPU[i] = rxboundaryGPU[i] + 0.5 * dtGPU * v;
-  
+
 
   //VELOCITY IN THE Y DIRECTION
   vecino0 = tex1Dfetch(texvecino0GPU, icely);
@@ -5145,6 +5141,7 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyantTEST4_3(particlesincel
   
   
   ryboundaryPredictionGPU[i] = ryboundaryGPU[i] + 0.5 * dtGPU * v;
+  
  
   //VELOCITY IN THE Z DIRECTION
   vecino0 = tex1Dfetch(texvecino0GPU, icelz);
@@ -5245,6 +5242,7 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyantTEST4_3(particlesincel
 
   
   rzboundaryPredictionGPU[i] = rzboundaryGPU[i] + 0.5 * dtGPU * v;
+  
 
 
 }
@@ -5293,9 +5291,9 @@ __global__ void calculateVelocityAtHalfTimeStep(double* vxGPU,
 
 //Calculate nu*L*\Delta v^{k=2} and store it
 //in vxGPU
-__global__ void laplacianDeltaV(cufftDoubleComplex* vxZ,
-				cufftDoubleComplex* vyZ,
-				cufftDoubleComplex* vzZ,
+__global__ void laplacianDeltaV(const cufftDoubleComplex* vxZ,
+				const cufftDoubleComplex* vyZ,
+				const cufftDoubleComplex* vzZ,
 				double* vxGPU,
 				double* vyGPU,
 				double* vzGPU){
@@ -5490,15 +5488,15 @@ __global__ void interpolateLaplacianDeltaV(double* rxcellGPU,
   vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelx);
   vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelx);
   vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelx);
-  int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
-  int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
-  int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
-  int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
-  int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
-  int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
-  int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
-  int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
-  int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
+  //int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
+  //int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
+  //int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
+  //int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
+  //int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
+  //int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
+  //int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
+  //int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
+  //int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
   
   r =  (rx - rxcellGPU[icelx] - dxGPU*0.5);
   rp = (rx - rxcellGPU[vecino3] - dxGPU*0.5);
@@ -5981,15 +5979,15 @@ __global__ void interpolateLaplacianDeltaV_2(double* rxcellGPU,
   vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelx);
   vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelx);
   vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelx);
-  int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
-  int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
-  int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
-  int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
-  int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
-  int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
-  int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
-  int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
-  int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
+  //int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
+  //int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
+  //int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
+  //int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
+  //int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
+  //int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
+  //int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
+  //int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
+  //int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
   
   r =  (rx - rxcellGPU[icelx] - dxGPU*0.5);
   rp = (rx - rxcellGPU[vecino3] - dxGPU*0.5);

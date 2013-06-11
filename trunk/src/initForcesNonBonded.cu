@@ -1,6 +1,6 @@
 // Filename: initForcesNonBonded.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -20,11 +20,12 @@
 
 float functionForceNonBonded1(double r){
   float sigma, epsilon;
-  sigma = 2.;
-  epsilon = 0.1;
+  sigma = 2 * lx / double(mx);
+  epsilon = temperature ;
+  //return -epsilon * ( r - sigma);
   return 48. * epsilon * (pow(sigma/r,12) - 0.5*pow(sigma/r,6))/r;
-  //return epsilon * ( (82.8 * pow(sigma/r,36) - 36 * pow(sigma/r,6))/r +
-  //		     (8.75/sigma) * exp(-2.5*r/sigma + 2.5));
+
+
 }
 
 bool initForcesNonBonded(){
@@ -41,14 +42,15 @@ bool initForcesNonBonded(){
   r = 0.5 * dr;
   for(int i=0;i<size;i++){
     h_data[i] = functionForceNonBonded1(sqrt(r))/sqrt(r);
+    //cout << sqrt(r) << "   " << h_data[i] << endl;
     r += dr;
   }
   h_data[size-1] = 0.;
   h_data[0] = 0.;
   cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc(32, 0, 0, 0, cudaChannelFormatKindFloat);
-  cudaMallocArray( &forceNonBonded1, &channelDesc, size, 1 ); 
-  cudaMemcpyToArray( forceNonBonded1, 0, 0, h_data, size*sizeof(float), cudaMemcpyHostToDevice);
-  cudaBindTextureToArray( texforceNonBonded1, forceNonBonded1, channelDesc);
+  cutilSafeCall( cudaMallocArray( &forceNonBonded1, &channelDesc, size, 1 )); 
+  cutilSafeCall( cudaMemcpyToArray( forceNonBonded1, 0, 0, h_data, size*sizeof(float), cudaMemcpyHostToDevice));
+  cutilSafeCall( cudaBindTextureToArray( texforceNonBonded1, forceNonBonded1, channelDesc));
 
 
   /*r = 0.5 * dr;

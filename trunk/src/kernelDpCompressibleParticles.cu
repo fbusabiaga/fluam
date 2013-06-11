@@ -1,6 +1,6 @@
 // Filename: kernelDpCompressibleParticles.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -610,7 +610,7 @@ __global__ void kernelDpCompressibleParticles(double* densityGPU,
   double sZX, sZY, sZZ;
   
 
-  sXX = pressure3 - pressure + fx * dxGPU ;//+ 5.75242795456e-4 ;
+  sXX = pressure3 - pressure + fx * dxGPU ;//+ 0.00048828125 ;
   sYY = pressure4 - pressure + fy * dyGPU ;
   sZZ = pressure5 - pressure + fz * dzGPU ;
 

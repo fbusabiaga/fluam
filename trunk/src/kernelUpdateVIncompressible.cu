@@ -1,6 +1,6 @@
 // Filename: kernelUpdateVIncompressible.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -122,6 +122,64 @@ __global__ void kernelUpdateVIncompressibleBE(cufftDoubleComplex *vxZ, cufftDoub
     vyZ[i].y = (WyZ[i].y + pF->gradKy[ky].y * GW.y / GG) / denominator;
     vzZ[i].x = (WzZ[i].x + pF->gradKz[kz].y * GW.x / GG) / denominator;
     vzZ[i].y = (WzZ[i].y + pF->gradKz[kz].y * GW.y / GG) / denominator;
+  }
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+__global__ void kernelUpdateVIncompressible2D(cufftDoubleComplex *vxZ, 
+					      cufftDoubleComplex *vyZ,
+					      cufftDoubleComplex *vzZ, 
+					      cufftDoubleComplex *WxZ, 
+					      cufftDoubleComplex *WyZ, 
+					      cufftDoubleComplex *WzZ, 
+					      prefactorsFourier *pF){
+
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=ncellsGPU) return;   
+
+  //Find mode
+  int kx, ky;
+  ky = (i % (mxGPU*myGPU)) / mxGPU;
+  kx = i % mxGPU;
+  
+  //Construct L
+  double L;
+  L = -((pF->gradKx[kx].y) * (pF->gradKx[kx].y)) - 
+    ((pF->gradKy[ky].y) * (pF->gradKy[ky].y))  ;
+
+  //Construct GG
+  double GG;
+  GG = L;
+
+  //Construct denominator
+  double denominator = 1 - 0.5 * dtGPU * shearviscosityGPU * L / densfluidGPU;
+
+  //Construct GW
+  cufftDoubleComplex GW;
+  GW.x = pF->gradKx[kx].y * WxZ[i].x + pF->gradKy[ky].y * WyZ[i].x ;
+  GW.y = pF->gradKx[kx].y * WxZ[i].y + pF->gradKy[ky].y * WyZ[i].y ;
+  
+  if(i==0){
+    vxZ[i].x = WxZ[i].x;
+    vxZ[i].y = WxZ[i].y;
+    vyZ[i].x = WyZ[i].x;
+    vyZ[i].y = WyZ[i].y;
+  }
+  else{
+    vxZ[i].x = (WxZ[i].x + pF->gradKx[kx].y * GW.x / GG) / denominator;
+    vxZ[i].y = (WxZ[i].y + pF->gradKx[kx].y * GW.y / GG) / denominator;
+    vyZ[i].x = (WyZ[i].x + pF->gradKy[ky].y * GW.x / GG) / denominator;
+    vyZ[i].y = (WyZ[i].y + pF->gradKy[ky].y * GW.y / GG) / denominator;
   }
   
 }

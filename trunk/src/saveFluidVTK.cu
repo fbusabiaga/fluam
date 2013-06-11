@@ -1,6 +1,6 @@
 // Filename: saveFluidVTK.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -30,18 +30,12 @@
 
 
 bool saveFluidVTK(int option){
-  //ofstream file;
-
-  //stringstream s;
-  //s << index;
-  //string st = s.str();
   
   string savefile;
   ofstream file;
   
   if(option==0){
     //Save snapshot by index
-
     int index = step/savefreq ;
     stringstream s;
     s << index;
@@ -152,7 +146,7 @@ bool saveFluidVTK(int option){
   int dims[] = {mx+1, mz+1, 1}; //Use this for projection in 2D
 
 
-  //For vtk the volovity is in the
+  //For vtk the velovity is in the
   //center of each cell, we need to
   //interpolate
   if(setparticles==0){

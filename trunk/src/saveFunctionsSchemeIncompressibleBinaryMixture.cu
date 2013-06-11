@@ -1,6 +1,6 @@
 // Filename: saveFunctionsSchemeIncompressibleBinaryMixture.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -30,29 +30,27 @@ bool saveFunctionsSchemeIncompressibleBinaryMixture(int index){
   //Use save functions
   else if(index==1){
     if(!temperatureFunction(index)) return 0;
-    /*if(samplefreq>0) // Call updateHydroGrid
+    if(samplefreq>0) // Call updateHydroGrid
     {
-      if(!hydroAnalysisIncompressibleBinaryMixture(1)) return 0;
+      //if(!hydroAnalysisIncompressibleBinaryMixture(1)) return 0;
     }  
-    if((savefreq>0)){
-      if((step%savefreq)==0) // Save a snapshot of spectral average data
-	if(!hydroAnalysisIncompressibleBinaryMixture(3)) return 0;
+    if((savefreq>0))
+    {
+      //if((step%savefreq)==0) // Save a snapshot of spectral average data
+      //if(!hydroAnalysisIncompressibleBinaryMixture(3)) return 0;
     }
     else if(savefreq<0)
     {
-      if((step%abs(savefreq))==0) // Save a snapshot and do some analysis right now 
-        if(!hydroAnalysisIncompressibleBinaryMixture(4)) return 0;
-	}*/
+      //if((step%abs(savefreq))==0) // Save a snapshot and do some analysis right now 
+      //if(!hydroAnalysisIncompressibleBinaryMixture(4)) return 0;
+    }
   }
   //Close save functions
   else if(index==2){
     if(!saveTime(index)) return 0;
     if(!temperatureFunction(index)) return 0;
-    if(samplefreq>0) // Call saveHydroGrid
-    {
-      //if(!hydroAnalysisIncompressibleBinaryMixture(2)) return 0;
-    }   
-    if(!saveFluidFinalConfiguration()) return 0;
+    //if(!hydroAnalysisIncompressibleBinaryMixture(2)) return 0;
+    //if(!saveFluidFinalConfiguration()) return 0; // A. Donev: This takes lots of space so remove it
   }
   else{
     cout << "SAVE FUNCTIONS ERROR, INDEX !=0,1,2 " << endl;

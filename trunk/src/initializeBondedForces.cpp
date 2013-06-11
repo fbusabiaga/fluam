@@ -1,6 +1,6 @@
 // Filename: initializeBondedForces.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -74,10 +74,12 @@ bool initializeBondedForces(){
     else if(index1!=indexOld){
       bondsParticleParticleOffset[index1]=nParticleParticleMemory;
       //nParticleParticleMemory++;//size for the array bondsIndexParticleParticle
+      //cout << "bPPoffset " << index1 << "  " << nParticleParticleMemory << endl;
     }
     nParticleParticleMemory++;
     bondsParticleParticle[index1]++;
     indexOld=index1;
+    //cout << "bPP " << index1 << " " << bondsParticleParticle[index1] << endl ;
   }
 
 
@@ -167,15 +169,17 @@ bool initializeBondedForces(){
     
     file >> index1;
 
-    file >> bondsIndexParticleParticle[bondsParticleParticleOffset[index1]+n]
-	 >> kSpringParticleParticle[             bondsParticleParticleOffset[index1]+n]
-	 >> r0ParticleParticle[                  bondsParticleParticleOffset[index1]+n];
     if(index1==indexOld){
       n++;
     }
     else{
       n=0;
     }
+
+    file >> bondsIndexParticleParticle[bondsParticleParticleOffset[index1]+n]
+	 >> kSpringParticleParticle[   bondsParticleParticleOffset[index1]+n]
+	 >> r0ParticleParticle[        bondsParticleParticleOffset[index1]+n];
+
     /*cout << "FFF " << index1 << "   " 
 	 << bondsIndexParticleParticle[bondsParticleParticleOffset[index1]+n] << "   "
 	 << kSpringParticleParticle[             bondsParticleParticleOffset[index1]+n] << "   "
@@ -195,17 +199,21 @@ bool initializeBondedForces(){
   indexOld=-1;
   for(int i=0;i<nbondsParticleFixedPoint;i++){  
     file >> index1;
-    file >> kSpringParticleFixedPoint[             bondsParticleFixedPointOffset[index1]+n]
-	 >> r0ParticleFixedPoint[                  bondsParticleFixedPointOffset[index1]+n]
-	 >> rxFixedPoint[                          bondsParticleFixedPointOffset[index1]+n]
-	 >> ryFixedPoint[                          bondsParticleFixedPointOffset[index1]+n]
-	 >> rzFixedPoint[                          bondsParticleFixedPointOffset[index1]+n];
+
     if(index1==indexOld){
       n++;
     }
     else{
       n=0;
     }
+
+
+    file >> kSpringParticleFixedPoint[             bondsParticleFixedPointOffset[index1]+n]
+	 >> r0ParticleFixedPoint[                  bondsParticleFixedPointOffset[index1]+n]
+	 >> rxFixedPoint[                          bondsParticleFixedPointOffset[index1]+n]
+	 >> ryFixedPoint[                          bondsParticleFixedPointOffset[index1]+n]
+	 >> rzFixedPoint[                          bondsParticleFixedPointOffset[index1]+n];
+
     indexOld=index1;
   }
 
@@ -227,11 +235,6 @@ bool initializeBondedForces(){
     }
     cout << endl << endl;
     }*/
-
-
-
-
-
 
 
 

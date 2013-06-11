@@ -1,6 +1,6 @@
 // Filename: header.h
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -63,6 +63,7 @@ EXTERN_GLOBAL bool setGhost;
 EXTERN_GLOBAL bool setboundary;
 EXTERN_GLOBAL string fileCheckVelocity;
 EXTERN_GLOBAL bool setSaveVTK;
+EXTERN_GLOBAL bool computeNonBondedForces;
 
 
 bool loadDataMain(int argc, char* argv[]);
@@ -150,6 +151,7 @@ bool temperatureFunction(int index);
 //schemeThermostat
 bool saveFunctionsSchemeThermostat(int index);
 bool runSchemeThermostat();
+bool saveCellsAlongZ(int index);
 
 //schemeBoundary
 bool schemeBoundary();
@@ -214,6 +216,20 @@ bool schemeQuasiNeutrallyBuoyant();
 bool freeMemoryQuasiNeutrallyBuoyant();
 bool runSchemeQuasiNeutrallyBuoyant();
 
+//SchemeQuasiNeutrallyBuoyant2D
+bool schemeQuasiNeutrallyBuoyant2D();
+bool freeMemoryQuasiNeutrallyBuoyant2D();
+bool runSchemeQuasiNeutrallyBuoyant2D();
+bool saveFunctionsSchemeIncompressibleBoundary2D(int index, long long step);
+bool temperatureBoundary2D(int index);
+
+//SchemeQuasiNeutrallyBuoyant4pt2D
+bool createBoundaries4ptGPU();
+bool schemeQuasiNeutrallyBuoyant4pt2D();
+bool freeMemoryQuasiNeutrallyBuoyant4pt2D();
+bool runSchemeQuasiNeutrallyBuoyant4pt2D();
+
+
 //schemeCompressibleParticles
 bool schemeCompressibleParticles();
 bool freeMemoryCompressibleParticles();
@@ -251,4 +267,28 @@ bool schemeTestJPS();
 bool freeMemoryTestJPS();
 bool saveFunctionsSchemeTestJPS(int index, long long step);
 bool runSchemeTestJPS();
+
+//SchemeFreeEnergyCompressibleParticles
+bool schemeFreeEnergyCompressibleParticles();
+bool freeMemoryFreeEnergyCompressibleParticles();
+bool runSchemeFreeEnergyCompressibleParticles();
+bool saveParticlesDensity(int index, long long step);
+
+//semiImplicitCompressibleParticles
+bool schemeSemiImplicitCompressibleParticles();
+bool freeMemorySemiImplicitCompressibleParticles();
+bool createCellsSemiImplicitCompressibleParticlesGPU();
+bool freeCellsSemiImplicitCompressibleParticlesGPU();
+bool runSchemeSemiImplicitCompressibleParticles();
+bool saveFunctionsSchemeSemiImplicitCompressibleParticles(int index, long long step);
+
+//momentumCoupling
+bool freeMemoryMomentumCoupling();
+bool schemeMomentumCoupling();
+bool runSchemeMomentumCoupling();
+
+
+
+
+
 

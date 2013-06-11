@@ -1,6 +1,6 @@
 // Filename: deltaGPU.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -16,6 +16,42 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Fluam. If not, see <http://www.gnu.org/licenses/>.
+
+
+__device__ void delta4pt2GPU(double x, double &dlx0, double &dlx1, double &dlx2, double &dlx3, double &dlx4){
+
+  if(x<0){
+    x = x + dxGPU;
+    double s = 0.125 * (3 - 2*x + sqrtf(1 + 4*x*(1-x)) );
+    dlx0 = 0.25 * (3-2*x) - s;
+    dlx1 = s;
+    dlx2 = 0.25 * (2*x-1) + s;
+    dlx3 = 0.5 - s;
+    dlx4 = 0;
+  }
+  else{
+    double s = 0.125 * (3 - 2*x + sqrtf(1 + 4*x*(1-x)) );
+    dlx0 = 0;
+    dlx1 = 0.25 * (3-2*x) - s;
+    dlx2 = s;
+    dlx3 = 0.25 * (2*x-1) + s;
+    dlx4 = 0.5 - s;
+  }
+  
+  return;
+}
+
+__device__ void delta4ptGPU(const double x, double &dlx0, double &dlx1, double &dlx2, double &dlx3){
+
+  double s = 0.125 * (3 - 2*x + sqrtf(1 + 4*x*(1-x)) );
+
+  dlx0 = 0.25 * (3-2*x) - s;
+  dlx1 = s;
+  dlx2 = 0.25 * (2*x-1) + s;
+  dlx3 = 0.5 - s;
+  return;
+}
+
 
 
 __device__ double delta(double x){
@@ -59,9 +95,9 @@ void initDelta(){
   }
   h_data[size-1] = 0.;
   cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc(32, 0, 0, 0, cudaChannelFormatKindFloat);
-  cudaMallocArray( &cuArrayDelta, &channelDesc, size, 1 ); 
-  cudaMemcpyToArray( cuArrayDelta, 0, 0, h_data, size*sizeof(float), cudaMemcpyHostToDevice);
-  cudaBindTextureToArray( texDelta, cuArrayDelta, channelDesc);
+  cutilSafeCall( cudaMallocArray( &cuArrayDelta, &channelDesc, size, 1 )); 
+  cutilSafeCall( cudaMemcpyToArray( cuArrayDelta, 0, 0, h_data, size*sizeof(float), cudaMemcpyHostToDevice));
+  cutilSafeCall( cudaBindTextureToArray( texDelta, cuArrayDelta, channelDesc));
   delete[] h_data;
   //cutilSafeCall( cudaUnbindTexture(texDelta) );
   //cutilSafeCall( cudaFreeArray(cuArrayDelta) );
@@ -69,9 +105,13 @@ void initDelta(){
 }
 
 bool freeDelta(){
-  cudaUnbindTexture(texDelta) ;
-  cudaFreeArray(cuArrayDelta) ;
+  cutilSafeCall( cudaUnbindTexture(texDelta) );
+  cutilSafeCall( cudaFreeArray(cuArrayDelta) );
   cout << "FREE MEMORY DELTA FUNCTION" << endl;
   return 1;
 }
+
+
+
+
 

@@ -1,6 +1,6 @@
 // Filename: hydroAnalysis.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -69,7 +69,12 @@ bool hydroAnalysis(int counter){
     velocities = new double [NDIMS*mx*my*mz];
     densities = new double [mx*my*mz];
     //concent = new double [mx*my*mz];
-    createHydroAnalysis_C(nCells,1,NDIMS,1,systemLength,heatCapacity,dt*samplefreq,0,densfluid/temperature,0);
+    if(temperature==0){
+      createHydroAnalysis_C(nCells,1,NDIMS,1,systemLength,heatCapacity,dt*samplefreq,0,1,0);
+    }
+    else{
+      createHydroAnalysis_C(nCells,1,NDIMS,1,systemLength,heatCapacity,dt*samplefreq,0,densfluid/temperature,0);
+    }
   }
   else if(counter == 1){
     for(int i=0;i<ncells;i++) {

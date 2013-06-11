@@ -1,6 +1,6 @@
 // Filename: initializeFluid.cpp
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -29,7 +29,7 @@
 
 
 bool initializeFluid(){
-  double v0, k;
+  double v0, k, kx, ky, kz;
   double vx, vy, vz;
 
   vx = 0.;
@@ -46,13 +46,33 @@ bool initializeFluid(){
       cDensity[i] = densfluid;
       
       if(incompressibleBinaryMixture || incompressibleBinaryMixtureMidPoint)
-      if(initfluid==5) {
+      if(initfluid==5) { // Sharp discontinuity for mixing
         double width=1.0; // How wide/smooth to make the tanh profile
-        //c[i] = 0.25 + 0.5*fy/double(my); // Linear profile
         // Profile for mixing with periodic BCs: a stripe in the middle
         c[i] = (1-concentration) + (2*concentration-1)/2* \
            ( tanh( (fy-double(my)/3+0.5) / width ) - tanh( (fy-2*double(my)/3+0.5) / width ));
         //cout << i << " c=" << c[i] << endl;
+      }
+      else if(initfluid==6) { // A smooth single-mode profile for mixing
+        int mode=1;
+	kx = 2*pi/double(mx) * mode;
+	ky = 2*pi/double(my) * mode;
+        c[i] = sin(kx*(fx+0.5)) * sin(ky*(fy+0.5));
+        //c[i] = sin(kx*(fx+0.5)) ;
+      }
+      else if(initfluid==7) { // Several lines next to each other
+        double width=1.0; // How wide/smooth to make the tanh profile
+        // Profile for mixing with periodic BCs: a stripe in the middle
+        c[i] = (1-concentration) + (2*concentration-1)/2* ( \
+           ( tanh( (fy-double(my)/2+6*width+12.5) / width ) - tanh( (fy-double(my)/2-6*width+12.5) / width )) \
+          -( tanh( (fy-double(my)/2+6*width-11.5) / width ) - tanh( (fy-double(my)/2-6*width-11.5) / width )) \
+           );
+        //cout << i << " c=" << c[i] << endl;
+      }
+      else if(initfluid==1) { // Equilibrium concentration fluctuations
+         double cvar = concentration * (1-concentration) * (massSpecies1*(1-concentration) + massSpecies0*concentration);
+         c[i] = concentration + sqrt(cvar/cVolume)*gauss();
+         
       }
       else {
 	c[i] = concentration;
@@ -69,6 +89,9 @@ bool initializeFluid(){
 	cvz[i] = vz0;
 	break;
       case 1:
+      case 5:
+      case 6:
+      case 7:
 	//!*************************************************
 	//! Fluido en equilibrio a T != 0
 	//!*************************************************
@@ -84,11 +107,11 @@ bool initializeFluid(){
 	//! Onda transversal y temperatura 0
 	//! vx = v0 sin(kz)exp(-nuk**2t)
 	//!*************************************************
-	v0 = 2.04;
-	k = 2*pi/lz;
+	v0 = 0.04;
+	k = 2*pi/lz * 1;
 	cvx[i] = vx0;
-	cvy[i] = vy0;//0.;
-	cvz[i] = v0*sin(k*cry[i]) + vz0;//0.;
+	cvy[i] = vy0 + v0*sin(k*crz[i]);//0.;
+	cvz[i] = vz0;//0.;
 	break;
       case 3:
 	//!*************************************************
@@ -97,11 +120,11 @@ bool initializeFluid(){
 	//! c_t = velocidad del sonido
 	//! gamma_t = absorción isoterma del sonido
 	//!*************************************************
-	v0 = 0.0204;
-	k = 2*pi/lz;
-	cvx[i] = v0 * sin(k*crx[i]);//0.;
-	cvy[i] = v0 * sin(k*cry[i]);//0.;
-	cvz[i] = v0 * sin(k*crz[i]);
+	v0 = 0.004;
+	k = 2*pi/lz * 8;
+	cvx[i] = 0.;
+	cvy[i] = 0.;//0.;
+	cvz[i] = v0 * sin(k*(crz[i]+0.5*lz/double(mz)));
 	break;
       case 4:
 	//c[0].density = 1.2;
@@ -130,7 +153,7 @@ bool initializeFluid(){
       //c[i].p[2] = c[i].v[2] * c[i].mass;
     }
     
-    if(initfluid == 1){
+    if(initfluid == 1 || initfluid>=5) {
       vx = vx/double(ncells);
       vy = vy/double(ncells);
       vz = vz/double(ncells);
@@ -138,6 +161,7 @@ bool initializeFluid(){
 	cvx[i] = cvx[i] - vx + vx0;
 	cvy[i] = cvy[i] - vy + vy0;
 	cvz[i] = cvz[i] - vz + vz0;
+        //cout << i << " " << cvx[i] << " " << cvy[i] << " " << cvz[i] << endl;
       }
     }
   }
@@ -151,6 +175,7 @@ bool initializeFluid(){
     getline(fileinput,word);
     fileinput >> word >> densfluid;
     fileinput >> word >> word >> pressurea0 >> pressurea1 >> pressurea2;
+    //getline(fileinput,word);//////
     getline(fileinput,word);
     getline(fileinput,word);
     getline(fileinput,word);

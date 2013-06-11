@@ -1,6 +1,6 @@
 // Filename: createParticles.cpp
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -37,9 +37,6 @@ const string wsigmap="sigmap";
 
 bool createParticles(){
 
-  mxrcut=int(lx/(rcut));
-  myrcut=int(ly/(rcut));
-  mzrcut=int(lz/(rcut));
   //Create particles in a simple cubic lattice
   if(loadparticles==0){
     rxParticle = new double [np];
