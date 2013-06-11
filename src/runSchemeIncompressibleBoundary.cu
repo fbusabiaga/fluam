@@ -1,6 +1,6 @@
 // Filename: runSchemeIncompressibleBoundary.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -94,6 +94,45 @@ bool runSchemeIncompressibleBoundary(){
   }
   initializePrefactorFourierSpace_1<<<1,1>>>(gradKx,gradKy,gradKz,expKx,expKy,expKz,pF);
   initializePrefactorFourierSpace_2<<<numBlocksdim,threadsPerBlockdim>>>(pF);
+
+
+
+
+
+
+
+
+
+  // A. Donev: Project the initial velocity to make sure it is div-free
+  //---------------------------------------------------------
+  //Copy velocities to complex variable
+  doubleToDoubleComplex<<<numBlocks,threadsPerBlock>>>(vxGPU,vyGPU,vzGPU,vxZ,vyZ,vzZ);
+
+  //Take velocities to fourier space
+  cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_FORWARD);//W
+  cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_FORWARD);//W
+  cufftExecZ2Z(FFT,vzZ,vzZ,CUFFT_FORWARD);//W
+  kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,-1);
+
+  //Project into divergence free space
+  projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
+
+  //Take velocities to real space
+  kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,1);
+  cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_INVERSE);
+  cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_INVERSE);
+  cufftExecZ2Z(FFT,vzZ,vzZ,CUFFT_INVERSE);
+
+  //Copy velocities to real variables
+  doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxGPU,vyGPU,vzGPU);
+  //---------------------------------------------------------
+
+
+
+
+
+
+
 
 
 

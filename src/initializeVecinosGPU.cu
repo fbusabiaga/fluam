@@ -1,6 +1,6 @@
 // Filename: initializeVecinosGPU.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -212,7 +212,7 @@ __global__ void initializeVecinos2(int* neighbor0GPU,
 				   int* neighbor2GPU,
 				   int* neighbor3GPU, 
 				   int* neighbor4GPU, 
-				   int*neighbor5GPU){
+				   int* neighbor5GPU){
 
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if(i>=ncellstGPU) return;

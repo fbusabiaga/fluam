@@ -1,6 +1,6 @@
 // Filename: gpuToHostIncompressibleBoundary.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -21,7 +21,7 @@
 bool gpuToHostIncompressibleBoundary(){
 
   int auxb[5];
-  cudaMemcpy(auxb,errorKernel,5*sizeof(int),cudaMemcpyDeviceToHost);
+  cutilSafeCall(cudaMemcpy(auxb,errorKernel,5*sizeof(int),cudaMemcpyDeviceToHost));
   if(auxb[0] == 1){
     for(int i=0;i<5;i++){
       cout << "ERROR IN KERNEL " << i << " " << auxb[i] << endl;
@@ -29,17 +29,17 @@ bool gpuToHostIncompressibleBoundary(){
     return 0;
   }
 
-  cudaMemcpy(cvx,vxGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
-  cudaMemcpy(cvy,vyGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
-  cudaMemcpy(cvz,vzGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
+  cutilSafeCall(cudaMemcpy(cvx,vxGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
+  cutilSafeCall(cudaMemcpy(cvy,vyGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
+  cutilSafeCall(cudaMemcpy(cvz,vzGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
 
   if(setparticles){
-    cudaMemcpy(rxParticle,&rxboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
-    cudaMemcpy(ryParticle,&ryboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
-    cudaMemcpy(rzParticle,&rzboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
-    cudaMemcpy(vxParticle,&vxboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
-    cudaMemcpy(vyParticle,&vyboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
-    cudaMemcpy(vzParticle,&vzboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
+    cutilSafeCall(cudaMemcpy(rxParticle,&rxboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
+    cutilSafeCall(cudaMemcpy(ryParticle,&ryboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
+    cutilSafeCall(cudaMemcpy(rzParticle,&rzboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
+    cutilSafeCall(cudaMemcpy(vxParticle,&vxboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
+    cutilSafeCall(cudaMemcpy(vyParticle,&vyboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
+    cutilSafeCall(cudaMemcpy(vzParticle,&vzboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
   }
 
   return 1;

@@ -1,6 +1,6 @@
 // Filename: GPU.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -25,6 +25,12 @@
 #include "headerOtherFluidVariables.h"
 #include "particles.h"
 #include "hydroAnalysis.h"
+
+
+static __inline__ void cutilSafeCall(int i){
+  return;
+}
+
 
 //GPU staff
 //#include <cutil_inline.h>
@@ -84,6 +90,7 @@ static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
 #include "findNeighborParticles.cu"
 #include "boundaryParticlesFunction.cu"
 #include "saveFunctionsSchemeBoundary.cu"
+#include "interpolateField.cu"
 #include "gpuToHostParticles.cu"
 #include "runSchemeBoundary.cu"
 
@@ -132,6 +139,7 @@ static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
 #include "runSchemeContinuousGradient.cu"
 
 //SchemeIncompressible
+#include "projectionDivergenceFree.cu"
 #include "saveFunctionsSchemeIncompressible.cu"
 #include "createCellsIncompressibleGPU.cu"
 #include "initializePrefactorFourierSpace.cu"
@@ -150,22 +158,35 @@ static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
 #include "nonBondedForceIncompressible.cu"
 #include "boundaryParticlesFunctionIncompressible.cu"
 #include "saveFunctionsSchemeIncompressibleBoundary.cu"
-#include "projectionDivergenceFree.cu"
 #include "runSchemeIncompressibleBoundary.cu"
 
-//SchemeIncompressibleBoundaryRK2
+//SchemeQuasiNeutrallyBuoyant
 #include "createBoundariesRK2GPU.cu"
 #include "freeBoundariesRK2GPU.cu"
 #include "quasiNeutrallyBuoyantFunctions.cu"
 #include "quasiNeutrallyBuoyantFunctions2.cu"
 #include "calculateAdvectionFluid.cu"
-#include "interpolateField.cu"
 #include "gpuToHostIncompressibleBoundaryRK2.cu"
 #include "kernelSpreadParticles.cu"
 #include "kernelConstructWQuasiNeutrallyBuoyant.cu"
 #include "kernelCorrectionVQuasiNeutrallyBuoyant.cu"
 #include "firstStepQuasiNeutrallyBuoyant.cu"
 #include "runSchemeQuasiNeutrallyBuoyant.cu"
+
+//SchemeQuasiNeutrallyBuoyant2D
+#include "saveFunctionsSchemeIncompressibleBoundary2D.cu"
+#include "createCellsIncompressible2DGPU.cu"
+#include "quasiNeutrallyBuoyantFunctions2D.cu"
+#include "firstStepQuasiNeutrallyBuoyant2D.cu"
+#include "runSchemeQuasiNeutrallyBuoyant2D.cu"
+
+//SchemeQuasiNeutrallyBuoyant4pt2D
+//#include "createCellsIncompressible2DGPU.cu"
+#include "quasiNeutrallyBuoyantFunctions4pt2D.cu"
+#include "createBoundaries4ptGPU.cu"
+#include "firstStepQuasiNeutrallyBuoyant4pt2D.cu"
+#include "runSchemeQuasiNeutrallyBuoyant4pt2D.cu"
+
 
 //SchemeCompressibleParticles
 #include "calculateVelocityAtHalfTimeStepCompressibleParticles.cu"
@@ -201,4 +222,28 @@ static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
 #include "saveFunctionsSchemeTestJPS.cu"
 #include "JPS.cu"
 #include "runSchemeTestJPS.cu"
+
+
+//SchemeFreeEnergyCompressibleParticles
+#include "freeEnergyCompressibleParticles.cu"
+#include "boundaryParticlesFunctionFreeEnergyCompressibleParticles.cu"
+#include "kernelDpFreeEnergyCompressibleParticles.cu"
+#include "runSchemeFreeEnergyCompressibleParticles.cu"
+
+//SchemeSemiImplicitCompressibleParticles
+#include "createCellsSemiImplicitCompressibleParticlesGPU.cu"
+#include "freeCellsSemiImplicitCompressibleParticlesGPU.cu"
+#include "kernelDpSemiImplicitCompressibleParticles.cu"
+#include "kernelConstructWSemiImplicitCompressibleParticles.cu"
+#include "kernelUpdateRhoSemiImplicit.cu"
+#include "runSchemeSemiImplicitCompressibleParticles.cu"
+#include "saveFunctionsSchemeSemiImplicitCompressibleParticles.cu"
+
+
+//SchemeMomentumCOupling
+#include "updateFluidMomentumCoupling.cu"
+#include "nonBondedForceMomentumCoupling.cu"
+#include "boundaryParticlesFunctionMomentumCoupling.cu"
+#include "runSchemeMomentumCoupling.cu"
+
 

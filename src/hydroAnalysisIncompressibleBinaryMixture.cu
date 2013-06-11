@@ -1,6 +1,6 @@
 // Filename: hydroAnalysisIncompressibleBinaryMixture.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -63,7 +63,12 @@ bool hydroAnalysisIncompressibleBinaryMixture(int counter){
 
     int project2D = 1 ; // Set to 1 if you want to do a 2D projection
     //cout << "CALLING createHydroAnalysis " << step << endl;
-    createHydroAnalysis_C(nCells,2,NDIMS,1,systemLength,heatCapacity,dt*samplefreq,0,densfluid/temperature,project2D);
+    string fileInputName = outputname + ".nml";
+    //setHydroInputFile_C(fileInputName.c_str());
+    
+    //double scaling = densfluid/temperature; // This is not a good idea when temperature=0
+    double scaling = 1;
+    createHydroAnalysis_C(nCells,2,NDIMS,1,systemLength,heatCapacity,dt*samplefreq,0,scaling,project2D);
   }
   else if(counter == 1){
     for(int i=0;i<ncells;i++) {
@@ -76,16 +81,21 @@ bool hydroAnalysisIncompressibleBinaryMixture(int counter){
     updateHydroAnalysisMixture_C(velocities, cDensity, c);
   }
   else if(counter == 2){
-    writeToFiles_C(-1); // Write to files
+    if((samplefreq>0) && (savefreq<=0)) {
+      if(savefreq>=0) writeHydroGridMixture_C (cDensity, c, "", -1);
+      writeToFiles_C(-1); // Write final statistics to files
+    }  
     destroyHydroAnalysis_C();
     delete[] velocities;
     //delete[] concent;
   }
   else if(counter == 3){
     if(step==0){
+      if(savefreq>=0) writeHydroGridMixture_C (cDensity, c, "", 0);
       writeToFiles_C(0); // Write to files
     }
     else{
+      if(savefreq>=0) writeHydroGridMixture_C (cDensity, c, "", step/abs(savefreq));
       writeToFiles_C(step/abs(savefreq)); // Write to files
     }
   }
@@ -94,7 +104,10 @@ bool hydroAnalysisIncompressibleBinaryMixture(int counter){
     // The value save_snapshot=2 means that a 2D projection will also be analyzed and saved to file
     // This requires project_2D=1 though and will overwrite any grid_2D data!
     //projectHydroGrid_C (cDensity, c, "", step, 2); // Number by time step
+    // This will write both a full grid file and project along 2D:
     projectHydroGrid_C (cDensity, c, "", step/abs(savefreq), 2); // Number by snapshot
+    // This will project along 2D but skip the 3D output:
+    //projectHydroGrid_C (cDensity, c, "", step/abs(savefreq), -2);
   }
   return 1;
 }

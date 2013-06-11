@@ -1,6 +1,6 @@
 // Filename: calculateAdvectionFluid.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -18,9 +18,9 @@
 // along with Fluam. If not, see <http://www.gnu.org/licenses/>.
 
 
-__global__ void calculateAdvectionFluid(double* vxPredictionGPU,
-					double* vyPredictionGPU,
-					double* vzPredictionGPU,
+__global__ void calculateAdvectionFluid(const double* vxPredictionGPU,
+					const double* vyPredictionGPU,
+					const double* vzPredictionGPU,
 					cufftDoubleComplex* vxZ,
 					cufftDoubleComplex* vyZ,
 					cufftDoubleComplex* vzZ){

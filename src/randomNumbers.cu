@@ -1,6 +1,6 @@
 // Filename: randomNumbers.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -27,8 +27,8 @@ bool initializeRandomNumbersGPU(size_t numberRandom, int seed){
 
   curandCreateGenerator(&gen,CURAND_RNG_PSEUDO_DEFAULT);
   curandSetPseudoRandomGeneratorSeed(gen,seedLong);
-  
-  cudaMalloc((void**)&dRand,numberRandom*sizeof(double));
+
+  cutilSafeCall(cudaMalloc((void**)&dRand,numberRandom*sizeof(double)));
 
   return 1;
 }
@@ -41,7 +41,7 @@ bool generateRandomNumbers(size_t numberRandom){
 
 
 bool freeRandomNumbersGPU(){
-  cudaFree(dRand);
+  cutilSafeCall(cudaFree(dRand));
   curandDestroyGenerator(gen);
   return 1;
 }

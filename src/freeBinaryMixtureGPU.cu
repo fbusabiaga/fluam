@@ -1,6 +1,6 @@
 // Filename: freeBinaryMixtureGPU.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -20,9 +20,9 @@
 
 bool freeBinaryMixtureGPU(){
   
-  cudaFree(cGPU);
-  cudaFree(cPredictionGPU);
-  cudaFree(dcGPU);
+  cutilSafeCall(cudaFree(cGPU));
+  cutilSafeCall(cudaFree(cPredictionGPU));
+  cutilSafeCall(cudaFree(dcGPU));
 
 
   cout << "FREE BINARY MIXTURE GPU :       DONE"  << endl;

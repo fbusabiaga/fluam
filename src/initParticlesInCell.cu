@@ -1,6 +1,6 @@
 // Filename: initParticlesInCell.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -39,6 +39,23 @@ __global__ void initParticlesInCell(int* partincellX,
   pc->countPartInCellNonBonded = countPartInCellNonBonded;
   pc->partInCellNonBonded = partInCellNonBonded;
 
+
+  return;
+
+}
+
+
+
+__global__ void initParticlesInCellOmega(int* partincell,
+                                         int* countparticlesincell,
+                                         particlesincell *pc){
+
+
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>0) return;
+
+  pc->countparticlesincell = countparticlesincell;
+  pc->partincell = partincell;
 
   return;
 

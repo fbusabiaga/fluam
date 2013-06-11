@@ -1210,10 +1210,10 @@ __global__ void kernelSpreadDeltap(double* rxcellGPU,
 
   int vecino0, vecino1, vecino2, vecino3, vecino4, vecino5;
   int vecinopxpy, vecinopxmy, vecinopxpz, vecinopxmz;
-  int vecinomxpy, vecinomxmy, vecinomxpz, vecinomxmz;
-  int vecinopypz, vecinopymz, vecinomypz, vecinomymz;
+  int vecinomxpy, vecinomxpz;
+  int vecinopypz, vecinopymz, vecinomypz;
   int vecinopxpypz, vecinopxpymz, vecinopxmypz, vecinopxmymz;
-  int vecinomxpypz, vecinomxpymz, vecinomxmypz, vecinomxmymz;
+  int vecinomxpypz, vecinomxpymz, vecinomxmypz;
 
   double dlx, dlxp, dlxm;
   double dly, dlyp, dlym;
@@ -1271,13 +1271,13 @@ __global__ void kernelSpreadDeltap(double* rxcellGPU,
   vecinopxpz = tex1Dfetch(texvecinopxpzGPU, icelx);
   vecinopxmz = tex1Dfetch(texvecinopxmzGPU, icelx);
   vecinomxpy = tex1Dfetch(texvecinomxpyGPU, icelx);
-  vecinomxmy = tex1Dfetch(texvecinomxmyGPU, icelx);
+  //vecinomxmy = tex1Dfetch(texvecinomxmyGPU, icelx);
   vecinomxpz = tex1Dfetch(texvecinomxpzGPU, icelx);
-  vecinomxmz = tex1Dfetch(texvecinomxmzGPU, icelx);
+  //vecinomxmz = tex1Dfetch(texvecinomxmzGPU, icelx);
   vecinopypz = tex1Dfetch(texvecinopypzGPU, icelx);
   vecinopymz = tex1Dfetch(texvecinopymzGPU, icelx);
   vecinomypz = tex1Dfetch(texvecinomypzGPU, icelx);
-  vecinomymz = tex1Dfetch(texvecinomymzGPU, icelx);
+  //vecinomymz = tex1Dfetch(texvecinomymzGPU, icelx);
   vecinopxpypz = tex1Dfetch(texvecinopxpypzGPU, icelx);
   vecinopxpymz = tex1Dfetch(texvecinopxpymzGPU, icelx);
   vecinopxmypz = tex1Dfetch(texvecinopxmypzGPU, icelx);
@@ -1285,7 +1285,7 @@ __global__ void kernelSpreadDeltap(double* rxcellGPU,
   vecinomxpypz = tex1Dfetch(texvecinomxpypzGPU, icelx);
   vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelx);
   vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelx);
-  vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelx);
+  //vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelx);
   int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
   int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
   int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
@@ -1408,13 +1408,13 @@ __global__ void kernelSpreadDeltap(double* rxcellGPU,
   vecinopxpz = tex1Dfetch(texvecinopxpzGPU, icely);
   vecinopxmz = tex1Dfetch(texvecinopxmzGPU, icely);
   vecinomxpy = tex1Dfetch(texvecinomxpyGPU, icely);
-  vecinomxmy = tex1Dfetch(texvecinomxmyGPU, icely);
+  //vecinomxmy = tex1Dfetch(texvecinomxmyGPU, icely);
   vecinomxpz = tex1Dfetch(texvecinomxpzGPU, icely);
-  vecinomxmz = tex1Dfetch(texvecinomxmzGPU, icely);
+  //vecinomxmz = tex1Dfetch(texvecinomxmzGPU, icely);
   vecinopypz = tex1Dfetch(texvecinopypzGPU, icely);
   vecinopymz = tex1Dfetch(texvecinopymzGPU, icely);
   vecinomypz = tex1Dfetch(texvecinomypzGPU, icely);
-  vecinomymz = tex1Dfetch(texvecinomymzGPU, icely);
+  //vecinomymz = tex1Dfetch(texvecinomymzGPU, icely);
   vecinopxpypz = tex1Dfetch(texvecinopxpypzGPU, icely);
   vecinopxpymz = tex1Dfetch(texvecinopxpymzGPU, icely);
   vecinopxmypz = tex1Dfetch(texvecinopxmypzGPU, icely);
@@ -1422,7 +1422,7 @@ __global__ void kernelSpreadDeltap(double* rxcellGPU,
   vecinomxpypz = tex1Dfetch(texvecinomxpypzGPU, icely);
   vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icely);
   vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icely);
-  vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icely);  
+  //vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icely);  
   //DEFINE MORE NEIGHBORS
   int vecinopymxpymz = tex1Dfetch(texvecino4GPU, vecinomxpymz);
   int vecinopymxpy   = tex1Dfetch(texvecino4GPU, vecinomxpy);
@@ -1539,13 +1539,13 @@ __global__ void kernelSpreadDeltap(double* rxcellGPU,
   vecinopxpz = tex1Dfetch(texvecinopxpzGPU, icelz);
   vecinopxmz = tex1Dfetch(texvecinopxmzGPU, icelz);
   vecinomxpy = tex1Dfetch(texvecinomxpyGPU, icelz);
-  vecinomxmy = tex1Dfetch(texvecinomxmyGPU, icelz);
+  //vecinomxmy = tex1Dfetch(texvecinomxmyGPU, icelz);
   vecinomxpz = tex1Dfetch(texvecinomxpzGPU, icelz);
-  vecinomxmz = tex1Dfetch(texvecinomxmzGPU, icelz);
+  //vecinomxmz = tex1Dfetch(texvecinomxmzGPU, icelz);
   vecinopypz = tex1Dfetch(texvecinopypzGPU, icelz);
   vecinopymz = tex1Dfetch(texvecinopymzGPU, icelz);
   vecinomypz = tex1Dfetch(texvecinomypzGPU, icelz);
-  vecinomymz = tex1Dfetch(texvecinomymzGPU, icelz);
+  //vecinomymz = tex1Dfetch(texvecinomymzGPU, icelz);
   vecinopxpypz = tex1Dfetch(texvecinopxpypzGPU, icelz);
   vecinopxpymz = tex1Dfetch(texvecinopxpymzGPU, icelz);
   vecinopxmypz = tex1Dfetch(texvecinopxmypzGPU, icelz);
@@ -1553,7 +1553,7 @@ __global__ void kernelSpreadDeltap(double* rxcellGPU,
   vecinomxpypz = tex1Dfetch(texvecinomxpypzGPU, icelz);
   vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelz);
   vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelz);
-  vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelz);  
+  //vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelz);  
   //DEFINE MORE NEIGHBORS
   int vecinopzmxmypz = tex1Dfetch(texvecino5GPU, vecinomxmypz);
   int vecinopzmxpz   = tex1Dfetch(texvecino5GPU, vecinomxpz);

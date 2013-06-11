@@ -1,6 +1,6 @@
 // Filename: saveFunctionsSchemeBoundary.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -29,7 +29,10 @@ bool saveFunctionsSchemeBoundary(int index, long long step){
       if(!saveParticles(index,step)) return 0;
     //if(!hydroAnalysis(0)) return 0;
     //if(!covarianceKernel(index)) return 0;
+    //if(!saveCellsAlongZ(index)) return 0;
     if(setCheckVelocity==1) checkVelocity(0,0,fileCheckVelocity);
+    if(freeEnergyCompressibleParticles || momentumCoupling)
+      if(!saveParticlesDensity(0,step)) return 0;
     if(!saveTime(index)) return 0;
   }
   //Use save functions
@@ -39,6 +42,9 @@ bool saveFunctionsSchemeBoundary(int index, long long step){
       if(!saveParticles(index,step)) return 0;
     //if(!hydroAnalysis(1)) return 0;
     //if(!covarianceKernel(index)) return 0;
+    //if(!saveCellsAlongZ(index)) return 0;
+    if(freeEnergyCompressibleParticles || momentumCoupling)
+      if(!saveParticlesDensity(1,step)) return 0;
     if(setCheckVelocity==1) checkVelocity(1,step,"0");
   }
   //Close save functions
@@ -49,6 +55,9 @@ bool saveFunctionsSchemeBoundary(int index, long long step){
       if(!saveParticles(index,step)) return 0;
     //if(!hydroAnalysis(2)) return 0;
     //if(!covarianceKernel(index)) return 0;
+    //if(!saveCellsAlongZ(index)) return 0;
+    if(freeEnergyCompressibleParticles || momentumCoupling)
+      if(!saveParticlesDensity(2,step)) return 0;
     if(setCheckVelocity==1) checkVelocity(2,0,fileCheckVelocity);
     if(!saveFluidFinalConfiguration()) return 0;
   }

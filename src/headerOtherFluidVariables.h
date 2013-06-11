@@ -1,6 +1,6 @@
 // Filename: headerOtherFluidVariables.h
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -71,6 +71,14 @@ EXTERN_OTHER_FLUID_V bool incompressibleBoundaryRK2;
 EXTERN_OTHER_FLUID_V bool quasiNeutrallyBuoyant;
 //quasiNeutrallyBuoyant Ends
 
+//quasiNeutrallyBuoyant2D Begins
+EXTERN_OTHER_FLUID_V bool quasiNeutrallyBuoyant2D;
+//quasiNeutrallyBuoyant2D Ends
+
+//quasiNeutrallyBuoyant4pt2D Begins
+EXTERN_OTHER_FLUID_V bool quasiNeutrallyBuoyant4pt2D;
+//quasiNeutrallyBuoyant4pt2D Ends
+
 //IMEXRK Begins
 EXTERN_OTHER_FLUID_V bool IMEXRK;
 //IMEXRK Ends
@@ -90,3 +98,18 @@ EXTERN_OTHER_FLUID_V bool particlesWall;
 //testJPS Begins
 EXTERN_OTHER_FLUID_V int testJPS;
 //testJPS Ends
+
+//freeEnergyCompressibleParticles Begins
+EXTERN_OTHER_FLUID_V int freeEnergyCompressibleParticles;
+EXTERN_OTHER_FLUID_V double omega0;
+//freeEnergyCompressibleParticles Ends
+
+//semiImplicitCompressibleParticles Begins
+EXTERN_OTHER_FLUID_V bool semiImplicitCompressibleParticles;
+//semiImplicitCompressibleParticles Ends
+
+//momentumCoupling Begins
+EXTERN_OTHER_FLUID_V bool momentumCoupling;
+//momentumCoupling Ends
+
+

@@ -1,6 +1,6 @@
 // Filename: checkVelocity.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -472,15 +472,15 @@ void checkVelocity(int index, unsigned long long step, string fileCheckVelocity)
       fileinput >> rxCheck[i] >> ryCheck[i] >> rzCheck[i];
     fileinput.close();
 
-    cudaMalloc((void**)&rxCheckGPU,nCheck*sizeof(double));
-    cudaMalloc((void**)&ryCheckGPU,nCheck*sizeof(double));
-    cudaMalloc((void**)&rzCheckGPU,nCheck*sizeof(double));
-    cudaMemcpy(rxCheckGPU,rxCheck,nCheck*sizeof(double),cudaMemcpyHostToDevice);
-    cudaMemcpy(ryCheckGPU,ryCheck,nCheck*sizeof(double),cudaMemcpyHostToDevice);
-    cudaMemcpy(rzCheckGPU,rzCheck,nCheck*sizeof(double),cudaMemcpyHostToDevice);
-    cudaMalloc((void**)&vxCheckGPU,nCheck*sizeof(double));
-    cudaMalloc((void**)&vyCheckGPU,nCheck*sizeof(double));
-    cudaMalloc((void**)&vzCheckGPU,nCheck*sizeof(double));
+    cutilSafeCall(cudaMalloc((void**)&rxCheckGPU,nCheck*sizeof(double)));
+    cutilSafeCall(cudaMalloc((void**)&ryCheckGPU,nCheck*sizeof(double)));
+    cutilSafeCall(cudaMalloc((void**)&rzCheckGPU,nCheck*sizeof(double)));
+    cutilSafeCall(cudaMemcpy(rxCheckGPU,rxCheck,nCheck*sizeof(double),cudaMemcpyHostToDevice));
+    cutilSafeCall(cudaMemcpy(ryCheckGPU,ryCheck,nCheck*sizeof(double),cudaMemcpyHostToDevice));
+    cutilSafeCall(cudaMemcpy(rzCheckGPU,rzCheck,nCheck*sizeof(double),cudaMemcpyHostToDevice));
+    cutilSafeCall(cudaMalloc((void**)&vxCheckGPU,nCheck*sizeof(double)));
+    cutilSafeCall(cudaMalloc((void**)&vyCheckGPU,nCheck*sizeof(double)));
+    cutilSafeCall(cudaMalloc((void**)&vzCheckGPU,nCheck*sizeof(double)));
     delete[] rxCheck;
     delete[] ryCheck;
     delete[] rzCheck;
@@ -509,21 +509,21 @@ void checkVelocity(int index, unsigned long long step, string fileCheckVelocity)
 										 vzCheckGPU,
 										 nCheck);
     double auxX[nCheck], auxY[nCheck], auxZ[nCheck];
-    cudaMemcpy(auxX,vxCheckGPU,nCheck*sizeof(double),cudaMemcpyDeviceToHost);
-    cudaMemcpy(auxY,vyCheckGPU,nCheck*sizeof(double),cudaMemcpyDeviceToHost);
-    cudaMemcpy(auxZ,vzCheckGPU,nCheck*sizeof(double),cudaMemcpyDeviceToHost);
+    cutilSafeCall(cudaMemcpy(auxX,vxCheckGPU,nCheck*sizeof(double),cudaMemcpyDeviceToHost));
+    cutilSafeCall(cudaMemcpy(auxY,vyCheckGPU,nCheck*sizeof(double),cudaMemcpyDeviceToHost));
+    cutilSafeCall(cudaMemcpy(auxZ,vzCheckGPU,nCheck*sizeof(double),cudaMemcpyDeviceToHost));
     fileOutputCheckVelocity << step*dt << endl;
     for(int i=0;i<nCheck;i++)
       fileOutputCheckVelocity << auxX[i] << " " << auxY[i] << " " << auxZ[i] << endl;
   }
   else if(index==2){
     fileOutputCheckVelocity.close();
-    cudaFree(rxCheckGPU);
-    cudaFree(ryCheckGPU);
-    cudaFree(rzCheckGPU);
-    cudaFree(vxCheckGPU);
-    cudaFree(vyCheckGPU);
-    cudaFree(vzCheckGPU);
+    cutilSafeCall(cudaFree(rxCheckGPU));
+    cutilSafeCall(cudaFree(ryCheckGPU));
+    cutilSafeCall(cudaFree(rzCheckGPU));
+    cutilSafeCall(cudaFree(vxCheckGPU));
+    cutilSafeCall(cudaFree(vyCheckGPU));
+    cutilSafeCall(cudaFree(vzCheckGPU));
   }
 
   return;

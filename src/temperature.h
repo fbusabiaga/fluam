@@ -1,6 +1,6 @@
 // Filename: temperature.h
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -27,3 +27,4 @@
 EXTERN_TEMPERATURE double sigma_t_fluid, t_mean_fluid;
 EXTERN_TEMPERATURE double txm, tym, tzm;
 EXTERN_TEMPERATURE double t_mean_particle;
+EXTERN_TEMPERATURE double txmP, tymP, tzmP;

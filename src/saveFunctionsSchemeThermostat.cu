@@ -1,6 +1,6 @@
 // Filename: saveFunctionsSchemeThermostat.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -24,18 +24,21 @@ bool saveFunctionsSchemeThermostat(int index){
   if(index==0){
     if(!saveSeed()) return 0;
     if(!temperatureFunction(index)) return 0;
+    //if(!saveCellsAlongZ(index)) return 0;
     //if(!hydroAnalysis(0)) return 0;
     if(!saveTime(index)) return 0;
   }
   //Use save functions
   else if(index==1){
     if(!temperatureFunction(index)) return 0;
+    //if(!saveCellsAlongZ(index)) return 0;
     //if(!hydroAnalysis(1)) return 0;
   }
   //Close save functions
   else if(index==2){
     if(!saveTime(index)) return 0;
     if(!temperatureFunction(index)) return 0;
+    //if(!saveCellsAlongZ(index)) return 0;
     //if(!hydroAnalysis(2)) return 0;
     if(!saveFluidFinalConfiguration()) return 0;
   }
@@ -48,3 +51,5 @@ bool saveFunctionsSchemeThermostat(int index){
 
   return 1;
 }
+
+

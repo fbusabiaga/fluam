@@ -1,6 +1,6 @@
 // Filename: gpuToHostRK3.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -19,9 +19,9 @@
 
 
 bool gpuToHostRK3(){
-  cudaMemcpy(cDensity,densityGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
-  cudaMemcpy(cvx,vxGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
-  cudaMemcpy(cvy,vyGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
-  cudaMemcpy(cvz,vzGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost);
+  cutilSafeCall(cudaMemcpy(cDensity,densityGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
+  cutilSafeCall(cudaMemcpy(cvx,vxGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
+  cutilSafeCall(cudaMemcpy(cvy,vyGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
+  cutilSafeCall(cudaMemcpy(cvz,vzGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
   return 1;
 }

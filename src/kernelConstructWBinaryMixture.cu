@@ -1,6 +1,6 @@
 // Filename: kernelConstructBinaryMixture.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -35,9 +35,9 @@
 //
 
 // A. Donev:
-#define VELADV false // Include the term v*grad(v) in the velocity equation
+#define VELADV true // Include the term v*grad(v) in the velocity equation
 #define CONCADV true // Include the term v*grad(c) in the concentration equation
-#define STOCHCONC false // Include the stochastic forcing term in the concetration equation
+#define STOCHCONC true // Include the stochastic forcing term in the concetration equation
 
 // A. Donev: This routine only deals with the velocity equation
 // It is basically a copy of kernelConstructW_1
@@ -1121,29 +1121,41 @@ __global__ void kernelConstructWBinaryMixtureMidPoint_1(double *vxPredictionGPU,
 
   //Noise terms
   double cMean = 0.5 * (cGPU[vecino3] + cGPU[i]);
+  cMean = ( (cMean<0) ? 0 : cMean );
+  cMean = ( (cMean>1) ? 1 : cMean );
   advX = fact5GPU * invdxGPU * 
     sqrt(2 * diffusionGPU * cMean * (1-cMean) * (massSpecies1GPU*(1-cMean) + massSpecies0GPU*cMean) ) * 
     d_rand[i + 6*ncellsGPU];
 
   cMean = 0.5 * (cGPU[i] + cGPU[vecino2]);
+  cMean = ( (cMean<0) ? 0 : cMean );
+  cMean = ( (cMean>1) ? 1 : cMean );
   advX -= fact5GPU * invdxGPU * 
     sqrt(2 * diffusionGPU * cMean * (1-cMean) * (massSpecies1GPU*(1-cMean) + massSpecies0GPU*cMean)) * 
     d_rand[vecino2 + 6*ncellsGPU];
 
   cMean = 0.5 * (cGPU[i] + cGPU[vecino4]);
+  cMean = ( (cMean<0) ? 0 : cMean );
+  cMean = ( (cMean>1) ? 1 : cMean );
   advX += fact5GPU * invdyGPU * 
     sqrt(2 * diffusionGPU * cMean * (1-cMean) * (massSpecies1GPU*(1-cMean) + massSpecies0GPU*cMean)) * 
     d_rand[i + 7*ncellsGPU];
   cMean = 0.5 * (cGPU[i] + cGPU[vecino1]);
+  cMean = ( (cMean<0) ? 0 : cMean );
+  cMean = ( (cMean>1) ? 1 : cMean );
   advX -= fact5GPU * invdyGPU * 
     sqrt(2 * diffusionGPU * cMean * (1-cMean) * (massSpecies1GPU*(1-cMean) + massSpecies0GPU*cMean)) * 
     d_rand[vecino1 + 7*ncellsGPU];
 
   cMean = 0.5 * (cGPU[i] + cGPU[vecino5]);
+  cMean = ( (cMean<0) ? 0 : cMean );
+  cMean = ( (cMean>1) ? 1 : cMean );
   advX += fact5GPU * invdzGPU * 
     sqrt(2 * diffusionGPU * cMean * (1-cMean) * (massSpecies1GPU*(1-cMean) + massSpecies0GPU*cMean)) * 
     d_rand[i + 8*ncellsGPU];
   cMean = 0.5 * (cGPU[i] + cGPU[vecino0]);
+  cMean = ( (cMean<0) ? 0 : cMean );
+  cMean = ( (cMean>1) ? 1 : cMean );
   advX -= fact5GPU * invdzGPU * 
     sqrt(2 * diffusionGPU * cMean * (1-cMean) * (massSpecies1GPU*(1-cMean) + massSpecies0GPU*cMean)) * 
     d_rand[vecino0 + 8*ncellsGPU];
@@ -1412,29 +1424,41 @@ __global__ void kernelConstructWBinaryMixtureMidPoint_2(double *vxPredictionGPU,
 
   //Noise terms
   double cMean = 0.5 * (cPredictionGPU[vecino3] + cPredictionGPU[i]);
+  cMean = ( (cMean<0) ? 0 : cMean );
+  cMean = ( (cMean>1) ? 1 : cMean );
   advX = fact5GPU * invdxGPU * 
     sqrt(2 * diffusionGPU * cMean * (1-cMean) * (massSpecies1GPU*(1-cMean) + massSpecies0GPU*cMean) ) * 
     d_rand[i + 6*ncellsGPU] ;
 
   cMean = 0.5 * (cPredictionGPU[i] + cPredictionGPU[vecino2]);
+  cMean = ( (cMean<0) ? 0 : cMean );
+  cMean = ( (cMean>1) ? 1 : cMean );
   advX -= fact5GPU * invdxGPU * 
     sqrt(2 * diffusionGPU * cMean * (1-cMean) * (massSpecies1GPU*(1-cMean) + massSpecies0GPU*cMean)) * 
     d_rand[vecino2 + 6*ncellsGPU] ;
 
   cMean = 0.5 * (cPredictionGPU[i] + cPredictionGPU[vecino4]);
+  cMean = ( (cMean<0) ? 0 : cMean );
+  cMean = ( (cMean>1) ? 1 : cMean );
   advX += fact5GPU * invdyGPU * 
     sqrt(2 * diffusionGPU * cMean * (1-cMean) * (massSpecies1GPU*(1-cMean) + massSpecies0GPU*cMean)) * 
     d_rand[i + 7*ncellsGPU] ;
   cMean = 0.5 * (cPredictionGPU[i] + cPredictionGPU[vecino1]);
+  cMean = ( (cMean<0) ? 0 : cMean );
+  cMean = ( (cMean>1) ? 1 : cMean );
   advX -= fact5GPU * invdyGPU * 
     sqrt(2 * diffusionGPU * cMean * (1-cMean) * (massSpecies1GPU*(1-cMean) + massSpecies0GPU*cMean)) * 
     d_rand[vecino1 + 7*ncellsGPU] ;
 
   cMean = 0.5 * (cPredictionGPU[i] + cPredictionGPU[vecino5]);
+  cMean = ( (cMean<0) ? 0 : cMean );
+  cMean = ( (cMean>1) ? 1 : cMean );
   advX += fact5GPU * invdzGPU * 
     sqrt(2 * diffusionGPU * cMean * (1-cMean) * (massSpecies1GPU*(1-cMean) + massSpecies0GPU*cMean)) * 
     d_rand[i + 8*ncellsGPU] ;
   cMean = 0.5 * (cPredictionGPU[i] + cPredictionGPU[vecino0]);
+  cMean = ( (cMean<0) ? 0 : cMean );
+  cMean = ( (cMean>1) ? 1 : cMean );
   advX -= fact5GPU * invdzGPU * 
     sqrt(2 * diffusionGPU * cMean * (1-cMean) * (massSpecies1GPU*(1-cMean) + massSpecies0GPU*cMean)) * 
     d_rand[vecino0 + 8*ncellsGPU] ;

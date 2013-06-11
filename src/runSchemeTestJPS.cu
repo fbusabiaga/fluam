@@ -1,6 +1,6 @@
 // Filename: runSchemeTestJPS.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -24,24 +24,6 @@ bool runSchemeTestJPS(){
   if((ncells/threadsPerBlock) < 60) threadsPerBlock = 32;
   int numBlocks = (ncells-1)/threadsPerBlock + 1;
 
-  int threadsPerBlockParticles = 128;
-  if((np/threadsPerBlockParticles) < 60) threadsPerBlockParticles = 64;
-  if((np/threadsPerBlockParticles) < 60) threadsPerBlockParticles = 32;
-  int numBlocksParticles = (np-1)/threadsPerBlockParticles + 1;
-
-  int threadsPerBlockNeighbors, numBlocksNeighbors;
-  if(ncells>numNeighbors){
-    threadsPerBlockNeighbors = 128;
-    if((ncells/threadsPerBlockNeighbors) < 60) threadsPerBlockNeighbors = 64;
-    if((ncells/threadsPerBlockNeighbors) < 60) threadsPerBlockNeighbors = 32;
-    numBlocksNeighbors = (ncells-1)/threadsPerBlockNeighbors + 1;
-  }
-  else{
-    threadsPerBlockNeighbors = 128;
-    if((numNeighbors/threadsPerBlockNeighbors) < 60) threadsPerBlockNeighbors = 64;
-    if((numNeighbors/threadsPerBlockNeighbors) < 60) threadsPerBlockNeighbors = 32;
-    numBlocksNeighbors = (numNeighbors-1)/threadsPerBlockNeighbors + 1;
-  }
 
 
 
@@ -102,8 +84,8 @@ bool runSchemeTestJPS(){
   double maxDiffNonDiag=0;
   double meanTrace=0;
   double errorTrace=0;
-  double meanMaxDiffDiag=0;
-  double meanMaxErrorNonDiag=0;
+  //double meanMaxDiffDiag=0;
+  //double meanMaxErrorNonDiag=0;
   int count=0;
   double traceXY, traceZ;
   double meanTraceXY=0;
@@ -193,9 +175,9 @@ bool runSchemeTestJPS(){
 				   vzboundaryGPU);
 
 	//Fill JPS matrix	
-	cudaMemcpy(vxParticle,&vxboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
-	cudaMemcpy(vyParticle,&vyboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
-	cudaMemcpy(vzParticle,&vzboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
+	cutilSafeCall(cudaMemcpy(vxParticle,&vxboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
+	cutilSafeCall(cudaMemcpy(vyParticle,&vyboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
+	cutilSafeCall(cudaMemcpy(vzParticle,&vzboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
 	
 	xx=vxParticle[0];
 	xy=vyParticle[0];
@@ -239,9 +221,9 @@ bool runSchemeTestJPS(){
 				   vzboundaryGPU);
 
 	//Fill JPS matrix	
-	cudaMemcpy(vxParticle,&vxboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
-	cudaMemcpy(vyParticle,&vyboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
-	cudaMemcpy(vzParticle,&vzboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
+	cutilSafeCall(cudaMemcpy(vxParticle,&vxboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
+	cutilSafeCall(cudaMemcpy(vyParticle,&vyboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
+	cutilSafeCall(cudaMemcpy(vzParticle,&vzboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
 	
 	yx=vxParticle[0];
 	yy=vyParticle[0];
@@ -284,9 +266,9 @@ bool runSchemeTestJPS(){
 				   vzboundaryGPU);
 
 	//Fill JPS matrix	
-	cudaMemcpy(vxParticle,&vxboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
-	cudaMemcpy(vyParticle,&vyboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
-	cudaMemcpy(vzParticle,&vzboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost);
+	cutilSafeCall(cudaMemcpy(vxParticle,&vxboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
+	cutilSafeCall(cudaMemcpy(vyParticle,&vyboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
+	cutilSafeCall(cudaMemcpy(vzParticle,&vzboundaryGPU[nboundary],np*sizeof(double),cudaMemcpyDeviceToHost));
 	
 	zx=vxParticle[0];
 	zy=vyParticle[0];

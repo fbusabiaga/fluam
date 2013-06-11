@@ -1,6 +1,6 @@
 // Filename: realToComplex.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -578,7 +578,7 @@ __global__ void doubleComplexToDoubleNormalizedAndNormalizeComplex(cufftDoubleCo
 __global__ void setArrayToZeroInput(double* vxboundaryPredictionGPU,
 				    double* vyboundaryPredictionGPU,
 				    double* vzboundaryPredictionGPU,
-				    double input){
+				    const double input){
 
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if(i>=npGPU) return;   

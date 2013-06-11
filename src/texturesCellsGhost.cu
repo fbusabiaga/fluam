@@ -1,6 +1,6 @@
 // Filename: texturesCellsGhost.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -24,17 +24,17 @@ bool texturesCellsGhost(){
   texVxGPU.normalized = false;
   texVxGPU.addressMode[0] = cudaAddressModeClamp;//Wrap and Clamp
   texVxGPU.filterMode = cudaFilterModePoint;//cudaFilterModeLinear and cudaFilterModePoint
-  cudaBindTexture(0,texVxGPU,vxGPU,ncellst*sizeof(double));
+  cutilSafeCall( cudaBindTexture(0,texVxGPU,vxGPU,ncellst*sizeof(double)));
   //texVyGPU;
   texVyGPU.normalized = false;
   texVyGPU.addressMode[0] = cudaAddressModeClamp;//Wrap and Clamp
   texVyGPU.filterMode = cudaFilterModePoint;//cudaFilterModeLinear and cudaFilterModePoint
-  cudaBindTexture(0,texVyGPU,vyGPU,ncellst*sizeof(double));
+  cutilSafeCall( cudaBindTexture(0,texVyGPU,vyGPU,ncellst*sizeof(double)));
   //texVzGPU;
   texVzGPU.normalized = false;
   texVzGPU.addressMode[0] = cudaAddressModeClamp;//Wrap and Clamp
   texVzGPU.filterMode = cudaFilterModePoint;//cudaFilterModeLinear and cudaFilterModePoint
-  cudaBindTexture(0,texVzGPU,vzGPU,ncellst*sizeof(double));
+  cutilSafeCall( cudaBindTexture(0,texVzGPU,vzGPU,ncellst*sizeof(double)));
 
 
 

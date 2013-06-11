@@ -1,6 +1,6 @@
 // Filename: kernelConstructWQuasiNeutrallyBuoyant.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -23,16 +23,16 @@
 //
 // W = v^n + 0.5*dt*nu*L*v^n + Advection^{n+1/2} + (dt/rho)*f^n_{noise} + dt*SF/rho 
 //
-__global__ void kernelConstructWQuasiNeutrallyBuoyant(double *vxPredictionGPU, 
-						      double *vyPredictionGPU, 
-						      double *vzPredictionGPU, 
+__global__ void kernelConstructWQuasiNeutrallyBuoyant(const double *vxPredictionGPU, 
+						      const double *vyPredictionGPU, 
+						      const double *vzPredictionGPU, 
 						      cufftDoubleComplex *WxZ, 
 						      cufftDoubleComplex *WyZ, 
 						      cufftDoubleComplex *WzZ, 
-						      double *d_rand,
-						      double *fxboundaryGPU,
-						      double *fyboundaryGPU,
-						      double *fzboundaryGPU,
+						      const double *d_rand,
+						      const double *fxboundaryGPU,
+						      const double *fyboundaryGPU,
+						      const double *fzboundaryGPU,
 						      double* advXGPU,
 						      double* advYGPU,
 						      double* advZGPU){
@@ -111,7 +111,7 @@ __global__ void kernelConstructWQuasiNeutrallyBuoyant(double *vxPredictionGPU,
   wz  = 0.5 * dtGPU * (shearviscosityGPU/densfluidGPU) * wz;
 
   //Previous Velocity
-  wx += vx ;//- pressurea1GPU * 0.267261241912424385 * dtGPU;
+  wx += vx ;//- pressurea1GPU * dtGPU;// * 0.267261241912424385 * dtGPU;
   wy += vy ;//- pressurea1GPU * 0.534522483824848769 * dtGPU;
   wz += vz ;//- pressurea1GPU * 0.801783725737273154 * dtGPU;
   
@@ -773,7 +773,7 @@ __global__ void kernelConstructWQuasiNeutrallyBuoyantTEST5_2(double *vxPredictio
   wz  = 0.5 * dtGPU * (shearviscosityGPU/densfluidGPU) * wz;
   
   //Previous Velocity
-  wx += vx ;//- pressurea1GPU * 0.267261241912424385 * dtGPU;
+  wx += vx ;//- pressurea1GPU * dtGPU;//* 0.267261241912424385 * dtGPU;
   wy += vy ;//- pressurea1GPU * 0.534522483824848769 * dtGPU;
   wz += vz ;//- pressurea1GPU * 0.801783725737273154 * dtGPU;
   
@@ -1363,16 +1363,16 @@ __global__ void kernelConstructWQuasiNeutrallyBuoyantTEST5_2(double *vxPredictio
 
 
 
-__global__ void kernelConstructWQuasiNeutrallyBuoyantTEST5_3(double *vxPredictionGPU, 
-							     double *vyPredictionGPU, 
-							     double *vzPredictionGPU, 
+__global__ void kernelConstructWQuasiNeutrallyBuoyantTEST5_3(const double *vxPredictionGPU, 
+							     const double *vyPredictionGPU, 
+							     const double *vzPredictionGPU, 
 							     cufftDoubleComplex *WxZ, 
 							     cufftDoubleComplex *WyZ, 
 							     cufftDoubleComplex *WzZ, 
-							     double *d_rand,
-							     double *fxboundaryGPU,
-							     double *fyboundaryGPU,
-							     double *fzboundaryGPU,
+							     const double *d_rand,
+							     const double *fxboundaryGPU,
+							     const double *fyboundaryGPU,
+							     const double *fzboundaryGPU,
 							     double* advXGPU,
 							     double* advYGPU,
 							     double* advZGPU){
@@ -1451,7 +1451,7 @@ __global__ void kernelConstructWQuasiNeutrallyBuoyantTEST5_3(double *vxPredictio
   wz  = 0.5 * dtGPU * (shearviscosityGPU/densfluidGPU) * wz;
 
   //Previous Velocity
-  wx += vx ;//- pressurea1GPU * 0.267261241912424385 * dtGPU;
+  wx += vx ;//- pressurea1GPU * dtGPU;//* 0.267261241912424385 * dtGPU;
   wy += vy ;//- pressurea1GPU * 0.534522483824848769 * dtGPU;
   wz += vz ;//- pressurea1GPU * 0.801783725737273154 * dtGPU;
   
@@ -2005,7 +2005,7 @@ __global__ void kernelConstructWQuasiNeutrallyBuoyantTEST5_3(double *vxPredictio
 
 
 
-
+  
 
   WxZ[i].x = wx + dtGPU * (fx / (volumeGPU*densfluidGPU)) - 1.5*advX + 0.5*advXGPU[i];
   WyZ[i].x = wy + dtGPU * (fy / (volumeGPU*densfluidGPU)) - 1.5*advY + 0.5*advYGPU[i];

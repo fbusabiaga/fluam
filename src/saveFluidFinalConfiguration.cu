@@ -1,6 +1,6 @@
 // Filename: saveFluidFinalConfiguration.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -62,7 +62,7 @@ bool saveFluidFinalConfiguration(){
       i = j;
     }
     file << cDensity[i] << endl;
-    if(incompressibleBinaryMixture)
+    if(incompressibleBinaryMixture || incompressibleBinaryMixtureMidPoint)
       file << c[i] << endl;
     file << cvx[i] << " " << cvy[i] << " " << cvz[i] << endl;
   }

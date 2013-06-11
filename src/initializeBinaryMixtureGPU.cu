@@ -1,6 +1,6 @@
 // Filename: initializeBinaryMixtureGPU.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -20,15 +20,15 @@
 
 bool initializeBinaryMixtureGPU(){
 
-  cudaMalloc((void**)&cGPU,ncells*sizeof(double));
-  cudaMalloc((void**)&cPredictionGPU,ncells*sizeof(double));
-  cudaMalloc((void**)&dcGPU,ncells*sizeof(double));
+  cutilSafeCall(cudaMalloc((void**)&cGPU,ncells*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&cPredictionGPU,ncells*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&dcGPU,ncells*sizeof(double)));
 
-  cudaMemcpy(cGPU,c,ncells*sizeof(double),cudaMemcpyHostToDevice);
+  cutilSafeCall(cudaMemcpy(cGPU,c,ncells*sizeof(double),cudaMemcpyHostToDevice));
 
-  cudaMemcpyToSymbol(diffusionGPU,&diffusion,sizeof(double));
-  cudaMemcpyToSymbol(massSpecies0GPU,&massSpecies0,sizeof(double));
-  cudaMemcpyToSymbol(massSpecies1GPU,&massSpecies1,sizeof(double));
+  cutilSafeCall(cudaMemcpyToSymbol(diffusionGPU,&diffusion,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(massSpecies0GPU,&massSpecies0,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(massSpecies1GPU,&massSpecies1,sizeof(double)));
 
 
 

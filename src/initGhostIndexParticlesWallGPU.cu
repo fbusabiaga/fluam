@@ -1,6 +1,6 @@
 // Filename: initGhostIndexParticlesWallGPU.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -98,7 +98,7 @@ __global__ void kernelGhostToPeriodicImageParticlesWall(int *ghostToPIGPU,
 							int *realIndexGPU, 
 							int *ghostIndexGPU){
 
-  int fx, fy, fz, j;  
+  int fy, j;  
   j = 0;
   for(int i=0;i<ncellstGPU;i++){
     

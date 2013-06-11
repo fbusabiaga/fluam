@@ -1,6 +1,6 @@
 // Filename: allocateErrorArray.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -24,16 +24,16 @@ void allocateErrorArray(){
   //if(setparticles==1) size++;
   //if((setparticles==1) || (setboundary==1)) size +=3;
   size = 5;
-  
-  cudaMalloc((void**)&errorKernel,size*sizeof(int));
+
+  cutilSafeCall(cudaMalloc((void**)&errorKernel,size*sizeof(int)));
   int aux[size];
   for(int i=0;i<size;i++) aux[i] = 0;
 
-  cudaMemcpy(errorKernel,aux,size*sizeof(int),cudaMemcpyHostToDevice);
+  cutilSafeCall(cudaMemcpy(errorKernel,aux,size*sizeof(int),cudaMemcpyHostToDevice));
 
 }
 
 
 void freeErrorArray(){
-  cudaFree(errorKernel);
+  cutilSafeCall(cudaFree(errorKernel));
 }

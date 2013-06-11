@@ -1,6 +1,6 @@
 // Filename: saveFunctionsSchemeBinaryMixture.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -32,9 +32,9 @@ bool saveFunctionsSchemeBinaryMixture(int index){
     if(!totalConcentration(index)) return 0;
     if(!temperatureGhost(index)) return 0;
     //if(!hydroAnalysisGhost(1)) return 0;
-    /*if((savefreq!=0))
-      if((step%savefreq)==0)
-      if(!hydroAnalysisGhost(3)) return 0;*/
+    //if((savefreq!=0))
+    //if((step%savefreq)==0)
+    //if(!hydroAnalysisGhost(3)) return 0;
   }
   //Close save functions
   else if(index==2){

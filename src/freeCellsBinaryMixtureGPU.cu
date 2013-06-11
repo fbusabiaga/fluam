@@ -1,6 +1,6 @@
 // Filename: freeCellsBinaryMixtureGPU.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -19,37 +19,37 @@
 
 
 bool freeCellsBinaryMixtureGPU(){
-  cudaFree(densityGPU);
-  cudaUnbindTexture(texVxGPU);
-  cudaUnbindTexture(texVyGPU);
-  cudaUnbindTexture(texVzGPU);    
-  cudaFree(vxGPU);
-  cudaFree(vyGPU);
-  cudaFree(vzGPU);
-  cudaFree(densityPredictionGPU);
-  cudaFree(vxPredictionGPU);
-  cudaFree(vyPredictionGPU);
-  cudaFree(vzPredictionGPU);
+  cutilSafeCall(cudaFree(densityGPU));
+  cutilSafeCall(cudaUnbindTexture(texVxGPU));
+  cutilSafeCall(cudaUnbindTexture(texVyGPU));
+  cutilSafeCall(cudaUnbindTexture(texVzGPU));    
+  cutilSafeCall(cudaFree(vxGPU));
+  cutilSafeCall(cudaFree(vyGPU));
+  cutilSafeCall(cudaFree(vzGPU));
+  cutilSafeCall(cudaFree(densityPredictionGPU));
+  cutilSafeCall(cudaFree(vxPredictionGPU));
+  cutilSafeCall(cudaFree(vyPredictionGPU));
+  cutilSafeCall(cudaFree(vzPredictionGPU));
 
-  cudaFree(cGPU);
-  cudaFree(cPredictionGPU);
-  cudaFree(dcGPU);
+  cutilSafeCall(cudaFree(cGPU));
+  cutilSafeCall(cudaFree(cPredictionGPU));
+  cutilSafeCall(cudaFree(dcGPU));
 
-  cudaFree(dmGPU);
-  cudaFree(dpxGPU);
-  cudaFree(dpyGPU);
-  cudaFree(dpzGPU);
+  cutilSafeCall(cudaFree(dmGPU));
+  cutilSafeCall(cudaFree(dpxGPU));
+  cutilSafeCall(cudaFree(dpyGPU));
+  cutilSafeCall(cudaFree(dpzGPU));
 
-  cudaFree(rxcellGPU);
-  cudaFree(rycellGPU);
-  cudaFree(rzcellGPU);
+  cutilSafeCall(cudaFree(rxcellGPU));
+  cutilSafeCall(cudaFree(rycellGPU));
+  cutilSafeCall(cudaFree(rzcellGPU));
 
-  cudaFree(ghostIndexGPU);
-  cudaFree(realIndexGPU);
-  cudaFree(ghostToPIGPU);
-  cudaFree(ghostToGhostGPU);
+  cutilSafeCall(cudaFree(ghostIndexGPU));
+  cutilSafeCall(cudaFree(realIndexGPU));
+  cutilSafeCall(cudaFree(ghostToPIGPU));
+  cutilSafeCall(cudaFree(ghostToGhostGPU));
 
-  cudaFree(stepGPU);
+  cutilSafeCall(cudaFree(stepGPU));
 
   cout << "FREE MEMORY GPU :               DONE" << endl; 
 

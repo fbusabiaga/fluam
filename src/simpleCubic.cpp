@@ -1,6 +1,6 @@
 // Filename: simpleCubic.cpp
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -66,8 +66,10 @@ void simpleCubic(){
 		    //p(n)%r(2) = (j + 0.5 - ny/2) * dy
 		    //p(n)%r(3) = (i + 0.5 - nz/2) * dz
 		}
-	    }//for k
-	}//for j
-    }//for i
+	    }
+	}
+    }
     
+
 }
+

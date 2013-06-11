@@ -1,6 +1,6 @@
 // Filename: runSchemeBoundary.cu
 //
-// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -90,9 +90,9 @@ bool runSchemeBoundary(){
 							vxPredictionGPU,vyPredictionGPU,vzPredictionGPU,
 							dmGPU,
 							dpxGPU,dpyGPU,dpzGPU);
-    cudaBindTexture(0,texVxGPU,vxPredictionGPU,ncells*sizeof(double));
-    cudaBindTexture(0,texVyGPU,vyPredictionGPU,ncells*sizeof(double));
-    cudaBindTexture(0,texVzGPU,vzPredictionGPU,ncells*sizeof(double));
+    cutilSafeCall( cudaBindTexture(0,texVxGPU,vxPredictionGPU,ncells*sizeof(double)));
+    cutilSafeCall( cudaBindTexture(0,texVyGPU,vyPredictionGPU,ncells*sizeof(double)));
+    cutilSafeCall( cudaBindTexture(0,texVzGPU,vzPredictionGPU,ncells*sizeof(double)));
     //Second substep RK3
     kernelDpThermostat_1<<<numBlocks,threadsPerBlock>>>(densityPredictionGPU,densityGPU,
 							vxGPU,vyGPU,vzGPU,
@@ -115,9 +115,9 @@ bool runSchemeBoundary(){
 							vxGPU,vyGPU,vzGPU,
 							dmGPU,
 							dpxGPU,dpyGPU,dpzGPU);
-    cudaBindTexture(0,texVxGPU,vxGPU,ncells*sizeof(double));
-    cudaBindTexture(0,texVyGPU,vyGPU,ncells*sizeof(double));
-    cudaBindTexture(0,texVzGPU,vzGPU,ncells*sizeof(double));
+    cutilSafeCall( cudaBindTexture(0,texVxGPU,vxGPU,ncells*sizeof(double)));
+    cutilSafeCall( cudaBindTexture(0,texVyGPU,vyGPU,ncells*sizeof(double)));
+    cutilSafeCall( cudaBindTexture(0,texVzGPU,vzGPU,ncells*sizeof(double)));
 
 
     //Boundaries and particles part start
