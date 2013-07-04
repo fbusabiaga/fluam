@@ -27,9 +27,21 @@
 #include "hydroAnalysis.h"
 
 
-static __inline__ void cutilSafeCall(int i){
+/*static __inline__ void cutilSafeCall(int i){
+  return;
+  }*/
+
+
+#define cutilSafeCall(i) __cutilSafeCall(i, __FILE__, __LINE__)
+
+inline void __cutilSafeCall(cudaError_t i, const char *file, const int line ){
+  if(i!=cudaSuccess){
+    printf("Error in %s at line %d with error code \"%s\"\n", file, line, cudaGetErrorString(i));
+    exit(i);
+  }  
   return;
 }
+
 
 
 //GPU staff
