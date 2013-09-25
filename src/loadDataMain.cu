@@ -1,6 +1,6 @@
 // Filename: loadDataMain.cu
 //
-// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -145,6 +145,10 @@ const string wsemiImplicitCompressibleParticles="semiImplicitCompressibleParticl
 //momentumCoupling Begins
 const string wmomentumCoupling="momentumCoupling";
 //momentumCoupling Ends
+//stokesLimit Begins
+const string wstokesLimit="stokesLimit";
+const string wextraMobility="extraMobility";
+//stokesLimit Ends
 
 
 bool loadDataMain(int argc, char* argv[]){
@@ -244,6 +248,12 @@ bool loadDataMain(int argc, char* argv[]){
   //momentumCoupling Begins
   momentumCoupling = 0;
   //momentumCoupling Ends
+
+  //stokesLimit Begins
+  stokesLimit = 0;
+  setExtraMobility = 0;
+  extraMobility = 0;
+  //stokesLimit Ends
 
 
   ifstream fileinput, fileoutput;
@@ -540,6 +550,18 @@ bool loadDataMain(int argc, char* argv[]){
       setparticles=1;
     }
     //momentumCouplings Ends
+    //stokesLimit Begins
+    else if(word==wstokesLimit){
+      stokesLimit=1;
+      setparticles=1;
+    }
+    else if(word==wextraMobility){
+      fileinput >> extraMobility;
+      if(extraMobility != 0){
+	setExtraMobility = 1;
+      }
+    }
+    //stokesLimit Ends
     else if(word.substr(0,1)==wnothing){
       getline(fileinput,word);
     }

@@ -1,6 +1,6 @@
 // Filename: initializeFluidIncompressibleGPU.cu
 //
-// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -24,7 +24,7 @@ bool initializeFluidIncompressibleGPU(){
   cutilSafeCall(cudaMemcpy(vyGPU,cvy,ncells*sizeof(double),cudaMemcpyHostToDevice));
   cutilSafeCall(cudaMemcpy(vzGPU,cvz,ncells*sizeof(double),cudaMemcpyHostToDevice));
 
-  if(quasiNeutrallyBuoyant || quasiNeutrallyBuoyant2D || quasiNeutrallyBuoyant4pt2D){
+  if(quasiNeutrallyBuoyant || quasiNeutrallyBuoyant2D || quasiNeutrallyBuoyant4pt2D || stokesLimit){
     cutilSafeCall(cudaMemcpy(rxcellGPU,crx,ncells*sizeof(double),cudaMemcpyHostToDevice));
     cutilSafeCall(cudaMemcpy(rycellGPU,cry,ncells*sizeof(double),cudaMemcpyHostToDevice));
     cutilSafeCall(cudaMemcpy(rzcellGPU,crz,ncells*sizeof(double),cudaMemcpyHostToDevice));

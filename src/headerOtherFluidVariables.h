@@ -1,6 +1,6 @@
 // Filename: headerOtherFluidVariables.h
 //
-// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -111,5 +111,11 @@ EXTERN_OTHER_FLUID_V bool semiImplicitCompressibleParticles;
 //momentumCoupling Begins
 EXTERN_OTHER_FLUID_V bool momentumCoupling;
 //momentumCoupling Ends
+
+//stokesLimit Begins
+EXTERN_OTHER_FLUID_V bool stokesLimit;
+EXTERN_OTHER_FLUID_V bool setExtraMobility;
+EXTERN_OTHER_FLUID_V double extraMobility;
+//stokesLimit Ends
 
 

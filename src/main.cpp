@@ -1,6 +1,6 @@
 // Filename: main.cpp
 //
-// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -90,6 +90,9 @@ int main(int argc, char* argv[]){
   }
   else if(quasiNeutrallyBuoyant4pt2D){
     if(!schemeQuasiNeutrallyBuoyant4pt2D()) return 0;
+  }
+  else if(stokesLimit==1){
+    if(!schemeStokesLimit()) return 0;
   }
   else if(setboundary || setparticles){
     if(!schemeBoundary()) return 0;

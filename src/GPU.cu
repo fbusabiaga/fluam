@@ -1,6 +1,6 @@
 // Filename: GPU.cu
 //
-// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -25,12 +25,6 @@
 #include "headerOtherFluidVariables.h"
 #include "particles.h"
 #include "hydroAnalysis.h"
-
-
-/*static __inline__ void cutilSafeCall(int i){
-  return;
-  }*/
-
 
 #define cutilSafeCall(i) __cutilSafeCall(i, __FILE__, __LINE__)
 
@@ -151,6 +145,7 @@ static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
 #include "runSchemeContinuousGradient.cu"
 
 //SchemeIncompressible
+#include <cufft.h>
 #include "projectionDivergenceFree.cu"
 #include "saveFunctionsSchemeIncompressible.cu"
 #include "createCellsIncompressibleGPU.cu"
@@ -252,10 +247,20 @@ static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
 #include "saveFunctionsSchemeSemiImplicitCompressibleParticles.cu"
 
 
-//SchemeMomentumCOupling
+//SchemeMomentumCoupling
 #include "updateFluidMomentumCoupling.cu"
 #include "nonBondedForceMomentumCoupling.cu"
 #include "boundaryParticlesFunctionMomentumCoupling.cu"
 #include "runSchemeMomentumCoupling.cu"
+
+//SchemeStokesLimit
+#include "createCellsStokesLimitGPU.cu"
+#include "freeCellsStokesLimitGPU.cu"
+#include "stokesLimitFunctions.cu"
+#include "boundaryParticlesFunctionStokesLimit.cu"
+#include "saveFunctionsSchemeStokesLimit.cu"
+#include "gpuToHostStokesLimit.cu"
+#include "runSchemeStokesLimit.cu"
+
 
 

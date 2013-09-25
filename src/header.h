@@ -1,6 +1,6 @@
 // Filename: header.h
 //
-// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -287,8 +287,12 @@ bool freeMemoryMomentumCoupling();
 bool schemeMomentumCoupling();
 bool runSchemeMomentumCoupling();
 
-
-
+//stokesLimit
+bool schemeStokesLimit();
+bool saveFunctionsSchemeStokesLimit(int index, long long step);
+bool runSchemeStokesLimit();
+bool createCellsStokesLimitGPU();
+bool freeCellsStokesLimitGPU();
 
 
 

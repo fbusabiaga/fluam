@@ -1,6 +1,6 @@
 // Filename: gpuVariables.cu
 //
-// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2012, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -172,6 +172,9 @@ __constant__ double fact5GPU, fact6GPU, fact7GPU;
 __constant__ double volumeboundaryconstGPU;
 
 __constant__ double soretCoefficientGPU, gradTemperatureGPU;
+
+__constant__ double extraMobilityGPU;
+__constant__ bool setExtraMobilityGPU;
 
 __device__ double *rxboundaryGPU, *ryboundaryGPU, *rzboundaryGPU;
 __device__ double *vxboundaryGPU, *vyboundaryGPU, *vzboundaryGPU;
