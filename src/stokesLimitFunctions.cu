@@ -1674,10 +1674,9 @@ __global__ void addSpreadedForcesStokesLimit(double* vxGPU, //fx=S*Fx
   }
 
 
-  
-  vxGPU[i] += fx;
-  vyGPU[i] += fy;
-  vzGPU[i] += fz;
+  vxGPU[i] += fx / volumeGPU;
+  vyGPU[i] += fy / volumeGPU;
+  vzGPU[i] += fz / volumeGPU;
 
 }
 
