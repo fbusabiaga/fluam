@@ -58,8 +58,12 @@ bool hydroAnalysisIncompressible(int counter){
     systemLength[2] = lz;
     heatCapacity[0] = 1.;
     velocities = new double [NDIMS*mx*my*mz];
-    createHydroAnalysis_C(nCells,1,NDIMS,1,systemLength,heatCapacity,dt*samplefreq,0,densfluid/temperature,0);
-    //createHydroAnalysis_C(nCells,2,NDIMS,1,systemLength,heatCapacity,dt*samplefreq,0,1,0);
+    if(temperature!=0){
+      createHydroAnalysis_C(nCells,1,NDIMS,1,systemLength,heatCapacity,dt*samplefreq,0,densfluid/temperature,0);
+    }
+    else{
+      createHydroAnalysis_C(nCells,2,NDIMS,1,systemLength,heatCapacity,dt*samplefreq,0,1,0);
+    }
   }
   else if(counter == 1){
     for(int i=0;i<ncells;i++) {
