@@ -44,6 +44,7 @@ schemeQuasiNeutrallyBuoyant.o \
 schemeQuasiNeutrallyBuoyant2D.o \
 schemeQuasiNeutrallyBuoyant4pt2D.o \
 schemeTestJPS.o \
+schemeStokesLimitFirstOrder.o \
 schemeStokesLimit.o \
 createCells.o \
 initializeFluid.o \
@@ -186,6 +187,10 @@ particles.h headerOtherFluidVariables.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
 schemeQuasiNeutrallyBuoyant.o: schemeQuasiNeutrallyBuoyant.cu header.h cells.h \
+boundary.h particles.h headerOtherFluidVariables.h ; \
+$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
+
+schemeStokesLimitFirstOrder.o: schemeStokesLimitFirstOrder.cu header.h cells.h \
 boundary.h particles.h headerOtherFluidVariables.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
@@ -387,7 +392,8 @@ runSchemeSemiImplicitCompressibleParticles.cu saveFunctionsSchemeSemiImplicitCom
 runSchemeMomentumCoupling.cu boundaryParticlesFunctionMomentumCoupling.cu nonBondedForceMomentumCoupling.cu \
 updateFluidMomentumCoupling.cu saveFunctionsSchemeStokesLimit.cu runSchemeStokesLimit.cu \
 boundaryParticlesFunctionStokesLimit.cu stokesLimitFunctions.cu createCellsStokesLimitGPU.cu \
-freeCellsStokesLimitGPU.cu ; \
+freeCellsStokesLimitGPU.cu schemeStokesLimitFirstOrder.cu runSchemeStokesLimitFirstOrder.cu \
+boundaryParticlesFunctionStokesLimitFirstOrder.cu ; \
 	$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
 
