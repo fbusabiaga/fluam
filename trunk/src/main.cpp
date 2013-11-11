@@ -91,6 +91,9 @@ int main(int argc, char* argv[]){
   else if(quasiNeutrallyBuoyant4pt2D){
     if(!schemeQuasiNeutrallyBuoyant4pt2D()) return 0;
   }
+  else if(stokesLimitFirstOrder==1){
+    if(!schemeStokesLimitFirstOrder()) return 0;
+  }
   else if(stokesLimit==1){
     if(!schemeStokesLimit()) return 0;
   }

@@ -37,7 +37,6 @@ inline void __cutilSafeCall(cudaError_t i, const char *file, const int line ){
 }
 
 
-
 //GPU staff
 //#include <cutil_inline.h>
 #include <cufft.h>
@@ -262,5 +261,8 @@ static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
 #include "gpuToHostStokesLimit.cu"
 #include "runSchemeStokesLimit.cu"
 
+//SchemeStokesLimitFirstOrder
+#include "boundaryParticlesFunctionStokesLimitFirstOrder.cu"
+#include "runSchemeStokesLimitFirstOrder.cu"
 
 
