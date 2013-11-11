@@ -71,7 +71,7 @@ bool runSchemeStokesLimit(){
   step = -numstepsRelaxation;
 
   //initialize random numbers
-  size_t numberRandom = 6*ncells + 9*np;
+  size_t numberRandom = 12*ncells + 9*np;
   if(numberRandom%2){//This is a limitation of curand library, numberRandom should be even
     numberRandom++ ;
   }
@@ -155,7 +155,7 @@ bool runSchemeStokesLimit(){
     
     //STEP 1:
     //Boundaries and particles 
-    //Spread particles force and drift
+    //Spread particles force 
     boundaryParticlesFunctionStokesLimit(0,
 					 numBlocksBoundary,
 					 threadsPerBlockBoundary,
@@ -170,14 +170,15 @@ bool runSchemeStokesLimit(){
 
     
     //STEP 2
-    //Construct W=S*F + noise + thermalDrift
-    kernelConstructWstokesLimit<<<numBlocks,threadsPerBlock>>>(vxGPU, //Stored fx=S*Fx+S*drift_p-S*drift_m
+    //Construct W=S*F + noise 
+    kernelConstructWstokesLimit<<<numBlocks,threadsPerBlock>>>(vxGPU, //Stored fx=S*Fx
 							       vyGPU,
 							       vzGPU,
 							       vxZ,
 							       vyZ,
 							       vzZ,
-							       dRand);
+							       dRand,
+							       sqrt(2));
 
     
     //STEP 3
@@ -202,8 +203,8 @@ bool runSchemeStokesLimit(){
     //STEP 4:
     //Boundaries and particles 
     //Update particle position with the midpoint scheme
-    // q^{n+1/2} = q^n + 0.5*dt*extraMobility*F^n + 0.5*dt*J^n * v + noise_1
-    // q^{n+1} = q^n + dt*extraMobility*F^{n+1/2} + dt*J^{n+1/2} * v + noise_1 + noise_2
+    // q^{n+1/2} = q^n + 0.5*dt*extraMobility*F^n + 0.5*dt*J^n * v^* + noise_1
+    //Spread particles force and thermal drift
     boundaryParticlesFunctionStokesLimit(1,
 					 numBlocksBoundary,
 					 threadsPerBlockBoundary,
@@ -216,6 +217,50 @@ bool runSchemeStokesLimit(){
 					 numBlocks,
 					 threadsPerBlock);
 
+    //STEP 5
+    //Construct W=S*F + noise + thermal drift
+    kernelConstructWstokesLimit_2<<<numBlocks,threadsPerBlock>>>(vxGPU, //Stored fx=S*Fx+S*drift_p-S*drift_m
+								 vyGPU,
+								 vzGPU,
+								 vxZ,
+								 vyZ,
+								 vzZ,
+								 dRand,
+								 sqrt(0.5));
+
+    //STEP 6
+    //Solve fluid velocity field
+    cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_FORWARD);//W
+    cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_FORWARD);//W
+    cufftExecZ2Z(FFT,vzZ,vzZ,CUFFT_FORWARD);//W
+    kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,-1);//W
+    kernelUpdateVstokesLimit<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxZ,vyZ,vzZ,pF);//W
+    kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,1);
+    cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_INVERSE);
+    cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_INVERSE);
+    cufftExecZ2Z(FFT,vzZ,vzZ,CUFFT_INVERSE);
+    doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(vxZ,
+								   vyZ,
+								   vzZ,
+								   vxGPU,
+								   vyGPU,
+								   vzGPU);
+
+    //STEP 7:
+    //Boundaries and particles 
+    //Update particle position with the midpoint scheme
+    // q^{n+1} = q^n + dt*extraMobility*F^{n+1/2} + dt*J^{n+1/2} * v + noise_1 + noise_2
+    boundaryParticlesFunctionStokesLimit(2,
+					 numBlocksBoundary,
+					 threadsPerBlockBoundary,
+					 numBlocksNeighbors,
+					 threadsPerBlockNeighbors,
+					 numBlocksPartAndBoundary,
+					 threadsPerBlockPartAndBoundary,
+					 numBlocksParticles,
+					 threadsPerBlockParticles,
+					 numBlocks,
+					 threadsPerBlock);
 
     
     step++;

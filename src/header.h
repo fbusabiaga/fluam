@@ -287,6 +287,10 @@ bool freeMemoryMomentumCoupling();
 bool schemeMomentumCoupling();
 bool runSchemeMomentumCoupling();
 
+//stokesLimitFirstOrder
+bool schemeStokesLimitFirstOrder();
+bool runSchemeStokesLimitFirstOrder();
+
 //stokesLimit
 bool schemeStokesLimit();
 bool saveFunctionsSchemeStokesLimit(int index, long long step);

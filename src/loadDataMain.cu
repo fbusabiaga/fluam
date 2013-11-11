@@ -145,6 +145,9 @@ const string wsemiImplicitCompressibleParticles="semiImplicitCompressibleParticl
 //momentumCoupling Begins
 const string wmomentumCoupling="momentumCoupling";
 //momentumCoupling Ends
+//stokesLimitFirstOrder Begins
+const string wstokesLimitFirstOrder="stokesLimitFirstOrder";
+//stokesLimitFirstOrder Ends
 //stokesLimit Begins
 const string wstokesLimit="stokesLimit";
 const string wextraMobility="extraMobility";
@@ -248,6 +251,10 @@ bool loadDataMain(int argc, char* argv[]){
   //momentumCoupling Begins
   momentumCoupling = 0;
   //momentumCoupling Ends
+
+  //stokesLimitFirstOrder Begins
+  stokesLimitFirstOrder = 0;
+  //stokesLimitFirstOrder Ends
 
   //stokesLimit Begins
   stokesLimit = 0;
@@ -550,6 +557,12 @@ bool loadDataMain(int argc, char* argv[]){
       setparticles=1;
     }
     //momentumCouplings Ends
+    //stokesLimitFirstOrder Begins
+    else if(word==wstokesLimitFirstOrder){
+      stokesLimitFirstOrder=1;
+      setparticles=1;
+    }
+    //stokesLimitFirstOrder Ends
     //stokesLimit Begins
     else if(word==wstokesLimit){
       stokesLimit=1;

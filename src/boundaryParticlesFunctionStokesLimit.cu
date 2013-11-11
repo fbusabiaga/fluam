@@ -75,57 +75,127 @@ void boundaryParticlesFunctionStokesLimit(int option,
 								  fzboundaryGPU,
 								  pc);
       
-      countToZero<<<numBlocksNeighbors,threadsPerBlockNeighbors>>>(pc);
-
-      //Spread particle drift term to positive directions
-      //(kT/delta) * [S(q+0.5*delta*W)*W]
-      kernelSpreadParticlesDrift<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
-										  rycellGPU,
-										  rzcellGPU,
-										  fxboundaryGPU,
-										  fyboundaryGPU,
-										  fzboundaryGPU,
-										  dRand,
-										  pc,
-										  1);
-
-      //Add drift spreaded by the particles
-      addSpreadedForcesStokesLimit<<<numBlocks,threadsPerBlock>>>(vxGPU, //Stored fx=S*Fx+S*drift_p
-								  vyGPU,
-								  vzGPU,
-								  fxboundaryGPU,
-								  fyboundaryGPU,
-								  fzboundaryGPU,
-								  pc);
-
-      
-      countToZero<<<numBlocksNeighbors,threadsPerBlockNeighbors>>>(pc);
-
-      //Spread particle drift term to negative directions
-      //(kT/delta) * [-S(q-0.5*delta*W)*W]
-      kernelSpreadParticlesDrift<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
-										  rycellGPU,
-										  rzcellGPU,
-										  fxboundaryGPU,
-										  fyboundaryGPU,
-										  fzboundaryGPU,
-										  dRand,
-										  pc,
-										  -1);
-
-      //Add drift spreaded by the particles
-      addSpreadedForcesStokesLimit<<<numBlocks,threadsPerBlock>>>(vxGPU, //Stored fx=S*Fx+S*drift_p-S*drift_m
-								  vyGPU,
-								  vzGPU,
-								  fxboundaryGPU,
-								  fyboundaryGPU,
-								  fzboundaryGPU,
-								  pc);
-
+      //countToZero<<<numBlocksNeighbors,threadsPerBlockNeighbors>>>(pc);
     }
 
   }
-  else{
+  else if(option==1){
+
+    countToZero<<<numBlocksNeighbors,threadsPerBlockNeighbors>>>(pc);
+    //Update particle position half time step
+    // q^{n+1/2} = q^n + 0.5*dt*extraMobility*F^n + 0.5*dt*J^n * v + noise_1
+    //And fill partInCellNonBonded
+    updateParticlesStokesLimit_1<<<numBlocksParticles,threadsPerBlockParticles>>>
+      (pc, 
+       errorKernel,
+       rxcellGPU,
+       rycellGPU,
+       rzcellGPU,
+       rxboundaryGPU,  //q^{n}
+       ryboundaryGPU, 
+       rzboundaryGPU,
+       rxboundaryPredictionGPU, //q^{n+1/2}
+       ryboundaryPredictionGPU, 
+       rzboundaryPredictionGPU,
+       vxboundaryGPU,//Fx^n
+       vyboundaryGPU,
+       vzboundaryGPU,
+       vxGPU, //
+       vyGPU, 
+       vzGPU,
+       dRand);
+
+    //Load textures with particles position q^{n+1/2}
+    cutilSafeCall( cudaBindTexture(0,texrxboundaryGPU,rxboundaryPredictionGPU,(nboundary+np)*sizeof(double)));
+    cutilSafeCall( cudaBindTexture(0,texryboundaryGPU,ryboundaryPredictionGPU,(nboundary+np)*sizeof(double)));
+    cutilSafeCall( cudaBindTexture(0,texrzboundaryGPU,rzboundaryPredictionGPU,(nboundary+np)*sizeof(double)));
+    
+    //Fill partInCellNonBonded
+    /*findNeighborParticlesStokesLimit_1<<<numBlocksParticles,threadsPerBlockParticles>>>
+      (pc, 
+      errorKernel);*/
+	 
+    //Fill "countparticlesincellX" lists
+    //and spread particle force F 
+    kernelSpreadParticlesForceStokesLimit<<<numBlocksParticles,threadsPerBlockParticles>>>
+      (rxcellGPU,
+       rycellGPU,
+       rzcellGPU,
+       fxboundaryGPU,
+       fyboundaryGPU,
+       fzboundaryGPU,
+       vxboundaryGPU,//Fx^{n+1/2}, this is the force on the particle.
+       vyboundaryGPU,
+       vzboundaryGPU,
+       pc,errorKernel,
+       bFV);
+
+    //Set vxGPU to zero
+    setFieldToZeroInput<<<numBlocks,threadsPerBlock>>>(vxGPU,vyGPU,vzGPU);
+
+    //Add force spreaded by the particles
+    addSpreadedForcesStokesLimit<<<numBlocks,threadsPerBlock>>>(vxGPU, //Stored fx=S*Fx
+								vyGPU,
+								vzGPU,
+								fxboundaryGPU,
+								fyboundaryGPU,
+								fzboundaryGPU,
+								pc);
+      
+    //Load textures with particles position q^{n}
+    cutilSafeCall( cudaBindTexture(0,texrxboundaryGPU,rxboundaryGPU,(nboundary+np)*sizeof(double)));
+    cutilSafeCall( cudaBindTexture(0,texryboundaryGPU,ryboundaryGPU,(nboundary+np)*sizeof(double)));
+    cutilSafeCall( cudaBindTexture(0,texrzboundaryGPU,rzboundaryGPU,(nboundary+np)*sizeof(double)));
+
+    countToZero<<<numBlocksNeighbors,threadsPerBlockNeighbors>>>(pc);
+
+    //Spread particle drift term to positive directions
+    //(kT/delta) * [S(q+0.5*delta*W)*W]
+    kernelSpreadParticlesDrift<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
+										rycellGPU,
+										rzcellGPU,
+										fxboundaryGPU,
+										fyboundaryGPU,
+										fzboundaryGPU,
+										dRand,
+										pc,
+										1);
+
+    //Add drift spreaded by the particles
+    addSpreadedForcesStokesLimit<<<numBlocks,threadsPerBlock>>>(vxGPU, //Stored fx=S*Fx+S*drift_p
+								vyGPU,
+								vzGPU,
+								fxboundaryGPU,
+								fyboundaryGPU,
+								fzboundaryGPU,
+								pc);
+
+      
+    countToZero<<<numBlocksNeighbors,threadsPerBlockNeighbors>>>(pc);
+
+    //Spread particle drift term to negative directions
+    //(kT/delta) * [-S(q-0.5*delta*W)*W]
+    kernelSpreadParticlesDrift<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
+										rycellGPU,
+										rzcellGPU,
+										fxboundaryGPU,
+										fyboundaryGPU,
+										fzboundaryGPU,
+										dRand,
+										pc,
+										-1);
+
+    //Add drift spreaded by the particles
+    addSpreadedForcesStokesLimit<<<numBlocks,threadsPerBlock>>>(vxGPU, //Stored fx=S*Fx+S*drift_p-S*drift_m
+								vyGPU,
+								vzGPU,
+								fxboundaryGPU,
+								fyboundaryGPU,
+								fzboundaryGPU,
+								pc);
+
+  }
+  else if(option==2){
 
 
 
@@ -138,45 +208,10 @@ void boundaryParticlesFunctionStokesLimit(int option,
 
       countToZero<<<numBlocksNeighbors,threadsPerBlockNeighbors>>>(pc);
       
-      //Update particle position half time step
-      // q^{n+1/2} = q^n + 0.5*dt*extraMobility*F^n + 0.5*dt*J^n * v + noise_1
-      //And fill partInCellNonBonded
-      updateParticlesStokesLimit_1<<<numBlocksParticles,threadsPerBlockParticles>>>
-	(pc, 
-	 errorKernel,
-	 rxcellGPU,
-	 rycellGPU,
-	 rzcellGPU,
-	 rxboundaryGPU,  //q^{n}
-	 ryboundaryGPU, 
-	 rzboundaryGPU,
-	 rxboundaryPredictionGPU, //q^{n+1/2}
-	 ryboundaryPredictionGPU, 
-	 rzboundaryPredictionGPU,
-	 vxboundaryGPU,//Fx^n
-	 vyboundaryGPU,
-	 vzboundaryGPU,
-	 vxGPU, //
-	 vyGPU, 
-	 vzGPU,
-	 dRand);
-
       //Load textures with particles position q^{n+1/2}
       cutilSafeCall( cudaBindTexture(0,texrxboundaryGPU,rxboundaryPredictionGPU,(nboundary+np)*sizeof(double)));
       cutilSafeCall( cudaBindTexture(0,texryboundaryGPU,ryboundaryPredictionGPU,(nboundary+np)*sizeof(double)));
       cutilSafeCall( cudaBindTexture(0,texrzboundaryGPU,rzboundaryPredictionGPU,(nboundary+np)*sizeof(double)));
-
-      //Calculate particles force at (n+1/2)*dt
-      if(setExtraMobility){
-	particlesForceStokesLimit<<<numBlocksParticles,threadsPerBlockParticles>>>
-	  (vxboundaryGPU,//Fx, this is the force on the particle.
-	   vyboundaryGPU,
-	   vzboundaryGPU,
-	   pc,
-	   errorKernel,
-	   bFV);
-      }
-
 
       //Update particle position
       // q^{n+1} = q^n + dt*extraMobility*F^{n+1/2} + dt*J^{n+1/2} * v + noise_1 + noise_2   

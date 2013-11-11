@@ -101,7 +101,6 @@ __global__ void kernelSpreadParticlesForceStokesLimit(const double* rxcellGPU,
   double fz = 0.;//pressurea0GPU * 0.801783725737273154 ;
   double f;
  
-
   double rx = fetch_double(texrxboundaryGPU,nboundaryGPU+i);
   double ry = fetch_double(texryboundaryGPU,nboundaryGPU+i);
   double rz = fetch_double(texrzboundaryGPU,nboundaryGPU+i);
@@ -1674,6 +1673,7 @@ __global__ void addSpreadedForcesStokesLimit(double* vxGPU, //fx=S*Fx
   }
 
 
+
   vxGPU[i] += fx / volumeGPU;
   vyGPU[i] += fy / volumeGPU;
   vzGPU[i] += fz / volumeGPU;
@@ -2297,7 +2297,8 @@ __global__ void kernelConstructWstokesLimit(const double *vxGPU, //Stored fx=S*F
 					    cufftDoubleComplex *WxZ, 
 					    cufftDoubleComplex *WyZ, 
 					    cufftDoubleComplex *WzZ, 
-					    const double* d_rand){
+					    const double* d_rand,
+					    const double noiseFactor){
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if(i>=ncellsGPU) return;   
 
@@ -2327,54 +2328,56 @@ __global__ void kernelConstructWstokesLimit(const double *vxGPU, //Stored fx=S*F
   double dnoise_sXX, dnoise_sXY, dnoise_sXZ;
   double dnoise_sYY, dnoise_sYZ;
   double dnoise_sZZ;
+  double fact1 = noiseFactor * fact1GPU;
+  double fact4 = noiseFactor * fact4GPU;
 
   dnoise_sXX = d_rand[vecino3];
-  wx += invdxGPU * fact1GPU * dnoise_sXX;
+  wx += invdxGPU * fact1 * dnoise_sXX;
 
   dnoise_sYY = d_rand[vecino4 + 3*ncellsGPU];
-  wy += invdyGPU * fact1GPU * dnoise_sYY;
+  wy += invdyGPU * fact1 * dnoise_sYY;
 
   dnoise_sZZ = d_rand[vecino5 + 5*ncellsGPU];
-  wz += invdzGPU * fact1GPU * dnoise_sZZ;
+  wz += invdzGPU * fact1 * dnoise_sZZ;
 
   dnoise_sXY = d_rand[i + ncellsGPU];
-  wx += invdyGPU * fact4GPU * dnoise_sXY;
-  wy += invdxGPU * fact4GPU * dnoise_sXY;
+  wx += invdyGPU * fact4 * dnoise_sXY;
+  wy += invdxGPU * fact4 * dnoise_sXY;
 
   dnoise_sXZ = d_rand[i + 2*ncellsGPU];
-  wx += invdzGPU * fact4GPU * dnoise_sXZ;
-  wz += invdxGPU * fact4GPU * dnoise_sXZ;
+  wx += invdzGPU * fact4 * dnoise_sXZ;
+  wz += invdxGPU * fact4 * dnoise_sXZ;
 
   dnoise_sYZ = d_rand[i + 4*ncellsGPU];
-  wy += invdzGPU * fact4GPU * dnoise_sYZ;
-  wz += invdyGPU * fact4GPU * dnoise_sYZ;
+  wy += invdzGPU * fact4 * dnoise_sYZ;
+  wz += invdyGPU * fact4 * dnoise_sYZ;
 
   dnoise_sXX = d_rand[i];
-  wx -= invdxGPU * fact1GPU * dnoise_sXX;
+  wx -= invdxGPU * fact1 * dnoise_sXX;
 
   dnoise_sYY = d_rand[i + 3*ncellsGPU];
-  wy -= invdyGPU * fact1GPU * dnoise_sYY;
+  wy -= invdyGPU * fact1 * dnoise_sYY;
 
   dnoise_sZZ = d_rand[i + 5*ncellsGPU];
-  wz -= invdzGPU * fact1GPU * dnoise_sZZ;
+  wz -= invdzGPU * fact1 * dnoise_sZZ;
 
   dnoise_sXY = d_rand[vecino1 + ncellsGPU];
-  wx -= invdyGPU * fact4GPU * dnoise_sXY;
+  wx -= invdyGPU * fact4 * dnoise_sXY;
 
   dnoise_sXZ = d_rand[vecino0 + 2*ncellsGPU];
-  wx -= invdzGPU * fact4GPU * dnoise_sXZ;
+  wx -= invdzGPU * fact4 * dnoise_sXZ;
 
   dnoise_sXY = d_rand[vecino2 + ncellsGPU];
-  wy -= invdxGPU * fact4GPU * dnoise_sXY;
+  wy -= invdxGPU * fact4 * dnoise_sXY;
 
   dnoise_sYZ = d_rand[vecino0 + 4*ncellsGPU];
-  wy -= invdzGPU * fact4GPU * dnoise_sYZ;
+  wy -= invdzGPU * fact4 * dnoise_sYZ;
 
   dnoise_sXZ = d_rand[vecino2 + 2*ncellsGPU];
-  wz -= invdxGPU * fact4GPU * dnoise_sXZ;
+  wz -= invdxGPU * fact4 * dnoise_sXZ;
 
   dnoise_sYZ = d_rand[vecino1 + 4*ncellsGPU];
-  wz -= invdyGPU * fact4GPU * dnoise_sYZ;
+  wz -= invdyGPU * fact4 * dnoise_sYZ;
 
 
   WxZ[i].x = wx;
@@ -2442,12 +2445,12 @@ __global__ void kernelUpdateVstokesLimit(cufftDoubleComplex *vxZ,
   GW.y = pF->gradKx[kx].y * WxZ[i].y + pF->gradKy[ky].y * WyZ[i].y + pF->gradKz[kz].y * WzZ[i].y;
   
   if(i==0){
-    vxZ[i].x = WxZ[i].x;
-    vxZ[i].y = WxZ[i].y;
-    vyZ[i].x = WyZ[i].x;
-    vyZ[i].y = WyZ[i].y;
-    vzZ[i].x = WzZ[i].x;
-    vzZ[i].y = WzZ[i].y;
+    vxZ[i].x = 0;//WxZ[i].x;
+    vxZ[i].y = 0;//WxZ[i].y;
+    vyZ[i].x = 0;//WyZ[i].x;
+    vyZ[i].y = 0;//WyZ[i].y;
+    vzZ[i].x = 0;//WzZ[i].x;
+    vzZ[i].y = 0;//WzZ[i].y;
   }
   else{
     vxZ[i].x = (WxZ[i].x + pF->gradKx[kx].y * GW.x / GG) / denominator;
@@ -3903,4 +3906,178 @@ __global__ void updateParticlesStokesLimit_2(const double* rxcellGPU,
 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+__global__ void kernelConstructWstokesLimit_2(const double *vxGPU, //Stored fx=S*Fx+S*drift_p-S*drift_m
+					      const double *vyGPU, 
+					      const double *vzGPU, 
+					      cufftDoubleComplex *WxZ, 
+					      cufftDoubleComplex *WyZ, 
+					      cufftDoubleComplex *WzZ, 
+					      const double* d_rand,
+					      const double noiseFactor){
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=ncellsGPU) return;   
+
+  double wx, wy, wz;
+  double vx, vy, vz;
+  int vecino0, vecino1, vecino2, vecino3, vecino4, vecino5; 
+
+  vecino0 = tex1Dfetch(texvecino0GPU,i);
+  vecino1 = tex1Dfetch(texvecino1GPU,i);
+  vecino2 = tex1Dfetch(texvecino2GPU,i);
+  vecino3 = tex1Dfetch(texvecino3GPU,i);
+  vecino4 = tex1Dfetch(texvecino4GPU,i);
+  vecino5 = tex1Dfetch(texvecino5GPU,i);
+
+  vx = fetch_double(texVxGPU,i);
+  vy = fetch_double(texVyGPU,i);
+  vz = fetch_double(texVzGPU,i);
+
+  //Stored fx=S*Fx+S*drift_p-S*drift_m
+  wx = vx;
+  wy = vy;
+  wz = vz;
+
+  
+
+  //NOISE part
+  double dnoise_sXX, dnoise_sXY, dnoise_sXZ;
+  double dnoise_sYY, dnoise_sYZ;
+  double dnoise_sZZ;
+  double fact1 = noiseFactor * fact1GPU;
+  double fact4 = noiseFactor * fact4GPU;
+
+  dnoise_sXX = d_rand[vecino3];
+  wx += invdxGPU * fact1 * dnoise_sXX;
+
+  dnoise_sYY = d_rand[vecino4 + 3*ncellsGPU];
+  wy += invdyGPU * fact1 * dnoise_sYY;
+
+  dnoise_sZZ = d_rand[vecino5 + 5*ncellsGPU];
+  wz += invdzGPU * fact1 * dnoise_sZZ;
+
+  dnoise_sXY = d_rand[i + ncellsGPU];
+  wx += invdyGPU * fact4 * dnoise_sXY;
+  wy += invdxGPU * fact4 * dnoise_sXY;
+
+  dnoise_sXZ = d_rand[i + 2*ncellsGPU];
+  wx += invdzGPU * fact4 * dnoise_sXZ;
+  wz += invdxGPU * fact4 * dnoise_sXZ;
+
+  dnoise_sYZ = d_rand[i + 4*ncellsGPU];
+  wy += invdzGPU * fact4 * dnoise_sYZ;
+  wz += invdyGPU * fact4 * dnoise_sYZ;
+
+  dnoise_sXX = d_rand[i];
+  wx -= invdxGPU * fact1 * dnoise_sXX;
+
+  dnoise_sYY = d_rand[i + 3*ncellsGPU];
+  wy -= invdyGPU * fact1 * dnoise_sYY;
+
+  dnoise_sZZ = d_rand[i + 5*ncellsGPU];
+  wz -= invdzGPU * fact1 * dnoise_sZZ;
+
+  dnoise_sXY = d_rand[vecino1 + ncellsGPU];
+  wx -= invdyGPU * fact4 * dnoise_sXY;
+
+  dnoise_sXZ = d_rand[vecino0 + 2*ncellsGPU];
+  wx -= invdzGPU * fact4 * dnoise_sXZ;
+
+  dnoise_sXY = d_rand[vecino2 + ncellsGPU];
+  wy -= invdxGPU * fact4 * dnoise_sXY;
+
+  dnoise_sYZ = d_rand[vecino0 + 4*ncellsGPU];
+  wy -= invdzGPU * fact4 * dnoise_sYZ;
+
+  dnoise_sXZ = d_rand[vecino2 + 2*ncellsGPU];
+  wz -= invdxGPU * fact4 * dnoise_sXZ;
+
+  dnoise_sYZ = d_rand[vecino1 + 4*ncellsGPU];
+  wz -= invdyGPU * fact4 * dnoise_sYZ;
+
+  //NOISE part, second random number
+  dnoise_sXX = d_rand[6*ncellsGPU + 9*npGPU + vecino3];
+  wx += invdxGPU * fact1 * dnoise_sXX;
+
+  dnoise_sYY = d_rand[6*ncellsGPU + 9*npGPU + vecino4 + 3*ncellsGPU];
+  wy += invdyGPU * fact1 * dnoise_sYY;
+
+  dnoise_sZZ = d_rand[6*ncellsGPU + 9*npGPU + vecino5 + 5*ncellsGPU];
+  wz += invdzGPU * fact1 * dnoise_sZZ;
+
+  dnoise_sXY = d_rand[6*ncellsGPU + 9*npGPU + i + ncellsGPU];
+  wx += invdyGPU * fact4 * dnoise_sXY;
+  wy += invdxGPU * fact4 * dnoise_sXY;
+
+  dnoise_sXZ = d_rand[6*ncellsGPU + 9*npGPU + i + 2*ncellsGPU];
+  wx += invdzGPU * fact4 * dnoise_sXZ;
+  wz += invdxGPU * fact4 * dnoise_sXZ;
+
+  dnoise_sYZ = d_rand[6*ncellsGPU + 9*npGPU + i + 4*ncellsGPU];
+  wy += invdzGPU * fact4 * dnoise_sYZ;
+  wz += invdyGPU * fact4 * dnoise_sYZ;
+
+  dnoise_sXX = d_rand[6*ncellsGPU + 9*npGPU + i];
+  wx -= invdxGPU * fact1 * dnoise_sXX;
+
+  dnoise_sYY = d_rand[6*ncellsGPU + 9*npGPU + i + 3*ncellsGPU];
+  wy -= invdyGPU * fact1 * dnoise_sYY;
+
+  dnoise_sZZ = d_rand[6*ncellsGPU + 9*npGPU + i + 5*ncellsGPU];
+  wz -= invdzGPU * fact1 * dnoise_sZZ;
+
+  dnoise_sXY = d_rand[6*ncellsGPU + 9*npGPU + vecino1 + ncellsGPU];
+  wx -= invdyGPU * fact4 * dnoise_sXY;
+
+  dnoise_sXZ = d_rand[6*ncellsGPU + 9*npGPU + vecino0 + 2*ncellsGPU];
+  wx -= invdzGPU * fact4 * dnoise_sXZ;
+
+  dnoise_sXY = d_rand[6*ncellsGPU + 9*npGPU + vecino2 + ncellsGPU];
+  wy -= invdxGPU * fact4 * dnoise_sXY;
+
+  dnoise_sYZ = d_rand[6*ncellsGPU + 9*npGPU + vecino0 + 4*ncellsGPU];
+  wy -= invdzGPU * fact4 * dnoise_sYZ;
+
+  dnoise_sXZ = d_rand[6*ncellsGPU + 9*npGPU + vecino2 + 2*ncellsGPU];
+  wz -= invdxGPU * fact4 * dnoise_sXZ;
+
+  dnoise_sYZ = d_rand[6*ncellsGPU + 9*npGPU + vecino1 + 4*ncellsGPU];
+  wz -= invdyGPU * fact4 * dnoise_sYZ;
+
+
+
+  WxZ[i].x = wx;
+  WyZ[i].x = wy;
+  WzZ[i].x = wz;
+
+  WxZ[i].y = 0;
+  WyZ[i].y = 0;
+  WzZ[i].y = 0;
+
+}
 

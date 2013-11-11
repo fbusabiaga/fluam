@@ -112,6 +112,10 @@ EXTERN_OTHER_FLUID_V bool semiImplicitCompressibleParticles;
 EXTERN_OTHER_FLUID_V bool momentumCoupling;
 //momentumCoupling Ends
 
+//stokesLimitFirstOrder Begins
+EXTERN_OTHER_FLUID_V bool stokesLimitFirstOrder;
+//stokesLimitFirstOrder Ends
+
 //stokesLimit Begins
 EXTERN_OTHER_FLUID_V bool stokesLimit;
 EXTERN_OTHER_FLUID_V bool setExtraMobility;
