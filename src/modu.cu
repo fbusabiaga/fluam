@@ -22,6 +22,7 @@ int modu(int x, int y){
     int k;
     
     k = x;
+    k = x % y;
     while(k >= y){
 	k = k - y;
     }
