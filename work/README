@@ -34,7 +34,7 @@ To speed up the compilation follow the next steps:
    "undefined reference to FUNCTION.NAME" or 
    "error: identifier IDENTIFIER.NAME is undefined".
    You will have to uncomment some more lines in
-   "GPU.cu" to make that files available to the compiler. 
+   "GPU.cu" to make the required files available to the compiler. 
    In general, the names of the files (included in "GPU.cu") and the names
    of the functions are similar and therefore they will be easy to find.
    If you do not know where a function or identifier is defined, try the spell
