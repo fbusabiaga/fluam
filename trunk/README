@@ -25,9 +25,10 @@ and the HydroGrid code in case you have it.
 Set the right architecture for your GPU in 
 "NVCCFLAGS".
 
-d) Go to fluam/bin/ and type 
+d) Move to fluam/bin/ and type 
 make
 
+e) To speed up the compilation process see fluam/work/README
 
 2. Use
 ------
