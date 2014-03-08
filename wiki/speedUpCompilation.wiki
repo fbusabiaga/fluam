@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary How to speed up the compilation process.
 
 = Speed up compilation =
 
@@ -37,4 +37,3 @@ To speed up the compilation follow the next steps:
 `find ../src/ -name "*cu" -print0 | xargs -0 grep FUNCTION.NAME`
 
 *6)* Once all the required files in "GPU.cu" are uncommented, compile the code. Now, the compilation process should be faster than before.
-
