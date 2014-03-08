@@ -1,0 +1,42 @@
+#setDevice			3
+#particles			1
+#quasiNeutrallyBuoyant
+incompressible
+
+numberparticles			12701
+volumeParticle			64
+mass   				0
+
+
+cutoff                  	10.776
+
+maxNumberPartInCellNonBonded    100
+maxNumberPartInCell     	100
+
+densfluid               	5
+shearviscosity          	2.493055
+bulkviscosity           	0
+
+
+temperature             	2
+numstepsRelaxation		0
+numsteps  		 	1000
+
+dt				0.01
+
+samplefreq              	100
+savefreq			0
+
+initfluid 			0
+
+
+pressureparameters 		0	256	0
+
+outputname			../data/run1
+
+cells			16	16	16
+celldimension		128	128	128
+
+
+loadparticles           0
+
