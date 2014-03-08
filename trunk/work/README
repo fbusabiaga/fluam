@@ -30,17 +30,17 @@ To speed up the compilation follow the next steps:
 
 5) Try to compile, type "make". Typically, the compilation
    will fail because the compiler is not able to find some
-   source files; you will see an error message like 
-   "undefined reference to FUNCTION.NAME".
+   source files; you will see errors messages like 
+   "undefined reference to FUNCTION.NAME" or 
+   "error: identifier IDENTIFIER.NAME is undefined".
    You will have to uncomment some more lines in
    "GPU.cu" to make that files available to the compiler. 
    In general, the names of the files (included in "GPU.cu") and the names
    of the functions are similar and therefore they will be easy to find.
-   If you do not know where a function is defined, try the spell
+   If you do not know where a function or identifier is defined, try the spell
    find ../src/ -name "*cu" -print0 | xargs -0 grep FUNCTION.NAME
 
 6) Once all the required files in "GPU.cu" are uncommented, compile
-   the code. Now, the compilation process should be fast and ideal
-   to develop the code.
+   the code. Now, the compilation process should be faster than before.
 
 
