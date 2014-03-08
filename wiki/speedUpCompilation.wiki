@@ -1,0 +1,40 @@
+#summary One-sentence summary of this page.
+
+= Speed up compilation =
+
+Part of fluam's code is compiled for the CPU while most part of
+the code is compiled to run on the GPU. The compilation of the
+GPU part of the code can take around 3 or 4 minutes which results
+too long when developing the code. To speed up the compilation it
+is necessary to reduce the number of lines of the GPU code; since
+fluam includes several schemes, while working with one of them it
+is not necessary to include the code for the other schemes.
+To speed up the compilation follow the next steps:
+
+*0)* Move to the new working directory
+
+`cd fluam/work/bin/`
+
+*1)* Copy Makefiles to the new working directory
+
+`rsync -avz ../../bin/Make* ./`
+
+`rsync -avz ../../bin/makefile ./`
+
+*2)* Copy source code, excluding the ".svn" directory, "`scheme*`" and "GPU.cu" files, to the new ``src'' working directory
+
+`rsync -avz --exclude ".svn/" --exclude "scheme*" --exclude "GPU.cu" ../../src/ ../src/`
+
+*3)* Copy the "`scheme*`" file that you are going to use to the working directory. For example, if you are working with the incompressible scheme
+
+`rsync -avz ../../src/schemeIncompressible.cu ../src/`
+
+*4)* Edit the file "fluam/work/src/GPU.cu". Uncomment the lines of the scheme you plan to use. For example, if you plan to use the incompressible scheme, uncomment the lines between "//SchemeIncompressible" and "//SchemeIncompressibleBoundary".
+
+*5)* Try to compile, type "make". Typically, the compilation will fail because the compiler is not able to find some source files; you will see errors messages like "undefined reference to FUNCTION.NAME" or "error: identifier IDENTIFIER.NAME is undefined". You will have to uncomment some more lines in
+"GPU.cu" to make the necessary files available to the compiler. In general, the names of the files (included in "GPU.cu") and the names of the functions are similar and therefore they will be easy to find. If you do not know where a function or identifier is defined, try the spell
+
+`find ../src/ -name "*cu" -print0 | xargs -0 grep FUNCTION.NAME`
+
+*6)* Once all the required files in "GPU.cu" are uncommented, compile the code. Now, the compilation process should be faster than before.
+
