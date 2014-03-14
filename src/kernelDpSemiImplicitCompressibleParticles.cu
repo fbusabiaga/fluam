@@ -1,3 +1,24 @@
+// Filename: kernelDpSemiImplicitCompressibleParticles.cu
+//
+// Copyright (c) 2010-2014, Florencio Balboa Usabiaga
+//
+// This file is part of Fluam
+//
+// Fluam is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Fluam is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Fluam. If not, see <http://www.gnu.org/licenses/>.
+
+
+
 //STEP 1: g^* = g^n - omega1*dt*c^2*G*rho^* + A^n
 //Calculate A^n
 __global__ void kernelDpSemiImplicitCompressibleParticles_1(const double *densityGPU,
@@ -601,12 +622,20 @@ __global__ void kernelDpSemiImplicitCompressibleParticles_1(const double *densit
   sYY += omega2 * fy * dyGPU ;
   sZZ += omega2 * fz * dzGPU ;
 
-
-  pressure  = (omega2-omega1) * pressure;
-  pressure3 = (omega2-omega1) * pressure3;
-  pressure4 = (omega2-omega1) * pressure4;
-  pressure5 = (omega2-omega1) * pressure5;
-
+  //IMPORTANT:
+  //Cuda floating-point multiply-add operations (FMAD) gave
+  //problems for some values of omega 
+  //when the pressure values were very large.
+  //We enforce the use of __dmul_rn.
+  //pressure  = (omega2-omega1) * pressure;
+  //pressure3 = (omega2-omega1) * pressure3;
+  //pressure4 = (omega2-omega1) * pressure4;
+  //pressure5 = (omega2-omega1) * pressure5;
+  pressure  = __dmul_rn((omega2-omega1),pressure);
+  pressure3 = __dmul_rn((omega2-omega1),pressure3);
+  pressure4 = __dmul_rn((omega2-omega1),pressure4);
+  pressure5 = __dmul_rn((omega2-omega1),pressure5);
+  
   //Include external pressure, explicit
   /*int kz = i / (mxmytGPU);
   double dp0 = 0.005;
@@ -1520,14 +1549,19 @@ __global__ void kernelDpSemiImplicitCompressibleParticles_3(const double *densit
   sYY += (1-omega5) * fy * dyGPU ;
   sZZ += (1-omega5) * fz * dzGPU ;
 
-  //sXX += (1-omega3-omega4) * (pressure3 - pressure);
-  //sYY += (1-omega3-omega4) * (pressure4 - pressure);
-  //sZZ += (1-omega3-omega4) * (pressure5 - pressure);
-  pressure  = (1-omega3-omega4) * pressure;
-  pressure3 = (1-omega3-omega4) * pressure3;
-  pressure4 = (1-omega3-omega4) * pressure4;
-  pressure5 = (1-omega3-omega4) * pressure5;
-
+  //IMPORTANT:
+  //Cuda floating-point multiply-add operations (FMAD) gave
+  //problems for some values of omega 
+  //when the pressure values were very large.
+  //We enforce the use of __dmul_rn.
+  //pressure  = (1-omega3-omega4) * pressure;
+  //pressure3 = (1-omega3-omega4) * pressure3;
+  //pressure4 = (1-omega3-omega4) * pressure4;
+  //pressure5 = (1-omega3-omega4) * pressure5;
+  pressure  = __dmul_rn((1-omega3-omega4),pressure);
+  pressure3 = __dmul_rn((1-omega3-omega4),pressure3);
+  pressure4 = __dmul_rn((1-omega3-omega4),pressure4);
+  pressure5 = __dmul_rn((1-omega3-omega4),pressure5);
 
 
   //Include external pressure, explicit form
@@ -1981,7 +2015,6 @@ __global__ void kernelDpSemiImplicitCompressibleParticles_4(const cufftDoubleCom
   double sXX = omega4 * (pressure3 - pressure) ;
   double sYY = omega4 * (pressure4 - pressure) ;
   double sZZ = omega4 * (pressure5 - pressure) ;
-
 
   px += -(invdxGPU * sXX)*dtGPU;
   py += -(invdyGPU * sYY)*dtGPU;
