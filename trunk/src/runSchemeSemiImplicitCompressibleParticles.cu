@@ -29,7 +29,7 @@ bool runSchemeSemiImplicitCompressibleParticles(){
   //L-stable
   //double omega1 = 0.292893218813452476;
   //double omega2 = 0.5;
-  //double omega3 = -0.414213562373095049;
+  //double omega3 = 0.414213562373095049;
   //double omega4 = 0.292893218813452476;
   //double omega5 = 1;
 
@@ -197,7 +197,7 @@ bool runSchemeSemiImplicitCompressibleParticles(){
 						   threadsPerBlock);
 
 
-    //STEP 1: g^* = g^n - omega1*dt*c^2*G*rho^* + A^n
+    //STEP 1: g^* = -omega1*dt*c^2*G*rho^* + A^n
     //Calculate A^n
     kernelDpSemiImplicitCompressibleParticles_1<<<numBlocks,threadsPerBlock>>>(densityGPU,
 									       dpxGPU,
@@ -237,7 +237,7 @@ bool runSchemeSemiImplicitCompressibleParticles(){
 									       vxZ,
 									       omega1);
 
-    //STEP 5: g^{n+1} = g^n - omega1*dt*c^2*G*rho^{n+1} + A^{n+1/2}
+    //STEP 5: g^{n+1} = -omega1*dt*c^2*G*rho^{n+1} + A^{n+1/2}
     //Calculate A^{n+1/2}
     kernelDpSemiImplicitCompressibleParticles_3<<<numBlocks,threadsPerBlock>>>(densityGPU,
 									       vxPredictionGPU,
@@ -255,7 +255,7 @@ bool runSchemeSemiImplicitCompressibleParticles(){
 									       omega3,
 									       omega4,
 									       omega5,
-									       step);//vxZ
+									       step);//vxZ 
 
     //STEP 6: (1-(omega4*dt*c)^2 * L) * rho^{n+1} = W
     //Construct vector W
@@ -296,7 +296,7 @@ bool runSchemeSemiImplicitCompressibleParticles(){
 									       dpxGPU,
 									       dpyGPU,
 									       dpzGPU,
-									       omega4);    
+									       omega4);
 
     //Boundaries and particles part start
     boundaryParticlesFunctionCompressibleParticles(1,

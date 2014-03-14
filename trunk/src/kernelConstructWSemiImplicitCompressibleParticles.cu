@@ -1,3 +1,26 @@
+// Filename: kernelConstructWSemiImplicitCompressibleParticles.cu
+//
+// Copyright (c) 2010-2014, Florencio Balboa Usabiaga
+//
+// This file is part of Fluam
+//
+// Fluam is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Fluam is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Fluam. If not, see <http://www.gnu.org/licenses/>.
+
+
+
+
+
 //STEP 2: (1-(omega1*dt*c)^2 * L) * rho^* = W
 //Construct vector W
 __global__ void kernelConstructWSemiImplicitCompressibleParticles_1(const double *densityGPU,
@@ -139,7 +162,7 @@ __global__ void kernelConstructWSemiImplicitCompressibleParticles_2(const double
   
   double W = density ;
 
-  //Contrinution momentum g^n
+  //Contribution momentum g^n
   W -= (1-omega3-omega4) * dtGPU * 0.5 * 
     (invdxGPU * ((density3 + density) * vx - (density + density2) * vx2) +
      invdyGPU * ((density4 + density) * vy - (density + density1) * vy1) +
