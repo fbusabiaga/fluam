@@ -62,7 +62,7 @@ bool hydroAnalysisIncompressible(int counter){
       createHydroAnalysis_C(nCells,1,NDIMS,1,systemLength,heatCapacity,dt*samplefreq,0,densfluid/temperature,0);
     }
     else{
-      createHydroAnalysis_C(nCells,2,NDIMS,1,systemLength,heatCapacity,dt*samplefreq,0,1,0);
+      createHydroAnalysis_C(nCells,1,NDIMS,1,systemLength,heatCapacity,dt*samplefreq,0,1,0);
     }
   }
   else if(counter == 1){
