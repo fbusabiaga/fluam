@@ -171,7 +171,7 @@ bool createCellsSemiImplicitCompressibleParticlesGPU(){
 
 
   double *auxD;
-  auxD = new double(ncellst);
+  auxD = new double [ncellst];
   for(int i=0;i<ncellst;i++) auxD[i] = 0;
   cudaMemcpy(dpxGPU,auxD,ncellst*sizeof(double),cudaMemcpyHostToDevice);
   cudaMemcpy(dpyGPU,auxD,ncellst*sizeof(double),cudaMemcpyHostToDevice);
@@ -182,7 +182,8 @@ bool createCellsSemiImplicitCompressibleParticlesGPU(){
   delete[] auxD;
 
   cufftDoubleComplex *auxC;
-  auxC = new cufftDoubleComplex (ncellst);
+  //auxC = new cufftDoubleComplex(ncellst);
+  auxC = (cufftDoubleComplex*) malloc(ncellst*sizeof(cufftDoubleComplex));
   for(int i=0;i<ncellst;i++){
     auxC[i].x = 1;
     auxC[i].y = 0;

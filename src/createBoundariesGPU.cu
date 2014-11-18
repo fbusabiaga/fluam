@@ -70,7 +70,7 @@ bool createBoundariesGPU(){
   cutilSafeCall(cudaMalloc((void**)&countparticlesincellY,ncellst*sizeof(int)));
   cutilSafeCall(cudaMalloc((void**)&countparticlesincellZ,ncellst*sizeof(int)));
   int *aux;
-  aux = new int(ncellst);
+  aux = new int [ncellst];
   for(int i=0;i<ncellst;i++) aux[i] = 0;
   cudaMemcpy(countparticlesincellX,aux,ncellst*sizeof(int),cudaMemcpyHostToDevice);
   cudaMemcpy(countparticlesincellY,aux,ncellst*sizeof(int),cudaMemcpyHostToDevice);

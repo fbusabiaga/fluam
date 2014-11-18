@@ -72,7 +72,7 @@ bool createBoundaries4ptGPU(){
   cutilSafeCall(cudaMalloc((void**)&countparticlesincellY,ncells*sizeof(int)));
   cutilSafeCall(cudaMalloc((void**)&countparticlesincellZ,ncells*sizeof(int)));
   int *aux;
-  aux = new int (ncells);
+  aux = new int [ncells];
   for(int i=0;i<ncells;i++) aux[i] = 0;
   cudaMemcpy(countparticlesincellX,aux,ncells*sizeof(int),cudaMemcpyHostToDevice);
   cudaMemcpy(countparticlesincellY,aux,ncells*sizeof(int),cudaMemcpyHostToDevice);
@@ -362,7 +362,7 @@ bool createBoundaries4ptGPU(){
   
 
   double *auxDouble;
-  auxDouble = new double (64*(nboundary+np));
+  auxDouble = new double [64*(nboundary+np)];
   for(int i=0;i<64*(nboundary+np);i++) auxDouble[i] = 0;
   cutilSafeCall(cudaMemcpy(fxboundaryGPU,auxDouble,64*(nboundary+np)*sizeof(double),cudaMemcpyHostToDevice));
   cutilSafeCall(cudaMemcpy(fyboundaryGPU,auxDouble,64*(nboundary+np)*sizeof(double),cudaMemcpyHostToDevice));
