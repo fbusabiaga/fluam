@@ -23,9 +23,11 @@
 // ==========================================================
 
 bool runSchemeIncompressibleBinaryMixtureMidPoint(){
-  int threadsPerBlock = 128;
-  if((ncells/threadsPerBlock) < 60) threadsPerBlock = 64;
-  if((ncells/threadsPerBlock) < 60) threadsPerBlock = 32;
+  int threadsPerBlock = 512;
+  if((ncells/threadsPerBlock) < 512) threadsPerBlock = 256;
+  if((ncells/threadsPerBlock) < 256) threadsPerBlock = 128;
+  if((ncells/threadsPerBlock) < 64) threadsPerBlock = 64;
+  if((ncells/threadsPerBlock) < 64) threadsPerBlock = 32;
   int numBlocks = (ncells-1)/threadsPerBlock + 1;
 
   step = -numstepsRelaxation;

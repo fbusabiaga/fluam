@@ -170,7 +170,8 @@ bool createCellsSemiImplicitCompressibleParticlesGPU(){
 
 
 
-  double auxD[ncellst];
+  double *auxD;
+  auxD = new double(ncellst);
   for(int i=0;i<ncellst;i++) auxD[i] = 0;
   cudaMemcpy(dpxGPU,auxD,ncellst*sizeof(double),cudaMemcpyHostToDevice);
   cudaMemcpy(dpyGPU,auxD,ncellst*sizeof(double),cudaMemcpyHostToDevice);
@@ -178,15 +179,17 @@ bool createCellsSemiImplicitCompressibleParticlesGPU(){
   cudaMemcpy(vxPredictionGPU,auxD,ncellst*sizeof(double),cudaMemcpyHostToDevice);
   cudaMemcpy(vyPredictionGPU,auxD,ncellst*sizeof(double),cudaMemcpyHostToDevice);
   cudaMemcpy(vzPredictionGPU,auxD,ncellst*sizeof(double),cudaMemcpyHostToDevice);
+  delete[] auxD;
 
-  cufftDoubleComplex auxC[ncellst];
+  cufftDoubleComplex *auxC;
+  auxC = new cufftDoubleComplex (ncellst);
   for(int i=0;i<ncellst;i++){
     auxC[i].x = 1;
     auxC[i].y = 0;
   }
   cudaMemcpy(vxZ,auxC,ncellst*sizeof(cufftDoubleComplex),cudaMemcpyHostToDevice);
   cudaMemcpy(vyZ,auxC,ncellst*sizeof(cufftDoubleComplex),cudaMemcpyHostToDevice);
-
+  delete[] auxC;
 
   
   cout << "CREATE CELLS GPU :              DONE" << endl;

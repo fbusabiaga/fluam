@@ -71,11 +71,13 @@ bool createBoundaries4ptGPU(){
   cutilSafeCall(cudaMalloc((void**)&countparticlesincellX,ncells*sizeof(int)));
   cutilSafeCall(cudaMalloc((void**)&countparticlesincellY,ncells*sizeof(int)));
   cutilSafeCall(cudaMalloc((void**)&countparticlesincellZ,ncells*sizeof(int)));
-  int aux[ncells];
+  int *aux;
+  aux = new int (ncells);
   for(int i=0;i<ncells;i++) aux[i] = 0;
   cudaMemcpy(countparticlesincellX,aux,ncells*sizeof(int),cudaMemcpyHostToDevice);
   cudaMemcpy(countparticlesincellY,aux,ncells*sizeof(int),cudaMemcpyHostToDevice);
   cudaMemcpy(countparticlesincellZ,aux,ncells*sizeof(int),cudaMemcpyHostToDevice);
+  delete[] aux;
 
   cudaMalloc((void**)&partincellX,maxNumberPartInCell*ncells*sizeof(int));
   cudaMalloc((void**)&partincellY,maxNumberPartInCell*ncells*sizeof(int));
@@ -359,12 +361,13 @@ bool createBoundaries4ptGPU(){
   //cutilSafeCall(cudaMalloc((void**)&saveForceZ,np*sizeof(double)));
   
 
-  double auxDouble[64*(nboundary+np)];
+  double *auxDouble;
+  auxDouble = new double (64*(nboundary+np));
   for(int i=0;i<64*(nboundary+np);i++) auxDouble[i] = 0;
   cutilSafeCall(cudaMemcpy(fxboundaryGPU,auxDouble,64*(nboundary+np)*sizeof(double),cudaMemcpyHostToDevice));
   cutilSafeCall(cudaMemcpy(fyboundaryGPU,auxDouble,64*(nboundary+np)*sizeof(double),cudaMemcpyHostToDevice));
   cutilSafeCall(cudaMemcpy(fzboundaryGPU,auxDouble,64*(nboundary+np)*sizeof(double),cudaMemcpyHostToDevice));
-
+  delete[] auxDouble;
 
   //Copy constant memory
   cudaMemcpyToSymbol(bondedForcesGPU,&bondedForces,sizeof(bool));
