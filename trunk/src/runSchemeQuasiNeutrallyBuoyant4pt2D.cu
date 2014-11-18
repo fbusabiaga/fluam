@@ -19,27 +19,35 @@
 
 
 bool runSchemeQuasiNeutrallyBuoyant4pt2D(){
-  int threadsPerBlock = 128;
-  if((ncells/threadsPerBlock) < 60) threadsPerBlock = 64;
-  if((ncells/threadsPerBlock) < 60) threadsPerBlock = 32;
+  int threadsPerBlock = 512;
+  if((ncells/threadsPerBlock) < 512) threadsPerBlock = 256;
+  if((ncells/threadsPerBlock) < 256) threadsPerBlock = 128;
+  if((ncells/threadsPerBlock) < 64) threadsPerBlock = 64;
+  if((ncells/threadsPerBlock) < 64) threadsPerBlock = 32;
   int numBlocks = (ncells-1)/threadsPerBlock + 1;
 
-  int threadsPerBlockParticles = 128;
-  if((np/threadsPerBlockParticles) < 60) threadsPerBlockParticles = 64;
-  if((np/threadsPerBlockParticles) < 60) threadsPerBlockParticles = 32;
+  int threadsPerBlockParticles = 512;
+  if((np/threadsPerBlockParticles) < 512) threadsPerBlockParticles = 256;
+  if((np/threadsPerBlockParticles) < 256) threadsPerBlockParticles = 128;
+  if((np/threadsPerBlockParticles) < 64) threadsPerBlockParticles = 64;
+  if((np/threadsPerBlockParticles) < 64) threadsPerBlockParticles = 32;
   int numBlocksParticles = (np-1)/threadsPerBlockParticles + 1;
 
   int threadsPerBlockNeighbors, numBlocksNeighbors;
   if(ncells>numNeighbors){
-    threadsPerBlockNeighbors = 128;
-    if((ncells/threadsPerBlockNeighbors) < 60) threadsPerBlockNeighbors = 64;
-    if((ncells/threadsPerBlockNeighbors) < 60) threadsPerBlockNeighbors = 32;
+    threadsPerBlockNeighbors = 512;
+    if((ncells/threadsPerBlockNeighbors) < 512) threadsPerBlockNeighbors = 256;
+    if((ncells/threadsPerBlockNeighbors) < 256) threadsPerBlockNeighbors = 128;
+    if((ncells/threadsPerBlockNeighbors) < 64) threadsPerBlockNeighbors = 64;
+    if((ncells/threadsPerBlockNeighbors) < 64) threadsPerBlockNeighbors = 32;
     numBlocksNeighbors = (ncells-1)/threadsPerBlockNeighbors + 1;
   }
   else{
-    threadsPerBlockNeighbors = 128;
-    if((numNeighbors/threadsPerBlockNeighbors) < 60) threadsPerBlockNeighbors = 64;
-    if((numNeighbors/threadsPerBlockNeighbors) < 60) threadsPerBlockNeighbors = 32;
+    threadsPerBlockNeighbors = 512;
+    if((numNeighbors/threadsPerBlockNeighbors) < 512) threadsPerBlockNeighbors = 256;
+    if((numNeighbors/threadsPerBlockNeighbors) < 256) threadsPerBlockNeighbors = 128;
+    if((numNeighbors/threadsPerBlockNeighbors) < 64) threadsPerBlockNeighbors = 64;
+    if((numNeighbors/threadsPerBlockNeighbors) < 64) threadsPerBlockNeighbors = 32;
     numBlocksNeighbors = (numNeighbors-1)/threadsPerBlockNeighbors + 1;
   }
 

@@ -69,7 +69,8 @@ bool createBoundariesGPU(){
   cutilSafeCall(cudaMalloc((void**)&countparticlesincellX,ncellst*sizeof(int)));
   cutilSafeCall(cudaMalloc((void**)&countparticlesincellY,ncellst*sizeof(int)));
   cutilSafeCall(cudaMalloc((void**)&countparticlesincellZ,ncellst*sizeof(int)));
-  int aux[ncellst];
+  int *aux;
+  aux = new int(ncellst);
   for(int i=0;i<ncellst;i++) aux[i] = 0;
   cudaMemcpy(countparticlesincellX,aux,ncellst*sizeof(int),cudaMemcpyHostToDevice);
   cudaMemcpy(countparticlesincellY,aux,ncellst*sizeof(int),cudaMemcpyHostToDevice);
@@ -400,6 +401,7 @@ bool createBoundariesGPU(){
 
   }
 
+  delete[] aux;
 
   //Copy constant memory
   cudaMemcpyToSymbol(bondedForcesGPU,&bondedForces,sizeof(bool));

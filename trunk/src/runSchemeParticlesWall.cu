@@ -19,48 +19,64 @@
 
 
 bool runSchemeParticlesWall(){
-  int threadsPerBlock = 128;
-  if((ncells/threadsPerBlock) < 60) threadsPerBlock = 64;
-  if((ncells/threadsPerBlock) < 60) threadsPerBlock = 32;
+  int threadsPerBlock = 512;
+  if((ncells/threadsPerBlock) < 512) threadsPerBlock = 256;
+  if((ncells/threadsPerBlock) < 256) threadsPerBlock = 128;
+  if((ncells/threadsPerBlock) < 64) threadsPerBlock = 64;
+  if((ncells/threadsPerBlock) < 64) threadsPerBlock = 32;
   int numBlocks = (ncells-1)/threadsPerBlock + 1;
 
-  int threadsPerBlockBoundary = 128;
-  if((nboundary/threadsPerBlockBoundary) < 60) threadsPerBlockBoundary = 64;
-  if((nboundary/threadsPerBlockBoundary) < 60) threadsPerBlockBoundary = 32;
+  int threadsPerBlockBoundary = 512;
+  if((nboundary/threadsPerBlockBoundary) < 512) threadsPerBlockBoundary = 256;
+  if((nboundary/threadsPerBlockBoundary) < 256) threadsPerBlockBoundary = 128;
+  if((nboundary/threadsPerBlockBoundary) < 64) threadsPerBlockBoundary = 64;
+  if((nboundary/threadsPerBlockBoundary) < 64) threadsPerBlockBoundary = 32;
   int numBlocksBoundary = (nboundary-1)/threadsPerBlockBoundary + 1;
 
-  int threadsPerBlockPartAndBoundary = 128;
-  if(((np+nboundary)/threadsPerBlockPartAndBoundary) < 60) threadsPerBlockPartAndBoundary = 64;
-  if(((np+nboundary)/threadsPerBlockPartAndBoundary) < 60) threadsPerBlockPartAndBoundary = 32;
+  int threadsPerBlockPartAndBoundary = 512;
+  if(((np+nboundary)/threadsPerBlockPartAndBoundary) < 512) threadsPerBlockPartAndBoundary = 256;
+  if(((np+nboundary)/threadsPerBlockPartAndBoundary) < 256) threadsPerBlockPartAndBoundary = 128;
+  if(((np+nboundary)/threadsPerBlockPartAndBoundary) < 64) threadsPerBlockPartAndBoundary = 64;
+  if(((np+nboundary)/threadsPerBlockPartAndBoundary) < 64) threadsPerBlockPartAndBoundary = 32;
   int numBlocksPartAndBoundary = (np+nboundary-1)/threadsPerBlockPartAndBoundary + 1;
 
-  int threadsPerBlockParticles = 128;
-  if((np/threadsPerBlockParticles) < 60) threadsPerBlockParticles = 64;
-  if((np/threadsPerBlockParticles) < 60) threadsPerBlockParticles = 32;
+  int threadsPerBlockParticles = 512;
+  if((np/threadsPerBlockParticles) < 512) threadsPerBlockParticles = 256;
+  if((np/threadsPerBlockParticles) < 256) threadsPerBlockParticles = 128;
+  if((np/threadsPerBlockParticles) < 64) threadsPerBlockParticles = 64;
+  if((np/threadsPerBlockParticles) < 64) threadsPerBlockParticles = 32;
   int numBlocksParticles = (np-1)/threadsPerBlockParticles + 1;
 
   int threadsPerBlockNeighbors, numBlocksNeighbors;
   if(ncellst>numNeighbors){
-    threadsPerBlockNeighbors = 128;
-    if((ncellst/threadsPerBlockNeighbors) < 60) threadsPerBlockNeighbors = 64;
-    if((ncellst/threadsPerBlockNeighbors) < 60) threadsPerBlockNeighbors = 32;
+    threadsPerBlockNeighbors = 512;
+    if((ncellst/threadsPerBlockNeighbors) < 512) threadsPerBlockNeighbors = 256;
+    if((ncellst/threadsPerBlockNeighbors) < 256) threadsPerBlockNeighbors = 128;
+    if((ncellst/threadsPerBlockNeighbors) < 64) threadsPerBlockNeighbors = 64;
+    if((ncellst/threadsPerBlockNeighbors) < 64) threadsPerBlockNeighbors = 32;
     numBlocksNeighbors = (ncellst-1)/threadsPerBlockNeighbors + 1;
   }
   else{
-    threadsPerBlockNeighbors = 128;
-    if((numNeighbors/threadsPerBlockNeighbors) < 60) threadsPerBlockNeighbors = 64;
-    if((numNeighbors/threadsPerBlockNeighbors) < 60) threadsPerBlockNeighbors = 32;
+    threadsPerBlockNeighbors = 512;
+    if((numNeighbors/threadsPerBlockNeighbors) < 512) threadsPerBlockNeighbors = 256;
+    if((numNeighbors/threadsPerBlockNeighbors) < 256) threadsPerBlockNeighbors = 128;
+    if((numNeighbors/threadsPerBlockNeighbors) < 64) threadsPerBlockNeighbors = 64;
+    if((numNeighbors/threadsPerBlockNeighbors) < 64) threadsPerBlockNeighbors = 32;
     numBlocksNeighbors = (numNeighbors-1)/threadsPerBlockNeighbors + 1;
   }
   int nGhost = ncellst - ncells;
-  int threadsPerBlockGhost = 128;
-  if((nGhost/threadsPerBlockGhost) < 60) threadsPerBlockGhost = 64;
-  if((nGhost/threadsPerBlockGhost) < 60) threadsPerBlockGhost = 32;
+  int threadsPerBlockGhost = 512;
+  if((nGhost/threadsPerBlockGhost) < 512) threadsPerBlockGhost = 256;
+  if((nGhost/threadsPerBlockGhost) < 256) threadsPerBlockGhost = 128;
+  if((nGhost/threadsPerBlockGhost) < 64) threadsPerBlockGhost = 64;
+  if((nGhost/threadsPerBlockGhost) < 64) threadsPerBlockGhost = 32;
   int numBlocksGhost = (nGhost-1)/threadsPerBlockGhost + 1;
 
-  int threadsPerBlockCellst = 128;
-  if((ncellst/threadsPerBlockCellst) < 60) threadsPerBlockCellst = 64;
-  if((ncellst/threadsPerBlockCellst) < 60) threadsPerBlockCellst = 32;
+  int threadsPerBlockCellst = 512;
+  if((ncellst/threadsPerBlockCellst) < 512) threadsPerBlockCellst = 256;
+  if((ncellst/threadsPerBlockCellst) < 256) threadsPerBlockCellst = 128;
+  if((ncellst/threadsPerBlockCellst) < 64) threadsPerBlockCellst = 64;
+  if((ncellst/threadsPerBlockCellst) < 64) threadsPerBlockCellst = 32;
   int numBlocksCellst = (ncellst-1)/threadsPerBlockCellst + 1;
 
 

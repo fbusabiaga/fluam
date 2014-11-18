@@ -19,15 +19,19 @@
 
 
 bool runSchemeRK3Ghost(){
-  int threadsPerBlock = 128;
-  if((ncells/threadsPerBlock) < 60) threadsPerBlock = 64;
-  if((ncells/threadsPerBlock) < 60) threadsPerBlock = 32;
+  int threadsPerBlock = 512;
+  if((ncells/threadsPerBlock) < 512) threadsPerBlock = 256;
+  if((ncells/threadsPerBlock) < 256) threadsPerBlock = 128;
+  if((ncells/threadsPerBlock) < 64) threadsPerBlock = 64;
+  if((ncells/threadsPerBlock) < 64) threadsPerBlock = 32;
   int numBlocks = (ncells-1)/threadsPerBlock + 1;
 
   int nGhost = ncellst - ncells;
-  int threadsPerBlockGhost = 128;
-  if((nGhost/threadsPerBlockGhost) < 60) threadsPerBlockGhost = 64;
-  if((nGhost/threadsPerBlockGhost) < 60) threadsPerBlockGhost = 32;
+  int threadsPerBlockGhost = 512;
+  if((nGhost/threadsPerBlockGhost) < 512) threadsPerBlockGhost = 256;
+  if((nGhost/threadsPerBlockGhost) < 256) threadsPerBlockGhost = 128;
+  if((nGhost/threadsPerBlockGhost) < 64) threadsPerBlockGhost = 64;
+  if((nGhost/threadsPerBlockGhost) < 64) threadsPerBlockGhost = 32;
   int numBlocksGhost = (nGhost-1)/threadsPerBlockGhost + 1;
 
 
