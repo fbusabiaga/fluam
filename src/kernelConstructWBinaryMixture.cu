@@ -25,8 +25,8 @@
 //  W = u^n + 0.5*dt*nu*L*u^n + Advection(u^n) + (dt/rho)*f^n_{noise}
 //
 //In the second substep
-//  W = u^n + 0.5*dt*nu*L*u^n + Advection(u^{n+1/2}) + (dt/rho)*f^n_{noise}
-//with u^{n+1/2} = 0.5 * (u^n + u^{n+1}_{result from first substep})
+//  W = u^n + 0.5*dt*nu*L*u^n + 0.5*(Advection(u^n) + Advection(u^(n+1))) + (dt/rho)*f^n_{noise}
+//  where the velocity in u^(n+1) in the advection part is the velocity computed in the predictor step
 
 
 //
