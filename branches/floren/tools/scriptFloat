@@ -1,0 +1,62 @@
+#This script helps to convert fluam from double precision
+#to simple precision. Simple precision codes can be around twice
+#as faster as double precision codes depending on the GPU.
+#!/bin/sh
+
+
+#Change all double to float                         
+for file in $(grep -il "double" ../src/*.*)
+do
+sed -e "s/double/float/ig" $file > /tmp/tempfile.tmp
+mv /tmp/tempfile.tmp $file
+done
+
+
+
+#Change all cufftfloatComplex to cufftComplex
+for file in $(grep -il "cufftfloatComplex" ../src/*.*)
+do
+sed -e "s/cufftfloatComplex/cufftComplex/ig" $file > /tmp/tempfile.tmp
+mv /tmp/tempfile.tmp $file
+done
+
+
+#Change all cufftDoubleComplex to cufftComplex
+for file in $(grep -il "cufftDoubleComplex" ../src/*.*)
+do
+sed -e "s/cufftDoubleComplex/cufftComplex/ig" $file > /tmp/tempfile.tmp
+mv /tmp/tempfile.tmp $file
+done
+
+
+#Change all Z2Z to C2C
+for file in $(grep -il "Z2Z" ../src/*.*)
+do
+sed -e "s/Z2Z/C2C/ig" $file > /tmp/tempfile.tmp
+mv /tmp/tempfile.tmp $file
+done
+
+
+#Change all int2 to float
+for file in $(grep -il "int2" ../src/*.*)
+do
+sed -e "s/int2/float/ig" $file > /tmp/tempfile.tmp
+mv /tmp/tempfile.tmp $file
+done
+
+
+#Change float to double in hydroAnalysis*.*
+for file in $(grep -il "float" ../src/hydroAnalysis*.*)
+do
+sed -e "s/float/double/ig" $file > /tmp/tempfile.tmp
+mv /tmp/tempfile.tmp $file
+done
+
+
+#Change fetch_float to tex1D in all *.*
+for file in $(grep -il "fetch_float" ../src/*.*)
+do
+sed -e "s/fetch_float/tex1Dfetch/ig" $file > /tmp/tempfile.tmp
+mv /tmp/tempfile.tmp $file
+done
+
