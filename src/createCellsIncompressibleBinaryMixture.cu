@@ -1,6 +1,6 @@
 // Filename: createCellsIncompressibleBinaryMixture.cu
 //
-// Copyright (c) 2010-2013, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2015, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
