@@ -70,10 +70,10 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyant4pt_1_2D(particlesince
   
 
   //r = (rx - rxcellGPU[icelx] - dxGPU*0.5); //
-  r = (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
+  r = invdxGPU * (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
   delta4ptGPU(r,dlx0,dlx1,dlx2,dlx3);
 
-  r = (ryI - rycellGPU[icel]);
+  r = invdyGPU * (ryI - rycellGPU[icel]);
   delta4pt2GPU(r,dly0,dly1,dly2,dly3,dly4);
 
   double v = dlx0 * dly0 * vxGPU[vecinomxmxmymy] +
@@ -126,10 +126,10 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyant4pt_1_2D(particlesince
 
 
 
-  r = (rxI - rxcellGPU[icel]); 
+  r = invdxGPU * (rxI - rxcellGPU[icel]); 
   delta4pt2GPU(r,dlx0,dlx1,dlx2,dlx3,dlx4);
 
-  r = (ryI - rycellGPU[icel] + 0.5*dyGPU);
+  r = invdyGPU * (ryI - rycellGPU[icel] + 0.5*dyGPU);
   delta4ptGPU(r,dly0,dly1,dly2,dly3);
 
 
@@ -460,11 +460,11 @@ __global__ void kernelSpreadParticlesForce4pt2D(const double* rxcellGPU,
   int vecinopxmymy = tex1Dfetch(texvecino3GPU, vecinomymy);
    
   
-  r = (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
+  r = invdxGPU * (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
   delta4ptGPU(r,dlx0,dlx1,dlx2,dlx3);
   dlx4 = 0;
 
-  r = (ryI - rycellGPU[icel]);
+  r = invdyGPU * (ryI - rycellGPU[icel]);
   delta4pt2GPU(r,dly0,dly1,dly2,dly3,dly4);
 
     
@@ -544,10 +544,10 @@ __global__ void kernelSpreadParticlesForce4pt2D(const double* rxcellGPU,
   int vecinopxpxmymy = tex1Dfetch(texvecino1GPU, vecinopxpxmy);
   //vecinopxmymy = tex1Dfetch(texvecino3GPU, vecinomymy);
 
-  r = (rxI - rxcellGPU[icel]); 
+  r = invdxGPU * (rxI - rxcellGPU[icel]); 
   delta4pt2GPU(r,dlx0,dlx1,dlx2,dlx3,dlx4);
 
-  r = (ryI - rycellGPU[icel] + 0.5*dyGPU);
+  r = invdyGPU * (ryI - rycellGPU[icel] + 0.5*dyGPU);
   delta4ptGPU(r,dly0,dly1,dly2,dly3);
   dly4=0;
 
@@ -1063,10 +1063,10 @@ __global__ void kernelCalculateDeltau4pt_2D(const double* rxcellGPU,
   int vecinopxmymy = tex1Dfetch(texvecino3GPU, vecinomymy);
    
   //r = (rx - rxcellGPU[icelx] - dxGPU*0.5); //
-  r = (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
+  r = invdxGPU * (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
   delta4ptGPU(r,dlx0,dlx1,dlx2,dlx3);
 
-  r = (ryI - rycellGPU[icel]);
+  r = invdyGPU * (ryI - rycellGPU[icel]);
   delta4pt2GPU(r,dly0,dly1,dly2,dly3,dly4);
 
   double v = dlx0 * dly0 * vxGPU[vecinomxmxmymy] +
@@ -1100,10 +1100,10 @@ __global__ void kernelCalculateDeltau4pt_2D(const double* rxcellGPU,
   int vecinopxpxmy = tex1Dfetch(texvecino1GPU, vecinopxpx);
   int vecinopxpxmymy = tex1Dfetch(texvecino1GPU, vecinopxpxmy);
 
-  r = (rxI - rxcellGPU[icel]); 
+  r = invdxGPU * (rxI - rxcellGPU[icel]); 
   delta4pt2GPU(r,dlx0,dlx1,dlx2,dlx3,dlx4);
 
-  r = (ryI - rycellGPU[icel] + 0.5*dyGPU);
+  r = invdyGPU * (ryI - rycellGPU[icel] + 0.5*dyGPU);
   delta4ptGPU(r,dly0,dly1,dly2,dly3);
 
 
@@ -1180,10 +1180,10 @@ __global__ void kernelCalculateDeltau4pt_2D(const double* rxcellGPU,
   vecinopxmymy = tex1Dfetch(texvecino3GPU, vecinomymy);
    
   //r = (rx - rxcellGPU[icelx] - dxGPU*0.5); //
-  r = (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
+  r = invdxGPU * (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
   delta4ptGPU(r,dlx0,dlx1,dlx2,dlx3);
 
-  r = (ryI - rycellGPU[icel]);
+  r = invdyGPU * (ryI - rycellGPU[icel]);
   delta4pt2GPU(r,dly0,dly1,dly2,dly3,dly4);
 
   v = dlx0 * dly0 * vxGPU[vecinomxmxmymy] +
@@ -1216,10 +1216,10 @@ __global__ void kernelCalculateDeltau4pt_2D(const double* rxcellGPU,
   vecinopxpxmy = tex1Dfetch(texvecino1GPU, vecinopxpx);
   vecinopxpxmymy = tex1Dfetch(texvecino1GPU, vecinopxpxmy);
 
-  r = (rxI - rxcellGPU[icel]); 
+  r = invdxGPU * (rxI - rxcellGPU[icel]); 
   delta4pt2GPU(r,dlx0,dlx1,dlx2,dlx3,dlx4);
 
-  r = (ryI - rycellGPU[icel] + 0.5*dyGPU);
+  r = invdyGPU * (ryI - rycellGPU[icel] + 0.5*dyGPU);
   delta4ptGPU(r,dly0,dly1,dly2,dly3);
 
 
@@ -1249,16 +1249,16 @@ __global__ void kernelCalculateDeltau4pt_2D(const double* rxcellGPU,
 
   //THIRD, add (J^{n+1/2} - J^n) * v^n to
   //0.5*dt*nu * J^{n-1/2} * L * \Delta v^{n+1/2}
-  //vxboundaryPredictionGPU[i] += dux;
-  //vyboundaryPredictionGPU[i] += duy;
+  vxboundaryPredictionGPU[i] += dux;
+  vyboundaryPredictionGPU[i] += duy;
 
   //\delta u = J*L*Delta u
   //vxboundaryPredictionGPU[i] += 0;
   //vyboundaryPredictionGPU[i] += 0;
 
   //\delta u = 0
-  vxboundaryPredictionGPU[i] = 0;
-  vyboundaryPredictionGPU[i] = 0;
+  //vxboundaryPredictionGPU[i] = 0;
+  //vyboundaryPredictionGPU[i] = 0;
 
 
 }
@@ -1356,10 +1356,10 @@ __global__ void kernelCalculateDeltapFirstStep4pt_2D(const double* rxcellGPU,
   int vecinopxmymy = tex1Dfetch(texvecino3GPU, vecinomymy);
    
   //r = (rx - rxcellGPU[icelx] - dxGPU*0.5); //
-  r = (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
+  r = invdxGPU * (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
   delta4ptGPU(r,dlx0,dlx1,dlx2,dlx3);
 
-  r = (ryI - rycellGPU[icel]);
+  r = invdyGPU * (ryI - rycellGPU[icel]);
   delta4pt2GPU(r,dly0,dly1,dly2,dly3,dly4);
 
   double v = dlx0 * dly0 * fetch_double(texVxGPU,vecinomxmxmymy) +
@@ -1393,10 +1393,10 @@ __global__ void kernelCalculateDeltapFirstStep4pt_2D(const double* rxcellGPU,
   int vecinopxpxmy = tex1Dfetch(texvecino1GPU, vecinopxpx);
   int vecinopxpxmymy = tex1Dfetch(texvecino1GPU, vecinopxpxmy);
 
-  r = (rxI - rxcellGPU[icel]); 
+  r = invdxGPU * (rxI - rxcellGPU[icel]); 
   delta4pt2GPU(r,dlx0,dlx1,dlx2,dlx3,dlx4);
 
-  r = (ryI - rycellGPU[icel] + 0.5*dyGPU);
+  r = invdyGPU * (ryI - rycellGPU[icel] + 0.5*dyGPU);
   delta4ptGPU(r,dly0,dly1,dly2,dly3);
 
 
@@ -1484,11 +1484,11 @@ __global__ void kernelSpreadDeltap4pt2D(const double* rxcellGPU,
 
 
   //SPREAD IN THE X DIRECTION
-  r = (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
+  r = invdxGPU * (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
   delta4ptGPU(r,dlx0,dlx1,dlx2,dlx3);
   dlx4=0;
 
-  r = (ryI - rycellGPU[icel]);
+  r = invdyGPU * (ryI - rycellGPU[icel]);
   delta4pt2GPU(r,dly0,dly1,dly2,dly3,dly4);
 
 
@@ -1556,10 +1556,10 @@ __global__ void kernelSpreadDeltap4pt2D(const double* rxcellGPU,
 
 
   //SPREAD IN THE Y DIRECTION
-  r = (rxI - rxcellGPU[icel]); 
+  r = invdxGPU * (rxI - rxcellGPU[icel]); 
   delta4pt2GPU(r,dlx0,dlx1,dlx2,dlx3,dlx4);
 
-  r = (ryI - rycellGPU[icel] + 0.5*dyGPU);
+  r = invdyGPU * (ryI - rycellGPU[icel] + 0.5*dyGPU);
   delta4ptGPU(r,dly0,dly1,dly2,dly3);
   dly4=0;
 
@@ -1968,11 +1968,11 @@ __global__ void kernelSpreadDeltapMinusJTildev4pt_2D(const double* rxcellGPU,
   int vecinopxmymy = tex1Dfetch(texvecino3GPU, vecinomymy);
    
   //r = (rx - rxcellGPU[icelx] - dxGPU*0.5); //
-  r = (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
+  r = invdxGPU * (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
   delta4ptGPU(r,dlx0,dlx1,dlx2,dlx3);
   dlx4=0;
 
-  r = (ryI - rycellGPU[icel]);
+  r = invdyGPU * (ryI - rycellGPU[icel]);
   delta4pt2GPU(r,dly0,dly1,dly2,dly3,dly4);
 
   double tildev = dlx0 * dly0 * vxZ[vecinomxmxmymy].y +
@@ -2058,10 +2058,10 @@ __global__ void kernelSpreadDeltapMinusJTildev4pt_2D(const double* rxcellGPU,
   int vecinopxpxmy = tex1Dfetch(texvecino1GPU, vecinopxpx);
   int vecinopxpxmymy = tex1Dfetch(texvecino1GPU, vecinopxpxmy);
 
-  r = (rxI - rxcellGPU[icel]); 
+  r = invdxGPU * (rxI - rxcellGPU[icel]); 
   delta4pt2GPU(r,dlx0,dlx1,dlx2,dlx3,dlx4);
 
-  r = (ryI - rycellGPU[icel] + 0.5*dyGPU);
+  r = invdyGPU * (ryI - rycellGPU[icel] + 0.5*dyGPU);
   delta4ptGPU(r,dly0,dly1,dly2,dly3);
   dly4=0;
 
@@ -2233,11 +2233,11 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyant4ptTEST4_3_2D(const pa
   int vecinopxmymy = tex1Dfetch(texvecino3GPU, vecinomymy);
    
   //r = (rx - rxcellGPU[icelx] - dxGPU*0.5); //
-  r = (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
+  r = invdxGPU * (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
   delta4ptGPU(r,dlx0,dlx1,dlx2,dlx3);
   dlx4=0;
 
-  r = (ryI - rycellGPU[icel]);
+  r = invdyGPU * (ryI - rycellGPU[icel]);
   delta4pt2GPU(r,dly0,dly1,dly2,dly3,dly4);
 
   double v = dlx0 * dly0 * vxGPU[vecinomxmxmymy] +
@@ -2270,10 +2270,10 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyant4ptTEST4_3_2D(const pa
   int vecinopxpxmy = tex1Dfetch(texvecino1GPU, vecinopxpx);
   int vecinopxpxmymy = tex1Dfetch(texvecino1GPU, vecinopxpxmy);
 
-  r = (rxI - rxcellGPU[icel]); 
+  r = invdxGPU * (rxI - rxcellGPU[icel]); 
   delta4pt2GPU(r,dlx0,dlx1,dlx2,dlx3,dlx4);
 
-  r = (ryI - rycellGPU[icel] + 0.5*dyGPU);
+  r = invdyGPU * (ryI - rycellGPU[icel] + 0.5*dyGPU);
   delta4ptGPU(r,dly0,dly1,dly2,dly3);
   dly4=0;
 
@@ -2396,11 +2396,11 @@ __global__ void interpolateLaplacianDeltaV4pt_2_2D(const double* rxcellGPU,
   int vecinopxmymy = tex1Dfetch(texvecino3GPU, vecinomymy);
    
   //r = (rx - rxcellGPU[icelx] - dxGPU*0.5); //
-  r = (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
+  r = invdxGPU * (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
   delta4ptGPU(r,dlx0,dlx1,dlx2,dlx3);
   dlx4=0;
 
-  r = (ryI - rycellGPU[icel]);
+  r = invdyGPU * (ryI - rycellGPU[icel]);
   delta4pt2GPU(r,dly0,dly1,dly2,dly3,dly4);
 
   double v = dlx0 * dly0 * vxZ[vecinomxmxmymy].y +
@@ -2434,10 +2434,10 @@ __global__ void interpolateLaplacianDeltaV4pt_2_2D(const double* rxcellGPU,
   int vecinopxpxmy = tex1Dfetch(texvecino1GPU, vecinopxpx);
   int vecinopxpxmymy = tex1Dfetch(texvecino1GPU, vecinopxpxmy);
   
-  r = (rxI - rxcellGPU[icel]); 
+  r = invdxGPU * (rxI - rxcellGPU[icel]); 
   delta4pt2GPU(r,dlx0,dlx1,dlx2,dlx3,dlx4);
 
-  r = (ryI - rycellGPU[icel] + 0.5*dyGPU);
+  r = invdyGPU * (ryI - rycellGPU[icel] + 0.5*dyGPU);
   delta4ptGPU(r,dly0,dly1,dly2,dly3);
   dly4=0;
 
@@ -2886,11 +2886,11 @@ __global__ void kernelCalculateDeltap4pt_2D(const double* rxcellGPU,
   int vecinopxmymy = tex1Dfetch(texvecino3GPU, vecinomymy);
    
   //r = (rx - rxcellGPU[icelx] - dxGPU*0.5); //
-  r = (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
+  r = invdxGPU * (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
   delta4ptGPU(r,dlx0,dlx1,dlx2,dlx3);
   dlx4=0;
 
-  r = (ryI - rycellGPU[icel]);
+  r = invdyGPU * (ryI - rycellGPU[icel]);
   delta4pt2GPU(r,dly0,dly1,dly2,dly3,dly4);
 
   double v = dlx0 * dly0 * fetch_double(texVxGPU,vecinomxmxmymy) +
@@ -2924,10 +2924,10 @@ __global__ void kernelCalculateDeltap4pt_2D(const double* rxcellGPU,
   int vecinopxpxmy = tex1Dfetch(texvecino1GPU, vecinopxpx);
   int vecinopxpxmymy = tex1Dfetch(texvecino1GPU, vecinopxpxmy);
 
-  r = (rxI - rxcellGPU[icel]); 
+  r = invdxGPU * (rxI - rxcellGPU[icel]); 
   delta4pt2GPU(r,dlx0,dlx1,dlx2,dlx3,dlx4);
 
-  r = (ryI - rycellGPU[icel] + 0.5*dyGPU);
+  r = invdyGPU * (ryI - rycellGPU[icel] + 0.5*dyGPU);
   delta4ptGPU(r,dly0,dly1,dly2,dly3);
   dly4=0;
 
@@ -3041,11 +3041,11 @@ __global__ void updateParticleVelocityme04pt_2D(const double* rxcellGPU,
   int vecinopxmymy = tex1Dfetch(texvecino3GPU, vecinomymy);
    
   //r = (rx - rxcellGPU[icelx] - dxGPU*0.5); //
-  r = (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
+  r = invdxGPU * (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
   delta4ptGPU(r,dlx0,dlx1,dlx2,dlx3);
   dlx4=0;
 
-  r = (ryI - rycellGPU[icel]);
+  r = invdyGPU * (ryI - rycellGPU[icel]);
   delta4pt2GPU(r,dly0,dly1,dly2,dly3,dly4);
 
   double v = dlx0 * dly0 * fetch_double(texVxGPU,vecinomxmxmymy) +
@@ -3079,10 +3079,10 @@ __global__ void updateParticleVelocityme04pt_2D(const double* rxcellGPU,
   int vecinopxpxmy = tex1Dfetch(texvecino1GPU, vecinopxpx);
   int vecinopxpxmymy = tex1Dfetch(texvecino1GPU, vecinopxpxmy);
 
-  r = (rxI - rxcellGPU[icel]); 
+  r = invdxGPU * (rxI - rxcellGPU[icel]); 
   delta4pt2GPU(r,dlx0,dlx1,dlx2,dlx3,dlx4);
 
-  r = (ryI - rycellGPU[icel] + 0.5*dyGPU);
+  r = invdyGPU * (ryI - rycellGPU[icel] + 0.5*dyGPU);
   delta4ptGPU(r,dly0,dly1,dly2,dly3);
   dly4=0;
 
@@ -3203,11 +3203,11 @@ __global__ void updateParticleVelocityme4pt_2D(const double* rxcellGPU,
   int vecinopxmymy = tex1Dfetch(texvecino3GPU, vecinomymy);
    
   //r = (rx - rxcellGPU[icelx] - dxGPU*0.5); //
-  r = (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
+  r = invdxGPU * (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
   delta4ptGPU(r,dlx0,dlx1,dlx2,dlx3);
   dlx4=0;
 
-  r = (ryI - rycellGPU[icel]);
+  r = invdyGPU * (ryI - rycellGPU[icel]);
   delta4pt2GPU(r,dly0,dly1,dly2,dly3,dly4);
 
   double v = dlx0 * dly0 * fetch_double(texVxGPU,vecinomxmxmymy) +
@@ -3263,10 +3263,10 @@ __global__ void updateParticleVelocityme4pt_2D(const double* rxcellGPU,
   int vecinopxpxmy = tex1Dfetch(texvecino1GPU, vecinopxpx);
   int vecinopxpxmymy = tex1Dfetch(texvecino1GPU, vecinopxpxmy);
 
-  r = (rxI - rxcellGPU[icel]); 
+  r = invdxGPU * (rxI - rxcellGPU[icel]); 
   delta4pt2GPU(r,dlx0,dlx1,dlx2,dlx3,dlx4);
 
-  r = (ryI - rycellGPU[icel] + 0.5*dyGPU);
+  r = invdyGPU * (ryI - rycellGPU[icel] + 0.5*dyGPU);
   delta4ptGPU(r,dly0,dly1,dly2,dly3);
   dly4=0;
 
@@ -3408,11 +3408,11 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyant4ptTEST4_2_2D(particle
   int vecinopxmymy = tex1Dfetch(texvecino3GPU, vecinomymy);
    
   //r = (rx - rxcellGPU[icelx] - dxGPU*0.5); //
-  r = (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
+  r = invdxGPU * (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
   delta4ptGPU(r,dlx0,dlx1,dlx2,dlx3);
   dlx4=0;
 
-  r = (ryI - rycellGPU[icel]);
+  r = invdyGPU * (ryI - rycellGPU[icel]);
   delta4pt2GPU(r,dly0,dly1,dly2,dly3,dly4);
 
   double v = dlx0 * dly0 * vxGPU[vecinomxmxmymy] +
@@ -3444,10 +3444,10 @@ __global__ void findNeighborParticlesQuasiNeutrallyBuoyant4ptTEST4_2_2D(particle
   int vecinopxpxmy = tex1Dfetch(texvecino1GPU, vecinopxpx);
   int vecinopxpxmymy = tex1Dfetch(texvecino1GPU, vecinopxpxmy);
 
-  r = (rxI - rxcellGPU[icel]); 
+  r = invdxGPU * (rxI - rxcellGPU[icel]); 
   delta4pt2GPU(r,dlx0,dlx1,dlx2,dlx3,dlx4);
 
-  r = (ryI - rycellGPU[icel] + 0.5*dyGPU);
+  r = invdyGPU * (ryI - rycellGPU[icel] + 0.5*dyGPU);
   delta4ptGPU(r,dly0,dly1,dly2,dly3);
   dly4=0;
 
@@ -3572,11 +3572,11 @@ __global__ void interpolateLaplacianDeltaV4pt_2D(const double* rxcellGPU,
   int vecinopxmymy = tex1Dfetch(texvecino3GPU, vecinomymy);
    
   //r = (rx - rxcellGPU[icelx] - dxGPU*0.5); //
-  r = (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
+  r = invdxGPU * (rxI - rxcellGPU[icel] + dxGPU*0.5); //distance to cell vecino2
   delta4ptGPU(r,dlx0,dlx1,dlx2,dlx3);
   dlx4=0;
 
-  r = (ryI - rycellGPU[icel]);
+  r = invdyGPU * (ryI - rycellGPU[icel]);
   delta4pt2GPU(r,dly0,dly1,dly2,dly3,dly4);
 
   double v = dlx0 * dly0 * vxGPU[vecinomxmxmymy] +
@@ -3609,10 +3609,10 @@ __global__ void interpolateLaplacianDeltaV4pt_2D(const double* rxcellGPU,
   int vecinopxpxmy = tex1Dfetch(texvecino1GPU, vecinopxpx);
   int vecinopxpxmymy = tex1Dfetch(texvecino1GPU, vecinopxpxmy);
 
-  r = (rxI - rxcellGPU[icel]); 
+  r = invdxGPU * (rxI - rxcellGPU[icel]); 
   delta4pt2GPU(r,dlx0,dlx1,dlx2,dlx3,dlx4);
 
-  r = (ryI - rycellGPU[icel] + 0.5*dyGPU);
+  r = invdyGPU * (ryI - rycellGPU[icel] + 0.5*dyGPU);
   delta4ptGPU(r,dly0,dly1,dly2,dly3);
   dly4=0;
 

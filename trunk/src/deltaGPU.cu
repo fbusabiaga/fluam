@@ -21,7 +21,7 @@
 __device__ void delta4pt2GPU(double x, double &dlx0, double &dlx1, double &dlx2, double &dlx3, double &dlx4){
 
   if(x<0){
-    x = x + dxGPU;
+    x = x + 1;
     double s = 0.125 * (3 - 2*x + sqrtf(1 + 4*x*(1-x)) );
     dlx0 = 0.25 * (3-2*x) - s;
     dlx1 = s;
