@@ -47,7 +47,7 @@ celldimension		320	320	320
 #initfluid=0, initial velocity=backgroundvelocity and density=density_0
 #initfluid=1, initial velocity=backgroundvelocity+randomFluctuations and density=density_0
 #See file fluam/src/initializeFluid.cpp
-initfluid 1
+initfluid		 1
 #Give background velocity components vx, vy, vz. If not one is given
 #the background velocity is set to zero
 backgroundvelocity 	 0  	0	    0

@@ -11,6 +11,8 @@ incompressible
 densfluid               1
 #Shear viscosity
 shearviscosity          1
+#Temperature in energy units (T -> k_B*T)
+temperature             0.1
 
 #Number of fluid cells in the directions x, y and z
 cells			32	32	32

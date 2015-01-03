@@ -11,7 +11,7 @@ particles		1
 #Number of particles
 numberparticles		1
 #Particle excess of mass (if mass=0 the particles are neutrally buoyant).
-mass			0
+mass			8000
 
 
 #Cutoff for the particle-particle interaction

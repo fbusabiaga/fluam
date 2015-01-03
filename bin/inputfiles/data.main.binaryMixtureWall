@@ -18,7 +18,7 @@ diffusion	        0.1
 #Molecular mass of species 0
 massSpecies0	        1e-20
 #Molecular mass of species 1
-massSpecies0	        1e-20
+massSpecies1	        1e-20
 #Concentration of species 0
 concentration 	        0.5
 #Temperature in energy units (T -> k_B*T)
