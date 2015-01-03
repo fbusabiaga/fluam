@@ -67,9 +67,9 @@ backgroundvelocity 	 0  	0	    0
 #Number of relaxation steps during which fluam save no data
 numstepsRelaxation	0
 #Number of steps (no counting numstepsRelaxation)
-numsteps                1000
+numsteps                2
 #Save data every samplefreq steps
-samplefreq              50
+samplefreq              1
 savefreq		0
 #Time step
 dt			0.25
