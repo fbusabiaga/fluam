@@ -18,7 +18,7 @@ diffusion	0.1
 #Molecular mass of species 0
 massSpecies0	1e-20
 #Molecular mass of species 1
-massSpecies0	1e-20
+massSpecies1	1e-20
 #Concentration of species 0
 concentration 	0.5
 #Temperature in energy units (T -> k_B*T)
@@ -44,7 +44,7 @@ celldimension		320	320	320
 initfluid 1
 #Give background velocity components vx, vy, vz. If not one is given
 #the background velocity is set to zero
-·backgroundvelocity 	 0  	0	    0
+#backgroundvelocity 	 0  	0	    0
 
 
 #Give initial fluid configuration. If not one is given fluam uses the option given in initfluid
