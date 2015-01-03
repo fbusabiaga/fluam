@@ -188,6 +188,7 @@ bool loadDataMain(int argc, char* argv[]){
   nboundary = 0;
   bondedForces=0;
   computeNonBondedForces=1;
+  setVolumeParticle=0;
   //DEFAULT PARAMETERS 
 
   //OTHER FLUID VARIABLES
@@ -262,7 +263,7 @@ bool loadDataMain(int argc, char* argv[]){
   extraMobility = 0;
   //stokesLimit Ends
 
-
+  
   ifstream fileinput, fileoutput;
   string fileinputname;
   if(argc!=1){
@@ -405,7 +406,7 @@ bool loadDataMain(int argc, char* argv[]){
     }
     else if(word==wvolumeParticle){
       fileinput >> volumeParticle;
-      //volumeParticle = volumeParticle/c[0].volume;
+      setVolumeParticle=1;
     }
     else if(word==wcutoff){
       fileinput >> cutoff;
@@ -596,8 +597,6 @@ bool loadDataMain(int argc, char* argv[]){
   fileout << wordfile << endl;
   fileout.close();
   //cout << 
-
-
 
 
   cout <<  "READ " << fileinputname.c_str() << " :                DONE" << endl;

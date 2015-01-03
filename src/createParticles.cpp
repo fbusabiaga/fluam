@@ -115,7 +115,18 @@ bool createParticles(){
     }
     filecoor.close();
   }  
-  volumeParticle = volumeParticle/cVolume;
+  // To obey the no-slip condition the particle volume should be
+  // (2)^dimensions times the volume of a fluid cell.
+  // However, the user still has the option of define a different value.
+  if(setVolumeParticle){
+    volumeParticle = volumeParticle/cVolume;
+  }
+  else if(quasiNeutrallyBuoyant2D || quasiNeutrallyBuoyant4pt2D){
+    volumeParticle = 4;
+  }
+  else{
+    volumeParticle = 8;
+  }
 
 
 
