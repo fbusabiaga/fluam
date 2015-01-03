@@ -22,6 +22,7 @@
 #include <cstring>
 #include <math.h>
 #include "header.h"
+#include "headerOtherFluidVariables.h"
 #include "particles.h"
 #include "fluid.h"
 #include "parameters.h"
@@ -121,8 +122,13 @@ bool createParticles(){
   if(setVolumeParticle){
     volumeParticle = volumeParticle/cVolume;
   }
-  else if(quasiNeutrallyBuoyant2D || quasiNeutrallyBuoyant4pt2D){
+  else if(quasiNeutrallyBuoyant2D){
     volumeParticle = 4;
+  }
+  else if(quasiNeutrallyBuoyant4pt2D){
+    // For the 4pt kernel the particle volume should be
+    // (8.0/3.0)^dimensions times the volume of a fluid cell.
+    volumeParticle = 64.0 / 9.0 ; 
   }
   else{
     volumeParticle = 8;
