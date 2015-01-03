@@ -1,0 +1,118 @@
+Here, some input files for the different schemes (algorithms) inplemented in fluam are provided. Many schemes
+only have minor difference with other schemes.
+The schemes to solve the fluid equations are described in Usabiaga et al. MULTISCALE MODEL. SIMUL. Vol. 10, No. 4, pp. 1369–1408 (2012). 
+The schemes to solve the particle equations are discribed in 
+Usabiaga et al. Comput. Methods Appl. Mech. Engrg. 269, 139–172 (2014),
+Usabiaga and Delgado-Buscalioni PHYSICAL REVIEW E 88, 063304 (2013) and
+Delong et al.  The Journal of Chemical Physics 140, 134110 (2014).
+These papers can be found also in arXiv.
+ 
+
+SCHEMES WITHOUT PARTICLES:
+data.main.thermostat: compressible fluid with PBC. 
+                      The scheme is described in Usabiaga et al. MULTISCALE MODEL. SIMUL. Vol. 10, No. 4, pp. 1369–1408 (2012).
+data.main.binaryMixture: compressible binary mixture with periodic boundary conditions.	 
+                         The scheme is described in Usabiaga et al. MULTISCALE MODEL. SIMUL. Vol. 10, No. 4, pp. 1369–1408 (2012).
+data.main.binaryMixtureWall: compressible binary mixture with walls in one direction (PBC in the other two).	 
+		             The scheme is described in Usabiaga et al. MULTISCALE MODEL. SIMUL. Vol. 10, No. 4, pp. 1369–1408 (2012).
+data.main.continuousGradient: compressible binary mixture with periodic boundary conditions and a constant forcing
+			      in the concentration equations to model the term v*grad(c).
+			      The scheme is described in Usabiaga et al. MULTISCALE MODEL. SIMUL. Vol. 10, No. 4, pp. 1369–1408 (2012).
+			      See equations 1-3 and section 5.1 for the forcing term v*grad(c).
+data.main.giantFluctuations: compressible binary mixture with walls in one direction (PBC in the other two)
+		             and a forcing term in the concentration equation of the form c*(1-c)*S_T*grad(T).
+		             The scheme is described in Usabiaga et al. MULTISCALE MODEL. SIMUL. Vol. 10, No. 4, pp. 1369–1408 (2012).
+data.main.incompressible: incompressible fluid with PBC.
+			  The scheme is described in Usabiaga et al. MULTISCALE MODEL. SIMUL. Vol. 10, No. 4, pp. 1369–1408 (2012).
+data.main.incompressibleBinaryMixture: incompressible binary mixture with PBC.
+				       The scheme is described in Usabiaga et al. MULTISCALE MODEL. SIMUL. Vol. 10, No. 4, pp. 1369–1408 (2012).
+
+
+SCHEME WITH PARTICLES:
+data.main.compressibleParticles: compressible fluid with PBC and immersed particles.
+	   		         The scheme is described in Usabiaga et al. Comput. Methods Appl. Mech. Engrg. 269, 139–172 (2014).
+			         See appendix D.
+data.main.particlesWall: compressible fluid with walls in one direction and PBC in the other two and immersed particles.
+			 The scheme is described in Usabiaga et al. Comput. Methods Appl. Mech. Engrg. 269, 139–172 (2014).
+			 See appendix D.
+data.main.freeEnergyCompressibleParticles: compressible fluid with PBC and immersed particles. The particles modified the
+					   equation of state (speed of sound) in the particle domain.
+				           The scheme is described in Usabiaga and Delgado-Buscalioni PHYSICAL REVIEW E 88, 063304 (2013).
+data.main.momentumCoupling: compressible fluid with PBC and immersed particles. The fluid-particle constraint is
+			    J*g=(m_p*u)/volumeParticle. See Reference 55 in Usabiaga and Delgado-Buscalioni PHYSICAL REVIEW E 88, 063304 (2013).
+data.main.incompressibleBoundary: incompressible fluid with immersed particles. The temporal accuracy of the scheme is
+			          first order; this scheme has not been used in years!
+data.main.quasiNeutrallyBuoyant: incompressible fluid with PBC and immersed particles.
+				 The scheme is described in Usabiaga et al. Comput. Methods Appl. Mech. Engrg. 269, 139–172 (2014).
+data.main.quasiNeutrallyBuoyant2D: 2D incompressible fluid with PBC and immersed particles.
+    				   The scheme is described in Usabiaga et al. Comput. Methods Appl. Mech. Engrg. 269, 139–172 (2014).
+data.main.quasiNeutrallyBuoyant4pt2D: 2D incompressible fluid with PBC and immersed particles. The kernel is the 4 points
+				      kernel instead of the 3pt kernel that we use in the other schemes.
+				      The scheme is described in Usabiaga et al. Comput. Methods Appl. Mech. Engrg. 269, 139–172 (2014).
+				      The 4pt kernel is defined in Peskin Acta Numerica (2002), pp. 479–517.
+data.main.stokesLimit: scheme for particles in the Stokes limit (not inertia). The scheme is described in Section IV.B of
+		       Delong et al. The Journal of Chemical Physics 140, 134110 (2014).
+
+
+
+
+
+INFORMATION FOR BONDED FORCES:
+It's possible link particles between them or to a fixed point in the simulation
+box. The new terms will be harmonic potentials with equilibrium length r0
+
+V(r) = 0.5 * k * (rij -r0)^2
+
+To use this forces in the inputfile "data.main" add the line
+
+bondedForces            fileBondedForces.dat
+
+Where fileBondedForces.dat is a file with the information of the bonded
+forces (it is possible to use a different file name). The format of the file is the
+following (see examples below)
+
+number_bonds_particle_particle
+index1          index2           kSpring           r0
+.
+.
+.
+.
+number_bonds_fixed_points
+index1           kSpring            r0        x       y       z
+.
+.
+.
+.
+
+
+number_bonds_particle_particle: This is twice the number of bonds between
+particles.
+
+index1:  one of the particles in the bond. They should be sort from lower  to
+higher index.
+
+kSpring: the spring constant
+
+r0: the equilibrium length
+
+number_bonds_fixed_points: number of bonds between particles and fixed points.
+
+index1: the particle in the bond
+
+kSpring: spring constant
+
+r0: equilibrium length
+
+x, y, z : coordinates of the fixed point or the potential center.
+
+EXAMPLE 1: One particle in an harmonic trap at (0,0,0) with spring constant 2
+and equilibrium length 0
+0
+1
+0       2       0      0     0      0
+
+EXAMPLE 2: two particles conected between them with srping constant 2 and equilibrium length 3
+2
+0	1	2	3
+1	0	2	3
+0

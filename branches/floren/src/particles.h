@@ -49,6 +49,7 @@ EXTERN_PARTICLES double volumeParticle;
 EXTERN_PARTICLES bool loadparticles;
 EXTERN_PARTICLES double cutoff;
 EXTERN_PARTICLES int numNeighbors;
+EXTERN_PARTICLES bool setVolumeParticle;
 //EXTERN_PARTICLES int nparticles;
 
 //NEW bonded forces
