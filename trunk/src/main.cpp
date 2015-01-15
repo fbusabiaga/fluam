@@ -27,12 +27,10 @@
 
 int main(int argc, char* argv[]){
 
-  //cout.precision(15);
-  //cout.width(12);
-  //cout.setf(ios_base::scientific,ios_base::floatfield);
 
   //Read a file with data for start the simulation
   if(!loadDataMain(argc,argv)) return 0;
+  
   //Save GPU information
   if(!cudaDevice()) return 0;
   
