@@ -1,9 +1,6 @@
-=====================================
-Fluam a fluctuating hydrodynamic code
-=====================================
+####Fluam a fluctuating hydrodynamic code
 
-Contents
---------
+###Contents
 1. Installation instructions
 2. Use
 3. Contact
@@ -11,8 +8,7 @@ Contents
 
 
 
-1. Installation instructions
----------------------------
+##1. Installation instructions
 a) You will need a NVIDIA GPU with compute capability 1.3
 or higher to use fluam. You don't need any GPU to compile 
 and modify the code.
@@ -32,8 +28,7 @@ make
 
 e) To speed up the compilation process see fluam/work/README
 
-2. Use
-------
+##2. Use
 To run fluam type
 fluam data.main
 
@@ -41,14 +36,12 @@ data.main is a file with the option for the simulation, look
 fluam/bin/data.main for the options.
 
 
-3. Contact
-----------
+##3. Contact
 If you find problems contact the owner of the project
 https://github.com/fbusabiaga/fluam
 
 
-4. License and Copyright
-------------------------
+##4. License and Copyright
 Source code is available at: https://github.com/fbusabiaga/fluam
 
 Fluam is released under the terms of the GNU General Public License. See
