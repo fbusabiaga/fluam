@@ -11,7 +11,7 @@
 ##0. Introduction
 **fluam** is a code for fluctuating hydrodynamics with immersed structures based
 on the immersed boundary method. It offers fluid solvers for the compressible and
-incompressible Navier-Stoke equations,
+incompressible Navier-Stokes equations,
 * Staggered Schemes for Fluctuating Hydrodynamics, F. Balboa Usabiaga, J. B. Bell, R. Delgado-Buscalioni, A. Donev, T. G. Fai, B. E. Griffith andC. S. Peskin. Multiscale Modeling & Simulation, 10 (3), 1369 (2012). [http://arxiv.org/abs/1108.5188]
  
 
