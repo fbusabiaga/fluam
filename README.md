@@ -41,7 +41,7 @@ make
 e) To speed up the compilation process see fluam/work/README
 
 ##2. Use
-To run fluam type
+To run **fluam** type
 fluam data.main
 
 data.main is a file with the option for the simulation, look
@@ -56,7 +56,7 @@ https://github.com/fbusabiaga/fluam
 ##4. License and Copyright
 Source code is available at: https://github.com/fbusabiaga/fluam
 
-Fluam is released under the terms of the GNU General Public License. See
+**fluam** is released under the terms of the GNU General Public License. See
 "COPYING" for more details.
 
 The source files included with this release are copyrighted by their
