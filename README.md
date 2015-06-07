@@ -12,12 +12,17 @@
 **fluam** is a code for fluctuating hydrodynamics with immersed structures based
 on the immersed boundary method. It offers fluid solvers for the compressible and
 incompressible Navier-Stokes equations,
-* Staggered Schemes for Fluctuating Hydrodynamics, F. Balboa Usabiaga, J. B. Bell, R. Delgado-Buscalioni, A. Donev, T. G. Fai, B. E. Griffith andC. S. Peskin. Multiscale Modeling & Simulation, 10 (3), 1369 (2012). [http://arxiv.org/abs/1108.5188]
+* Staggered Schemes for Fluctuating Hydrodynamics, F. Balboa Usabiaga, J. B. Bell, R. Delgado-Buscalioni, A. Donev, T. G. Fai, B. E. Griffith andC. S. Peskin. Multiscale Modeling & Simulation, **10** (3), 1369 (2012). [http://arxiv.org/abs/1108.5188]
  
+and particle solvers for regimes ranging from the acoustic time scales to the Stokes limit,
+* Minimal model for acoustic forces on Brownian particles, F. Balboa Usabiaga and R. Delgado-Buscalioni. Physical Review E, **88**, 063304 (2013). [http://arxiv.org/abs/1307.0702] 
+* Inertial coupling method for particles in an incompressible fluctuating fluid, F. Balboa Usabiaga, R. Delgado-Buscalioni, B. E. Griffith and A. Donev. Computer Methods in Applied Mechanics and Engineering, **269**, 139 (2014). [http://arxiv.org/abs/1212.6427]
+* Brownian Dynamics without Green's Functions, S. Delong, F. Balboa Usabiaga, R. Delgado-Buscalioni, B. E. Griffith and A. Donev. The Journal of Chemical Physics, **140** (13), 134110 (2014). [http://arxiv.org/abs/1401.4198]
+
 
 ##1. Installation instructions
 a) You will need a NVIDIA GPU with compute capability 1.3
-or higher to use fluam. You don't need any GPU to compile 
+or higher to use **fluam**. You don't need any GPU to compile 
 and modify the code.
 
 b) Third-party software: you will need the CUDA compiler
