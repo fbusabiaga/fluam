@@ -21,8 +21,7 @@ int main(  int argc, char* argv[]){
   
   float t, x, y, z, u;
   cout.precision(12);
-  while(!fileinput.eof()){
-    fileinput >> t;
+  while(fileinput >> t){
     for(int i=0;i<np;i++){
       if(i==particle) fileinput >> x >> y >> z;
       else fileinput >> u >> u >> u;
