@@ -67,7 +67,7 @@ To use this forces in the inputfile "data.main" add the line
 
 bondedForces            fileBondedForces.dat
 
-Where fileBondedForces.dat is a file with the information of the bonded
+Where fileBondedForces.dat is a file with the information for the bonded
 forces (it is possible to use a different file name). The format of the file is the
 following (see examples below)
 
@@ -85,24 +85,15 @@ index1           kSpring            r0        x       y       z
 .
 
 
-number_bonds_particle_particle: This is twice the number of bonds between
-particles.
-
-index1:  one of the particles in the bond. They should be sort from lower  to
-higher index.
-
+number_bonds_particle_particle: This is the number of bonds between particles.
+index1: one of the particles in the bond. 
 kSpring: the spring constant
-
 r0: the equilibrium length
 
 number_bonds_fixed_points: number of bonds between particles and fixed points.
-
 index1: the particle in the bond
-
 kSpring: spring constant
-
 r0: equilibrium length
-
 x, y, z : coordinates of the fixed point or the potential center.
 
 EXAMPLE 1: One particle in an harmonic trap at (0,0,0) with spring constant 2
@@ -112,7 +103,6 @@ and equilibrium length 0
 0       2       0      0     0      0
 
 EXAMPLE 2: two particles conected between them with srping constant 2 and equilibrium length 3
-2
+1
 0	1	2	3
-1	0	2	3
 0
