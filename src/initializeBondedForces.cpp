@@ -53,8 +53,10 @@ bool initializeBondedForces(){
     file >> index1 >> index2 >> trashDouble >> trashDouble;   
     bondsParticleParticle[index1]++;
     bondsParticleParticle[index2]++;
+    cout << index1 << " " << index2 << " " << bondsParticleParticle[index1] << " " << bondsParticleParticle[index2]
+	 << endl;
   }
-
+  
 
 
 
@@ -75,15 +77,15 @@ bool initializeBondedForces(){
     file >> index1 >> trashDouble >> trashDouble >> trashDouble >> trashDouble >> trashDouble;
     bondsParticleFixedPoint[index1]++;
   }
-
+  
   //Important, lear how to rewind a file
   //CLOSE FILE 
   file.close();
-
+  
   //Allocate memory
-  bondsIndexParticleParticle = new int [nbondsParticleParticle];
-  kSpringParticleParticle = new double [nbondsParticleParticle];
-  r0ParticleParticle = new double [nbondsParticleParticle];
+  bondsIndexParticleParticle = new int [nbondsParticleParticle * 2];
+  kSpringParticleParticle = new double [nbondsParticleParticle * 2];
+  r0ParticleParticle = new double [nbondsParticleParticle * 2];
 
   //bondsIndexParticleFixedPoint = new int [nbondsParticleFixedPoint];  
   kSpringParticleFixedPoint = new double [nbondsParticleFixedPoint];
@@ -95,11 +97,13 @@ bool initializeBondedForces(){
   //Compute offset
   bondsParticleParticleOffset[0] = 0;
   bondsParticleFixedPointOffset[0] = 0;
+  cout  << "============  offset  ============================ " << endl;
   for(int i=1; i<np; i++){
-    bondsParticleParticleOffset[i] = bondsParticleParticleOffset[i] + bondsParticleParticle[i-1];
+    bondsParticleParticleOffset[i] = bondsParticleParticleOffset[i-1] + bondsParticleParticle[i-1];
     bondsParticleFixedPointOffset[i] = bondsParticleFixedPointOffset[i-1] + bondsParticleFixedPoint[i-1];
+    cout << i << " " << bondsParticleParticleOffset[i] << "  " << bondsParticleFixedPointOffset[i] << endl;
   }
-
+  
   //Create tmp offset
   int *tmpOffset = new int [np];
   for(int i=0;i<np;i++){
@@ -113,12 +117,32 @@ bool initializeBondedForces(){
   file >> nbondsParticleParticle;
 
   //Information bonds particle-particle
+  double k, r0;
   for(int i=0;i<nbondsParticleParticle;i++){  
-    file >> index1 >> bondsIndexParticleParticle[bondsParticleParticleOffset[index1]+tmpOffset[index1]]
-	 >> kSpringParticleParticle[             bondsParticleParticleOffset[index1]+tmpOffset[index1]]
-	 >> r0ParticleParticle[                  bondsParticleParticleOffset[index1]+tmpOffset[index1]];
+    file >> index1 >> index2 >> k >> r0;
+    
+    // Data for particle index1
+    bondsIndexParticleParticle[bondsParticleParticleOffset[index1]+tmpOffset[index1]] = index2;
+    kSpringParticleParticle[   bondsParticleParticleOffset[index1]+tmpOffset[index1]] = k;
+    r0ParticleParticle[        bondsParticleParticleOffset[index1]+tmpOffset[index1]] = r0;
+
+    // Data for particle index2
+    bondsIndexParticleParticle[bondsParticleParticleOffset[index2]+tmpOffset[index2]] = index1;
+    kSpringParticleParticle[   bondsParticleParticleOffset[index2]+tmpOffset[index2]] = k;
+    r0ParticleParticle[        bondsParticleParticleOffset[index2]+tmpOffset[index2]] = r0;
+
     // Increase tmpOffset
     tmpOffset[index1]++;
+    tmpOffset[index2]++;
+  }
+
+  cout << "=============== springs =========================" << endl;
+  for(int i=0;i<np;i++){
+    for(int j=0; j<bondsParticleParticle[i];j++){
+      cout << i << " " << bondsIndexParticleParticle[bondsParticleParticleOffset[i]+j]
+	   << " " << kSpringParticleParticle[bondsParticleParticleOffset[i]+j]
+	   << " " << r0ParticleParticle[bondsParticleParticleOffset[i]+j] << endl;
+    }
   }
 
   // Reset tmp offset to zero for particle-fixed point interactions

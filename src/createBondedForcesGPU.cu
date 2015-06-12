@@ -64,9 +64,9 @@ bool createBondedForcesGPU(){
   cutilSafeCall(cudaMalloc((void**)&bFV,sizeof(bondedForcesVariables)));
   cutilSafeCall(cudaMalloc((void**)&bondsParticleParticleGPU,np*sizeof(int)));
   cutilSafeCall(cudaMalloc((void**)&bondsParticleParticleOffsetGPU,np*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&bondsIndexParticleParticleGPU,nbondsParticleParticle*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&r0ParticleParticleGPU,nbondsParticleParticle*sizeof(double)));
-  cutilSafeCall(cudaMalloc((void**)&kSpringParticleParticleGPU,nbondsParticleParticle*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&bondsIndexParticleParticleGPU,nbondsParticleParticle*2*sizeof(int)));
+  cutilSafeCall(cudaMalloc((void**)&r0ParticleParticleGPU,nbondsParticleParticle*2*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&kSpringParticleParticleGPU,nbondsParticleParticle*2*sizeof(double)));
 
   //Copy global memory
   cutilSafeCall(cudaMemcpy(bondsParticleParticleGPU,bondsParticleParticle,
@@ -74,11 +74,11 @@ bool createBondedForcesGPU(){
   cutilSafeCall(cudaMemcpy(bondsParticleParticleOffsetGPU,bondsParticleParticleOffset,
 			   np*sizeof(int),cudaMemcpyHostToDevice));
   cutilSafeCall(cudaMemcpy(bondsIndexParticleParticleGPU,bondsIndexParticleParticle,
-			   nbondsParticleParticle*sizeof(int),cudaMemcpyHostToDevice));
+			   nbondsParticleParticle*2*sizeof(int),cudaMemcpyHostToDevice));
   cutilSafeCall(cudaMemcpy(r0ParticleParticleGPU,r0ParticleParticle,
-			   nbondsParticleParticle*sizeof(double),cudaMemcpyHostToDevice));
+			   nbondsParticleParticle*2*sizeof(double),cudaMemcpyHostToDevice));
   cutilSafeCall(cudaMemcpy(kSpringParticleParticleGPU,kSpringParticleParticle,
-			   nbondsParticleParticle*sizeof(double),cudaMemcpyHostToDevice));
+			   nbondsParticleParticle*2*sizeof(double),cudaMemcpyHostToDevice));
 
 
 
