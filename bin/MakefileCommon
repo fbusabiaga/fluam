@@ -114,8 +114,7 @@ endif
 
 
 
-all : $(OBJS) ; $(NVCC) $(NVCCFLAGS) -o  $(EFILE) $(OBJS) $(LIBS)  \
-$(LIBRARIES) -L/usr/lib64/ -L./ -lgfortran -lfftw3 -lfftw3f -lcufft -lm 
+all : $(OBJS) ; $(NVCC) $(NVCCFLAGS) -o  $(EFILE) $(OBJS) $(LIBRARIES) 
 
 
 
