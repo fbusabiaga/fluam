@@ -114,7 +114,8 @@ endif
 
 
 
-all : $(OBJS) ; $(NVCC) $(NVCCFLAGS) -o  $(EFILE) $(OBJS) $(LIBS)  $(STATIC_LIBRARIES) $(LIBRARIES) 
+
+all : $(OBJS) ; $(NVCC) $(NVCCFLAGS) -o  $(EFILE) $(OBJS) $(STATIC_LIBRARIES) $(LIBRARIES) 
 
 
 
