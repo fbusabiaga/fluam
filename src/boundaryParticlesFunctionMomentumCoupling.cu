@@ -92,7 +92,8 @@ void boundaryParticlesFunctionMomentumCoupling(int option,
 										     rzcellGPU,
 										     densityGPU,
 										     fboundaryOmega,
-										     pc);
+										     pc,
+										     errorKernel);
       
       kernelAddPressureParticles<<<numBlocks,threadsPerBlock>>>(omegaGPU,
 								fboundaryOmega,
@@ -121,7 +122,8 @@ void boundaryParticlesFunctionMomentumCoupling(int option,
 										     rzcellGPU,
 										     densityPredictionGPU,
 										     fboundaryOmega,
-										     pc);
+										     pc,
+										     errorKernel);
       
       kernelAddPressureParticles<<<numBlocks,threadsPerBlock>>>(omegaGPU,
 								fboundaryOmega,

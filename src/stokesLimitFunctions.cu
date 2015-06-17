@@ -1710,6 +1710,7 @@ __global__ void kernelSpreadParticlesDrift(const double* rxcellGPU,
 					   double* fzboundaryGPU,
 					   const double* d_rand,
 					   particlesincell* pc,
+					   int* errorKernel,
 					   int sign){
   
   int i = blockDim.x * blockIdx.x + threadIdx.x;

@@ -21,8 +21,6 @@
 
 void allocateErrorArray(){
   int size = 0;
-  //if(setparticles==1) size++;
-  //if((setparticles==1) || (setboundary==1)) size +=3;
   size = 5;
 
   cutilSafeCall(cudaMalloc((void**)&errorKernel,size*sizeof(int)));

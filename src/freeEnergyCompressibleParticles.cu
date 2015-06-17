@@ -22,12 +22,13 @@
 
 
 //Calculate and spread "pressure" due to the particle S*Omega
-__global__ void kernelSpreadPressureParticles(double* rxcellGPU,
-					      double* rycellGPU,
-					      double* rzcellGPU,
+__global__ void kernelSpreadPressureParticles(const double* rxcellGPU,
+					      const double* rycellGPU,
+					      const double* rzcellGPU,
 					      double* densityGPU,
 					      double* fboundaryOmega,
-					      particlesincell* pc){
+					      particlesincell* pc,
+					      int* errorKernel){
   
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if(i>=(npGPU)) return;   

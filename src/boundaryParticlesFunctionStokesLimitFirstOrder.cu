@@ -87,6 +87,7 @@ void boundaryParticlesFunctionStokesLimitFirstOrder(int option,
 										  fzboundaryGPU,
 										  dRand,
 										  pc,
+										  errorKernel,
 										  1);
 
       //Add drift spreaded by the particles
@@ -111,6 +112,7 @@ void boundaryParticlesFunctionStokesLimitFirstOrder(int option,
 										  fzboundaryGPU,
 										  dRand,
 										  pc,
+										  errorKernel,
 										  -1);
 
       //Add drift spreaded by the particles

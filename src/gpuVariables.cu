@@ -95,7 +95,6 @@ typedef struct{
   int* partincellZ;
   int* countPartInCellNonBonded;
   int* partInCellNonBonded;
-  //freeEnergyCompressibleParticles
   int* countparticlesincell;
   int* partincell;
 } particlesincell;
@@ -118,7 +117,6 @@ __constant__ double lxGPU, lyGPU, lzGPU;
 __constant__ double velocityboundaryGPU;
 __constant__ double dtGPU;
 __constant__ int numberneighboursGPU;
-//int *cellneighbourGPU;// cellneighbourGPU[i*numberneighbours+j] neighbour j cell i
 __constant__ double volumeGPU;
 __constant__ double exGPU[6], eyGPU[6], ezGPU[6];
 __constant__ double dxGPU, dyGPU, dzGPU; 
@@ -126,33 +124,31 @@ __constant__ double invdxGPU, invdyGPU, invdzGPU;
 __constant__ double invlxGPU, invlyGPU, invlzGPU;
 __constant__ double invdtGPU;
 
-//__device__ double *massGPU;
-__device__ double *densityGPU;
-__device__ double *densityPredictionGPU;
-__device__ double *vxGPU, *vyGPU, *vzGPU;
-__device__ double *vxPredictionGPU, *vyPredictionGPU, *vzPredictionGPU;
-__device__ double *fxGPU, *fyGPU, *fzGPU;
-__device__ double *dmGPU;
-__device__ double *dpxGPU, *dpyGPU, *dpzGPU;
-__device__ double *rxcellGPU, *rycellGPU, *rzcellGPU;
-__device__ double *advXGPU, *advYGPU, *advZGPU;
-__device__ double *omegaGPU;
+double *densityGPU;
+double *densityPredictionGPU;
+double *vxGPU, *vyGPU, *vzGPU;
+double *vxPredictionGPU, *vyPredictionGPU, *vzPredictionGPU;
+double *fxGPU, *fyGPU, *fzGPU;
+double *dmGPU;
+double *dpxGPU, *dpyGPU, *dpzGPU;
+double *rxcellGPU, *rycellGPU, *rzcellGPU;
+double *advXGPU, *advYGPU, *advZGPU;
+double *omegaGPU;
 
 //IMEXRK
-__device__ double *vx2GPU, *vy2GPU, *vz2GPU;
-__device__ double *vx3GPU, *vy3GPU, *vz3GPU;
-__device__ double *rxboundary2GPU, *ryboundary2GPU, *rzboundary2GPU;
-__device__ double *rxboundary3GPU, *ryboundary3GPU, *rzboundary3GPU;
-__device__ double *vxboundary2GPU, *vyboundary2GPU, *vzboundary2GPU;
-__device__ double *vxboundary3GPU, *vyboundary3GPU, *vzboundary3GPU;
-__device__ double *fx2GPU, *fy2GPU, *fz2GPU;
-__device__ double *fx3GPU, *fy3GPU, *fz3GPU;
+double *vx2GPU, *vy2GPU, *vz2GPU;
+double *vx3GPU, *vy3GPU, *vz3GPU;
+double *rxboundary2GPU, *ryboundary2GPU, *rzboundary2GPU;
+double *rxboundary3GPU, *ryboundary3GPU, *rzboundary3GPU;
+double *vxboundary2GPU, *vyboundary2GPU, *vzboundary2GPU;
+double *vxboundary3GPU, *vyboundary3GPU, *vzboundary3GPU;
+double *fx2GPU, *fy2GPU, *fz2GPU;
+double *fx3GPU, *fy3GPU, *fz3GPU;
 
-//__constant__ double omega1, omega2, omega3, omega4, omega5;
 
 
 //Binary Mixture
-__device__ double *cGPU, *cPredictionGPU, *dcGPU;
+double *cGPU, *cPredictionGPU, *dcGPU;
 
 __constant__ double cWall0GPU, cWall1GPU, densityWall0GPU, densityWall1GPU;
 __constant__ double vxWall0GPU, vxWall1GPU;
@@ -176,69 +172,61 @@ __constant__ double soretCoefficientGPU, gradTemperatureGPU;
 __constant__ double extraMobilityGPU;
 __constant__ bool setExtraMobilityGPU;
 
-__device__ double *rxboundaryGPU, *ryboundaryGPU, *rzboundaryGPU;
-__device__ double *vxboundaryGPU, *vyboundaryGPU, *vzboundaryGPU;
-__device__ double *fxboundaryGPU, *fyboundaryGPU, *fzboundaryGPU;
-__device__ double *fboundaryOmega;
-__device__ double *volumeboundaryGPU;
-__device__ double *fbcell;
+double *rxboundaryGPU, *ryboundaryGPU, *rzboundaryGPU;
+double *vxboundaryGPU, *vyboundaryGPU, *vzboundaryGPU;
+double *fxboundaryGPU, *fyboundaryGPU, *fzboundaryGPU;
+double *fboundaryOmega;
+double *volumeboundaryGPU;
+double *fbcell;
 
-//__device__ double *rxParticleGPU, *ryParticleGPU, *rzParticleGPU;
-//__device__ double *vxParticleGPU, *vyParticleGPU, *vzParticleGPU;
 __constant__ double massParticleGPU, volumeParticleGPU;
 __constant__ int npGPU;
 __constant__ bool setparticlesGPU, setboundaryGPU;
 __constant__ double omega0GPU;
-/*__device__ double *fb0, *fb1, *fb2, *fb3, *fb4, *fb5;
-__device__ double *fbpxpy, *fbpxmy, *fbpxpz, *fbpxmz;
-__device__ double *fbmxpy, *fbmxmy, *fbmxpz, *fbmxmz;
-__device__ double *fbpypz, *fbpymz, *fbmypz, *fbmymz;
-__device__ double *fbpxpypz, *fbpxpymz, *fbpxmypz, *fbpxmymz;
-__device__ double *fbmxpypz, *fbmxpymz, *fbmxmypz, *fbmxmymz;
-__device__ int *bposition;*/
 
-__device__ int *ghostIndexGPU, *realIndexGPU;
-__device__ int *ghostToPIGPU, *ghostToGhostGPU;
-__device__ int *vecino0GPU, *vecino1GPU, *vecino2GPU;
-__device__ int *vecino3GPU, *vecino4GPU, *vecino5GPU;
-__device__ int *vecinopxpyGPU, *vecinopxmyGPU, *vecinopxpzGPU, *vecinopxmzGPU;
-__device__ int *vecinomxpyGPU, *vecinomxmyGPU, *vecinomxpzGPU, *vecinomxmzGPU;
-__device__ int *vecinopypzGPU, *vecinopymzGPU, *vecinomypzGPU, *vecinomymzGPU;
-__device__ int *vecinopxpypzGPU, *vecinopxpymzGPU, *vecinopxmypzGPU, *vecinopxmymzGPU;
-__device__ int *vecinomxpypzGPU, *vecinomxpymzGPU, *vecinomxmypzGPU, *vecinomxmymzGPU; 
+int *ghostIndexGPU, *realIndexGPU;
+int *ghostToPIGPU, *ghostToGhostGPU;
+int *vecino0GPU, *vecino1GPU, *vecino2GPU;
+int *vecino3GPU, *vecino4GPU, *vecino5GPU;
+int *vecinopxpyGPU, *vecinopxmyGPU, *vecinopxpzGPU, *vecinopxmzGPU;
+int *vecinomxpyGPU, *vecinomxmyGPU, *vecinomxpzGPU, *vecinomxmzGPU;
+int *vecinopypzGPU, *vecinopymzGPU, *vecinomypzGPU, *vecinomymzGPU;
+int *vecinopxpypzGPU, *vecinopxpymzGPU, *vecinopxmypzGPU, *vecinopxmymzGPU;
+int *vecinomxpypzGPU, *vecinomxpymzGPU, *vecinomxmypzGPU, *vecinomxmymzGPU; 
 __constant__ int nboundaryGPU;
 __constant__ double vboundaryGPU;
 
-__device__ int *neighbor0GPU, *neighbor1GPU, *neighbor2GPU;
-__device__ int *neighbor3GPU, *neighbor4GPU, *neighbor5GPU;
-__device__ int *neighborpxpyGPU, *neighborpxmyGPU, *neighborpxpzGPU, *neighborpxmzGPU;
-__device__ int *neighbormxpyGPU, *neighbormxmyGPU, *neighbormxpzGPU, *neighbormxmzGPU;
-__device__ int *neighborpypzGPU, *neighborpymzGPU, *neighbormypzGPU, *neighbormymzGPU;
-__device__ int *neighborpxpypzGPU, *neighborpxpymzGPU, *neighborpxmypzGPU, *neighborpxmymzGPU;
-__device__ int *neighbormxpypzGPU, *neighbormxpymzGPU, *neighbormxmypzGPU, *neighbormxmymzGPU;
+int *neighbor0GPU, *neighbor1GPU, *neighbor2GPU;
+int *neighbor3GPU, *neighbor4GPU, *neighbor5GPU;
+int *neighborpxpyGPU, *neighborpxmyGPU, *neighborpxpzGPU, *neighborpxmzGPU;
+int *neighbormxpyGPU, *neighbormxmyGPU, *neighbormxpzGPU, *neighbormxmzGPU;
+int *neighborpypzGPU, *neighborpymzGPU, *neighbormypzGPU, *neighbormymzGPU;
+int *neighborpxpypzGPU, *neighborpxpymzGPU, *neighborpxmypzGPU, *neighborpxmymzGPU;
+int *neighbormxpypzGPU, *neighbormxpymzGPU, *neighbormxmypzGPU, *neighbormxmymzGPU;
 __constant__ int mxNeighborsGPU, myNeighborsGPU, mzNeighborsGPU, mNeighborsGPU;
 
 
-__device__ int *partincellX, *partincellY, *partincellZ;
-__device__ int *countparticlesincellX, *countparticlesincellY, *countparticlesincellZ;
-__device__ int *partInCellNonBonded, *countPartInCellNonBonded;
-__device__ int *countparticlesincell, *partincell;
+int *partincellX, *partincellY, *partincellZ;
+int *countparticlesincellX, *countparticlesincellY, *countparticlesincellZ;
+int *partInCellNonBonded, *countPartInCellNonBonded;
+int *countparticlesincell, *partincell;
+int *errorKernel;
+double *saveForceX, *saveForceY, *saveForceZ;
+
 __constant__ int maxNumberPartInCellGPU, maxNumberPartInCellNonBondedGPU;
-__device__ int *errorKernel;
 __constant__ double cutoffGPU, invcutoffGPU, invcutoff2GPU;
 
-__constant__ double *saveForceX, *saveForceY, *saveForceZ;
 
 //WAVE SOURCE
-__device__ long long *stepGPU;
+long long *stepGPU;
 __constant__ double densityConstGPU, dDensityGPU;
 
-__device__ vecinos *vec;
-__device__ fvec *fb;
-__device__ particlesincell *pc;
+vecinos *vec;
+fvec *fb;
+particlesincell *pc;
 
-__device__ double *rxCheckGPU, *ryCheckGPU, *rzCheckGPU;
-__device__ double *vxCheckGPU, *vyCheckGPU, *vzCheckGPU;
+double *rxCheckGPU, *ryCheckGPU, *rzCheckGPU;
+double *vxCheckGPU, *vyCheckGPU, *vzCheckGPU;
 
 cudaArray *cuArrayDelta;
 cudaArray *cuArrayDeltaDerived;
@@ -325,17 +313,17 @@ texture<int, 1> texneighbormxmymzGPU;
 
 
 //Incompressible
-__device__ cufftDoubleComplex *WxZ, *WyZ, *WzZ;
-__device__ cufftDoubleComplex *vxZ, *vyZ, *vzZ;
-__device__ cufftDoubleComplex *cZ;
-__device__ cufftDoubleComplex *gradKx, *gradKy, *gradKz;
-__device__ cufftDoubleComplex *expKx, *expKy, *expKz;
-__device__ prefactorsFourier *pF;
+cufftDoubleComplex *WxZ, *WyZ, *WzZ;
+cufftDoubleComplex *vxZ, *vyZ, *vzZ;
+cufftDoubleComplex *cZ;
+cufftDoubleComplex *gradKx, *gradKy, *gradKz;
+cufftDoubleComplex *expKx, *expKy, *expKz;
+prefactorsFourier *pF;
 
 
 //IncompressibleBoundaryRK2
-__device__ double *rxboundaryPredictionGPU, *ryboundaryPredictionGPU, *rzboundaryPredictionGPU;
-__device__ double *vxboundaryPredictionGPU, *vyboundaryPredictionGPU, *vzboundaryPredictionGPU;
+double *rxboundaryPredictionGPU, *ryboundaryPredictionGPU, *rzboundaryPredictionGPU;
+double *vxboundaryPredictionGPU, *vyboundaryPredictionGPU, *vzboundaryPredictionGPU;
 
 
 
@@ -350,7 +338,6 @@ typedef struct{
 
   int *bondsParticleFixedPointGPU;
   int *bondsParticleFixedPointOffsetGPU;
-  //int *bondsIndexParticleFixedPointGPU;
   double *r0ParticleFixedPointGPU;
   double *kSpringParticleFixedPointGPU;
   double *rxFixedPointGPU;
@@ -359,22 +346,21 @@ typedef struct{
 } bondedForcesVariables;
 
 __constant__ bool bondedForcesGPU;
-__device__ bondedForcesVariables *bFV;
-__device__ int *bondsParticleParticleGPU;
-__device__ int *bondsParticleParticleOffsetGPU;
-__device__ int *bondsIndexParticleParticleGPU;
-__device__ double *r0ParticleParticleGPU;
-__device__ double *kSpringParticleParticleGPU;
+bondedForcesVariables *bFV;
+int *bondsParticleParticleGPU;
+int *bondsParticleParticleOffsetGPU;
+int *bondsIndexParticleParticleGPU;
+double *r0ParticleParticleGPU;
+double *kSpringParticleParticleGPU;
 
 
-__device__ int *bondsParticleFixedPointGPU;
-__device__ int *bondsParticleFixedPointOffsetGPU;
-//__device__ int *bondsIndexParticleFixedPointGPU;
-__device__ double *r0ParticleFixedPointGPU;
-__device__ double *kSpringParticleFixedPointGPU;
-__device__ double *rxFixedPointGPU;
-__device__ double *ryFixedPointGPU;
-__device__ double *rzFixedPointGPU;
+int *bondsParticleFixedPointGPU;
+int *bondsParticleFixedPointOffsetGPU;
+double *r0ParticleFixedPointGPU;
+double *kSpringParticleFixedPointGPU;
+double *rxFixedPointGPU;
+double *ryFixedPointGPU;
+double *rzFixedPointGPU;
 __constant__ bool particlesWallGPU;
 __constant__ bool computeNonBondedForcesGPU;
 

@@ -114,8 +114,7 @@ endif
 
 
 
-all : $(OBJS) ; $(NVCC) $(NVCCFLAGS) -o  $(EFILE) $(OBJS) $(LIBS)  \
-$(LIBRARIES) -L/usr/lib64/ -L./ -lgfortran -lfftw3 -lfftw3f -lcufft -lm 
+all : $(OBJS) ; $(NVCC) $(NVCCFLAGS) -o  $(EFILE) $(OBJS) $(LIBS)  $(STATIC_LIBRARIES) $(LIBRARIES) 
 
 
 
@@ -131,7 +130,7 @@ $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 saveCellsAlongZ.o : saveCellsAlongZ.cu header.h fluid.h cells.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
-saveFluidVTK.o : saveFluidVTK.cu header.h fluid.h cells.h ; \
+saveFluidVTK.o : saveFluidVTK.cu header.h fluid.h cells.h visit_writer.c visit_writer.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
 loadDataMain.o : loadDataMain.cu header.h cells.h particles.h fluid.h ; \

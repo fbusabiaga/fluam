@@ -27,9 +27,7 @@
 
 bool createCellsIncompressibleBinaryMixture(){
 
-  int fx, fy, fz;
-  int** neighbour;
-  double dx, dy, dz, vol, areax, areay, areaz;
+  double dx, dy, dz;
   
 
   ncells = mx * my * mz;

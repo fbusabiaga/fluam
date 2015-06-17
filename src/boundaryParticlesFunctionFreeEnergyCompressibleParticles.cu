@@ -92,7 +92,8 @@ void boundaryParticlesFunctionFreeEnergyCompressibleParticles(int option,
 										     rzcellGPU,
 										     densityGPU,
 										     fboundaryOmega,
-										     pc);
+										     pc,
+										     errorKernel);
       
       kernelAddPressureParticles<<<numBlocks,threadsPerBlock>>>(omegaGPU,
 								fboundaryOmega,
@@ -109,7 +110,8 @@ void boundaryParticlesFunctionFreeEnergyCompressibleParticles(int option,
 										  fxboundaryGPU,
 										  fyboundaryGPU,
 										  fzboundaryGPU,
-										  pc,errorKernel,
+										  pc,
+										  errorKernel,
 										  bFV);
     }
 
@@ -121,7 +123,8 @@ void boundaryParticlesFunctionFreeEnergyCompressibleParticles(int option,
 										     rzcellGPU,
 										     densityPredictionGPU,
 										     fboundaryOmega,
-										     pc);
+										     pc,
+										     errorKernel);
       
       kernelAddPressureParticles<<<numBlocks,threadsPerBlock>>>(omegaGPU,
 								fboundaryOmega,
