@@ -142,6 +142,17 @@ bool firstStepQuasiNeutrallyBuoyant(int numBlocksNeighbors,
 									      pc,
 									      errorKernel,
 									      bFV);    
+
+  // Spread particle thermal drift 
+  // drift = (m_f_tilde/(m_e+m_f_tilde) * kT * ( \delta S(q) / \delta q )
+  kernelSpreadParticlesThermalDrift<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
+										     rycellGPU,
+										     rzcellGPU,
+										     fxboundaryGPU,
+										     fyboundaryGPU,
+										     fzboundaryGPU,
+										     pc,
+										     errorKernel);
   
   
   
@@ -681,6 +692,17 @@ bool firstStepQuasiNeutrallyBuoyant(int numBlocksNeighbors,
 									      pc,
 									      errorKernel,
 									      bFV);    
+
+  // Spread particle thermal drift 
+  // drift = (m_f_tilde/(m_e+m_f_tilde) * kT * ( \delta S(q) / \delta q )
+  kernelSpreadParticlesThermalDrift<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
+										     rycellGPU,
+										     rzcellGPU,
+										     fxboundaryGPU,
+										     fyboundaryGPU,
+										     fzboundaryGPU,
+										     pc,
+										     errorKernel);
   
   
   

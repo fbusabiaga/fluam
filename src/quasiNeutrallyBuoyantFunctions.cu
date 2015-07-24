@@ -6257,3 +6257,755 @@ __global__ void interpolateLaplacianDeltaV_2(double* rxcellGPU,
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Spread the particles thermal drift
+// drift = (m_f_tilde/(m_e+m_f_tilde) * kT * ( \delta S(q) / \delta q )
+__global__ void kernelSpreadParticlesThermalDrift(const double *rxcellGPU,
+						  const double *rycellGPU,
+						  const double *rzcellGPU,
+						  double *fxboundaryGPU,
+						  double *fyboundaryGPU,
+						  double *fzboundaryGPU,
+						  particlesincell *pc,
+						  int *errorKernel){
+
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=(npGPU)) return;   
+
+  double fx = 0.;
+  double fy = 0.;
+  double fz = 0.;
+  double f;
+  
+  double rx = fetch_double(texrxboundaryGPU,nboundaryGPU+i);
+  double ry = fetch_double(texryboundaryGPU,nboundaryGPU+i);
+  double rz = fetch_double(texrzboundaryGPU,nboundaryGPU+i);
+
+  int vecino0, vecino1, vecino2, vecino3, vecino4, vecino5;
+  int vecinopxpy, vecinopxmy, vecinopxpz, vecinopxmz;
+  int vecinomxpy, vecinomxmy, vecinomxpz, vecinomxmz;
+  int vecinopypz, vecinopymz, vecinomypz, vecinomymz;
+  int vecinopxpypz, vecinopxpymz, vecinopxmypz, vecinopxmymz;
+  int vecinomxpypz, vecinomxpymz, vecinomxmypz, vecinomxmymz;
+  
+  double r, rp, rm;
+
+  double dlx, dlxp, dlxm;
+  double dly, dlyp, dlym;
+  double dlz, dlzp, dlzm;
+  int icelx, icely, icelz;
+
+  {
+    int mxmy = mxGPU * mytGPU;
+    r = rx;
+    r = r - (int(r*invlxGPU + 0.5*((r>0)-(r<0)))) * lxGPU;
+    int jx   = int(r * invdxGPU + 0.5*mxGPU) % mxGPU;
+    r = rx - 0.5*dxGPU;
+    r = r - (int(r*invlxGPU + 0.5*((r>0)-(r<0)))) * lxGPU;
+    int jxdx = int(r * invdxGPU + 0.5*mxGPU) % mxGPU;
+
+    r = ry;
+    r = r - (int(r*invlyGPU + 0.5*((r>0)-(r<0)))) * lyGPU;
+    int jy   = int(r * invdyGPU + 0.5*mytGPU) % mytGPU;
+    r = ry - 0.5*dyGPU;
+    r = r - (int(r*invlyGPU + 0.5*((r>0)-(r<0)))) * lyGPU;
+    int jydy = int(r * invdyGPU + 0.5*mytGPU) % mytGPU;
+
+    r = rz;
+    r = r - (int(r*invlzGPU + 0.5*((r>0)-(r<0)))) * lzGPU;
+    int jz   = int(r * invdzGPU + 0.5*mzGPU) % mzGPU;
+    r = rz - 0.5*dzGPU;
+    r = r - (int(r*invlzGPU + 0.5*((r>0)-(r<0)))) * lzGPU;
+    int jzdz = int(r * invdzGPU + 0.5*mzGPU) % mzGPU;
+
+    icelx  = jxdx;
+    icelx += jy * mxGPU;
+    icelx += jz * mxmy;
+
+    icely  = jx;
+    icely += jydy * mxGPU;
+    icely += jz * mxmy;
+
+    icelz  = jx;
+    icelz += jy * mxGPU;
+    icelz += jzdz * mxmy;
+  }
+
+  double auxdx = invdxGPU/1.5;
+  double auxdy = invdyGPU/1.5;
+  double auxdz = invdzGPU/1.5;
+
+  //FORCE IN THE X DIRECTION
+  vecino0 = tex1Dfetch(texvecino0GPU, icelx);
+  vecino1 = tex1Dfetch(texvecino1GPU, icelx);
+  vecino2 = tex1Dfetch(texvecino2GPU, icelx);
+  vecino3 = tex1Dfetch(texvecino3GPU, icelx);
+  vecino4 = tex1Dfetch(texvecino4GPU, icelx);
+  vecino5 = tex1Dfetch(texvecino5GPU, icelx);
+  vecinopxpy = tex1Dfetch(texvecinopxpyGPU, icelx);
+  vecinopxmy = tex1Dfetch(texvecinopxmyGPU, icelx);
+  vecinopxpz = tex1Dfetch(texvecinopxpzGPU, icelx);
+  vecinopxmz = tex1Dfetch(texvecinopxmzGPU, icelx);
+  vecinomxpy = tex1Dfetch(texvecinomxpyGPU, icelx);
+  vecinomxmy = tex1Dfetch(texvecinomxmyGPU, icelx);
+  vecinomxpz = tex1Dfetch(texvecinomxpzGPU, icelx);
+  vecinomxmz = tex1Dfetch(texvecinomxmzGPU, icelx);
+  vecinopypz = tex1Dfetch(texvecinopypzGPU, icelx);
+  vecinopymz = tex1Dfetch(texvecinopymzGPU, icelx);
+  vecinomypz = tex1Dfetch(texvecinomypzGPU, icelx);
+  vecinomymz = tex1Dfetch(texvecinomymzGPU, icelx);
+  vecinopxpypz = tex1Dfetch(texvecinopxpypzGPU, icelx);
+  vecinopxpymz = tex1Dfetch(texvecinopxpymzGPU, icelx);
+  vecinopxmypz = tex1Dfetch(texvecinopxmypzGPU, icelx);
+  vecinopxmymz = tex1Dfetch(texvecinopxmymzGPU, icelx);
+  vecinomxpypz = tex1Dfetch(texvecinomxpypzGPU, icelx);
+  vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelx);
+  vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelx);
+  vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelx);
+  int vecinopxpxpypz = tex1Dfetch(texvecino3GPU, vecinopxpypz);
+  int vecinopxpxpymz = tex1Dfetch(texvecino3GPU, vecinopxpymz);
+  int vecinopxpxmypz = tex1Dfetch(texvecino3GPU, vecinopxmypz);
+  int vecinopxpxmymz = tex1Dfetch(texvecino3GPU, vecinopxmymz);
+  int vecinopxpx     = tex1Dfetch(texvecino3GPU, vecino3);
+  int vecinopxpxpy   = tex1Dfetch(texvecino3GPU, vecinopxpy);
+  int vecinopxpxmy   = tex1Dfetch(texvecino3GPU, vecinopxmy);
+  int vecinopxpxpz   = tex1Dfetch(texvecino3GPU, vecinopxpz);
+  int vecinopxpxmz   = tex1Dfetch(texvecino3GPU, vecinopxmz);
+
+  double dlS, dlpS, dlmS;
+
+  r =  (rx - rxcellGPU[icelx] - dxGPU*0.5);
+  rp = (rx - rxcellGPU[vecino3] - dxGPU*0.5);
+  rm = (rx - rxcellGPU[vecino2] - dxGPU*0.5);
+  r =  auxdx * (r - int(r*invlxGPU + 0.5*((r>0)-(r<0)))*lxGPU);
+  rm = auxdx * (rm - int(rm*invlxGPU + 0.5*((rm>0)-(rm<0)))*lxGPU);
+  rp = auxdx * (rp - int(rp*invlxGPU + 0.5*((rp>0)-(rp<0)))*lxGPU);
+  dlx = tex1D(texDelta, fabs(r));
+  dlxp = tex1D(texDelta, fabs(rp));
+  dlxm = tex1D(texDelta, fabs(rm));
+  dlS = functionDeltaDerived(1.5*r);
+  dlpS = functionDeltaDerived(1.5*rp);
+  dlmS = functionDeltaDerived(1.5*rm);
+
+
+  r =  (ry - rycellGPU[icelx]);
+  rp = (ry - rycellGPU[vecino4]);
+  rm = (ry - rycellGPU[vecino1]); 
+  r =  auxdy * (r - int(r*invlyGPU + 0.5*((r>0)-(r<0)))*lyGPU);
+  rp = auxdy * (rp - int(rp*invlyGPU + 0.5*((rp>0)-(rp<0)))*lyGPU);
+  rm = auxdy * (rm - int(rm*invlyGPU + 0.5*((rm>0)-(rm<0)))*lyGPU);
+  dly = tex1D(texDelta, fabs(r));
+  dlyp = tex1D(texDelta, fabs(rp));
+  dlym = tex1D(texDelta, fabs(rm));
+
+  r =  (rz - rzcellGPU[icelx]);
+  rp = (rz - rzcellGPU[vecino5]);
+  rm = (rz - rzcellGPU[vecino0]);
+  r = auxdz * (r - int(r*invlzGPU + 0.5*((r>0)-(r<0)))*lzGPU);
+  rp = auxdz * (rp - int(rp*invlzGPU + 0.5*((rp>0)-(rp<0)))*lzGPU);
+  rm = auxdz * (rm - int(rm*invlzGPU + 0.5*((rm>0)-(rm<0)))*lzGPU);
+  dlz = tex1D(texDelta, fabs(r));
+  dlzp = tex1D(texDelta, fabs(rp));
+  dlzm = tex1D(texDelta, fabs(rm));
+
+  double spxpypz, spxpy, spxpymz, spxpz, spx, spxmz, spxmypz, spxmy, spxmymz;
+  double spypz, spy, spymz, spz, s, smz, smypz, smy, smymz;
+  double smxpypz, smxpy, smxpymz, smxpz, smx, smxmz, smxmypz, smxmy, smxmymz;
+
+  double massfluid = 1.5 * volumeGPU*volumeParticleGPU*densfluidGPU;
+  
+  spxpypz = dlpS * dlyp * dlzp * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxpy   = dlpS * dlyp * dlz  * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxpymz = dlpS * dlyp * dlzm * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxpz   = dlpS * dly  * dlzp * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+  
+  spx     = dlpS * dly  * dlz  * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;//
+
+  spxmz   = dlpS * dly  * dlzm * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxmypz = dlpS * dlym * dlzp * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxmy   = dlpS * dlym * dlz  * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxmymz = dlpS * dlym * dlzm * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spypz   = dlS  * dlyp * dlzp * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spy     = dlS  * dlyp * dlz  * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spymz   = dlS  * dlyp * dlzm * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spz     = dlS  * dly  * dlzp * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+  
+  s       = dlS  * dly  * dlz  * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;//
+  
+  smz     = dlS  * dly  * dlzm * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smypz   = dlS  * dlym * dlzp * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smy     = dlS  * dlym * dlz  * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smymz   = dlS  * dlym * dlzm * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxpypz = dlmS * dlyp * dlzp * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxpy   = dlmS * dlyp * dlz  * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxpymz = dlmS * dlyp * dlzm * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxpz   = dlmS * dly  * dlzp * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+  
+  smx     = dlmS * dly  * dlz  * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;//
+
+  smxmz   = dlmS * dly  * dlzm * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxmypz = dlmS * dlym * dlzp * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxmy   = dlmS * dlym * dlz  * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxmymz = dlmS * dlym * dlzm * temperatureGPU * massfluid *  invdxGPU / 
+    (massParticleGPU+massfluid) ;
+
+
+
+  int offset = nboundaryGPU;
+  fxboundaryGPU[offset+i]        += spxpypz;
+  offset += nboundaryGPU+npGPU;//1
+  fxboundaryGPU[offset+i] +=  spxpy;
+  offset += nboundaryGPU+npGPU;//2
+  fxboundaryGPU[offset+i] +=  spxpymz;
+  offset += nboundaryGPU+npGPU;//3
+  fxboundaryGPU[offset+i] +=  spxpz;
+  offset += nboundaryGPU+npGPU;//4
+  fxboundaryGPU[offset+i] +=  spx;
+  offset += nboundaryGPU+npGPU;//5
+  fxboundaryGPU[offset+i] +=  spxmz;
+  offset += nboundaryGPU+npGPU;//6
+  fxboundaryGPU[offset+i] +=  spxmypz;
+  offset += nboundaryGPU+npGPU;//7
+  fxboundaryGPU[offset+i] +=  spxmy;
+  offset += nboundaryGPU+npGPU;//8
+  fxboundaryGPU[offset+i] +=  spxmymz;
+  offset += nboundaryGPU+npGPU;//9
+  fxboundaryGPU[offset+i] +=  spypz;
+  offset += nboundaryGPU+npGPU;//10
+  fxboundaryGPU[offset+i] +=  spy;
+  offset += nboundaryGPU+npGPU;//11
+  fxboundaryGPU[offset+i] +=  spymz;
+  offset += nboundaryGPU+npGPU;//12
+  fxboundaryGPU[offset+i] +=  spz;
+  offset += nboundaryGPU+npGPU;//13
+  fxboundaryGPU[offset+i] +=  s;
+  offset += nboundaryGPU+npGPU;//14
+  fxboundaryGPU[offset+i] +=  smz;
+  offset += nboundaryGPU+npGPU;//15
+  fxboundaryGPU[offset+i] +=  smypz;
+  offset += nboundaryGPU+npGPU;//16
+  fxboundaryGPU[offset+i] +=  smy;
+  offset += nboundaryGPU+npGPU;//17
+  fxboundaryGPU[offset+i] +=  smymz;
+  offset += nboundaryGPU+npGPU;//18
+  fxboundaryGPU[offset+i] +=  smxpypz;
+  offset += nboundaryGPU+npGPU;//19
+  fxboundaryGPU[offset+i] +=  smxpy;
+  offset += nboundaryGPU+npGPU;//20
+  fxboundaryGPU[offset+i] +=  smxpymz;
+  offset += nboundaryGPU+npGPU;//21
+  fxboundaryGPU[offset+i] +=  smxpz;
+  offset += nboundaryGPU+npGPU;//22
+  fxboundaryGPU[offset+i] +=  smx;
+  offset += nboundaryGPU+npGPU;//23
+  fxboundaryGPU[offset+i] +=  smxmz;
+  offset += nboundaryGPU+npGPU;//24
+  fxboundaryGPU[offset+i] +=  smxmypz;
+  offset += nboundaryGPU+npGPU;//25
+  fxboundaryGPU[offset+i] +=  smxmy;
+  offset += nboundaryGPU+npGPU;//26
+  fxboundaryGPU[offset+i] +=  smxmymz;
+  
+
+
+
+
+
+
+
+  //FORCE IN THE Y DIRECTION
+  vecino0 = tex1Dfetch(texvecino0GPU, icely);
+  vecino1 = tex1Dfetch(texvecino1GPU, icely);
+  vecino2 = tex1Dfetch(texvecino2GPU, icely);
+  vecino3 = tex1Dfetch(texvecino3GPU, icely);
+  vecino4 = tex1Dfetch(texvecino4GPU, icely);
+  vecino5 = tex1Dfetch(texvecino5GPU, icely);
+  vecinopxpy = tex1Dfetch(texvecinopxpyGPU, icely);
+  vecinopxmy = tex1Dfetch(texvecinopxmyGPU, icely);
+  vecinopxpz = tex1Dfetch(texvecinopxpzGPU, icely);
+  vecinopxmz = tex1Dfetch(texvecinopxmzGPU, icely);
+  vecinomxpy = tex1Dfetch(texvecinomxpyGPU, icely);
+  vecinomxmy = tex1Dfetch(texvecinomxmyGPU, icely);
+  vecinomxpz = tex1Dfetch(texvecinomxpzGPU, icely);
+  vecinomxmz = tex1Dfetch(texvecinomxmzGPU, icely);
+  vecinopypz = tex1Dfetch(texvecinopypzGPU, icely);
+  vecinopymz = tex1Dfetch(texvecinopymzGPU, icely);
+  vecinomypz = tex1Dfetch(texvecinomypzGPU, icely);
+  vecinomymz = tex1Dfetch(texvecinomymzGPU, icely);
+  vecinopxpypz = tex1Dfetch(texvecinopxpypzGPU, icely);
+  vecinopxpymz = tex1Dfetch(texvecinopxpymzGPU, icely);
+  vecinopxmypz = tex1Dfetch(texvecinopxmypzGPU, icely);
+  vecinopxmymz = tex1Dfetch(texvecinopxmymzGPU, icely);
+  vecinomxpypz = tex1Dfetch(texvecinomxpypzGPU, icely);
+  vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icely);
+  vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icely);
+  vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icely);  
+  //DEFINE MORE NEIGHBORS
+  int vecinopymxpymz = tex1Dfetch(texvecino4GPU, vecinomxpymz);
+  int vecinopymxpy   = tex1Dfetch(texvecino4GPU, vecinomxpy);
+  int vecinopymxpypz = tex1Dfetch(texvecino4GPU, vecinomxpypz);
+  int vecinopypymz   = tex1Dfetch(texvecino4GPU, vecinopymz);
+  int vecinopypy     = tex1Dfetch(texvecino4GPU, vecino4);
+  int vecinopypypz   = tex1Dfetch(texvecino4GPU, vecinopypz);
+  int vecinopypxpymz = tex1Dfetch(texvecino4GPU, vecinopxpymz);
+  int vecinopypxpy   = tex1Dfetch(texvecino4GPU, vecinopxpy);
+  int vecinopypxpypz = tex1Dfetch(texvecino4GPU, vecinopxpypz);
+
+  r =  (rx - rxcellGPU[icely]);
+  rp = (rx - rxcellGPU[vecino3]);
+  rm = (rx - rxcellGPU[vecino2]);
+  r =  auxdx * (r - int(r*invlxGPU + 0.5*((r>0)-(r<0)))*lxGPU);
+  rm = auxdx * (rm - int(rm*invlxGPU + 0.5*((rm>0)-(rm<0)))*lxGPU);
+  rp = auxdx * (rp - int(rp*invlxGPU + 0.5*((rp>0)-(rp<0)))*lxGPU);
+  dlx = tex1D(texDelta, fabs(r));
+  dlxp = tex1D(texDelta, fabs(rp));
+  dlxm = tex1D(texDelta, fabs(rm));
+
+  r =  (ry - rycellGPU[icely] - dyGPU*0.5);
+  rp = (ry - rycellGPU[vecino4] - dyGPU*0.5);
+  rm = (ry - rycellGPU[vecino1] - dyGPU*0.5); 
+  r =  auxdy * (r - int(r*invlyGPU + 0.5*((r>0)-(r<0)))*lyGPU);
+  rp = auxdy * (rp - int(rp*invlyGPU + 0.5*((rp>0)-(rp<0)))*lyGPU);
+  rm = auxdy * (rm - int(rm*invlyGPU + 0.5*((rm>0)-(rm<0)))*lyGPU);
+  dly = tex1D(texDelta, fabs(r));
+  dlyp = tex1D(texDelta, fabs(rp));
+  dlym = tex1D(texDelta, fabs(rm));
+  dlS = functionDeltaDerived(1.5*r);
+  dlpS = functionDeltaDerived(1.5*rp);
+  dlmS = functionDeltaDerived(1.5*rm);
+
+  r =  (rz - rzcellGPU[icely]);
+  rp = (rz - rzcellGPU[vecino5]);
+  rm = (rz - rzcellGPU[vecino0]);
+  r = auxdz * (r - int(r*invlzGPU + 0.5*((r>0)-(r<0)))*lzGPU);
+  rp = auxdz * (rp - int(rp*invlzGPU + 0.5*((rp>0)-(rp<0)))*lzGPU);
+  rm = auxdz * (rm - int(rm*invlzGPU + 0.5*((rm>0)-(rm<0)))*lzGPU);
+  dlz = tex1D(texDelta, fabs(r));
+  dlzp = tex1D(texDelta, fabs(rp));
+  dlzm = tex1D(texDelta, fabs(rm));
+
+
+
+
+  spxpypz = dlxp * dlpS * dlzp * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxpy   = dlxp * dlpS * dlz  * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxpymz = dlxp * dlpS * dlzm * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxpz   = dlxp * dlS  * dlzp * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+  
+  spx     = dlxp * dlS  * dlz  * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;//
+
+  spxmz   = dlxp * dlS  * dlzm * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxmypz = dlxp * dlmS * dlzp * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxmy   = dlxp * dlmS * dlz  * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxmymz = dlxp * dlmS * dlzm * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spypz   = dlx * dlpS * dlzp * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spy     = dlx  * dlpS * dlz  * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spymz   = dlx  * dlpS * dlzm * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spz     = dlx  * dlS  * dlzp * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+  
+  s       = dlx  * dlS  * dlz  * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;//
+  
+  smz     = dlx  * dlS  * dlzm * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smypz   = dlx  * dlmS * dlzp * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smy     = dlx  * dlmS * dlz  * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smymz   = dlx  * dlmS * dlzm * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxpypz = dlxm * dlpS * dlzp * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxpy   = dlxm * dlpS * dlz  * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxpymz = dlxm * dlpS * dlzm * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxpz   = dlxm * dlS  * dlzp * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+  
+  smx     = dlxm * dlS  * dlz  * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;//
+
+  smxmz   = dlxm * dlS  * dlzm * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxmypz = dlxm * dlmS * dlzp * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxmy   = dlxm * dlmS * dlz  * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxmymz = dlxm * dlmS * dlzm * temperatureGPU * massfluid *  invdyGPU / 
+    (massParticleGPU+massfluid) ;
+
+
+
+
+  offset = nboundaryGPU;
+  fyboundaryGPU[offset+i]        +=  spxpypz;
+  offset += nboundaryGPU+npGPU;//1
+  fyboundaryGPU[offset+i] +=  spxpy;
+  offset += nboundaryGPU+npGPU;//2
+  fyboundaryGPU[offset+i] +=  spxpymz;
+  offset += nboundaryGPU+npGPU;//3
+  fyboundaryGPU[offset+i] +=  spxpz;
+  offset += nboundaryGPU+npGPU;//4
+  fyboundaryGPU[offset+i] +=  spx;
+  offset += nboundaryGPU+npGPU;//5
+  fyboundaryGPU[offset+i] +=  spxmz;
+  offset += nboundaryGPU+npGPU;//6
+  fyboundaryGPU[offset+i] +=  spxmypz;
+  offset += nboundaryGPU+npGPU;//7
+  fyboundaryGPU[offset+i] +=  spxmy;
+  offset += nboundaryGPU+npGPU;//8
+  fyboundaryGPU[offset+i] += + spxmymz;
+  offset += nboundaryGPU+npGPU;//9
+  fyboundaryGPU[offset+i] +=  spypz;
+  offset += nboundaryGPU+npGPU;//10
+  fyboundaryGPU[offset+i] +=  spy;
+  offset += nboundaryGPU+npGPU;//11
+  fyboundaryGPU[offset+i] +=  spymz;
+  offset += nboundaryGPU+npGPU;//12
+  fyboundaryGPU[offset+i] +=  spz;
+  offset += nboundaryGPU+npGPU;//13
+  fyboundaryGPU[offset+i] +=  s;
+  offset += nboundaryGPU+npGPU;//14
+  fyboundaryGPU[offset+i] +=  smz;
+  offset += nboundaryGPU+npGPU;//15
+  fyboundaryGPU[offset+i] +=  smypz;
+  offset += nboundaryGPU+npGPU;//16
+  fyboundaryGPU[offset+i] +=  smy;
+  offset += nboundaryGPU+npGPU;//17
+  fyboundaryGPU[offset+i] +=  smymz;
+  offset += nboundaryGPU+npGPU;//18
+  fyboundaryGPU[offset+i] +=  smxpypz;
+  offset += nboundaryGPU+npGPU;//19
+  fyboundaryGPU[offset+i] +=  smxpy;
+  offset += nboundaryGPU+npGPU;//20
+  fyboundaryGPU[offset+i] +=  smxpymz;
+  offset += nboundaryGPU+npGPU;//21
+  fyboundaryGPU[offset+i] +=  smxpz;
+  offset += nboundaryGPU+npGPU;//22
+  fyboundaryGPU[offset+i] +=  smx;
+  offset += nboundaryGPU+npGPU;//23
+  fyboundaryGPU[offset+i] +=  smxmz;
+  offset += nboundaryGPU+npGPU;//24
+  fyboundaryGPU[offset+i] +=  smxmypz;
+  offset += nboundaryGPU+npGPU;//25
+  fyboundaryGPU[offset+i] +=  smxmy;
+  offset += nboundaryGPU+npGPU;//26
+  fyboundaryGPU[offset+i] +=  smxmymz;
+
+
+  
+  
+  //FORCE IN THE Z DIRECTION
+  vecino0 = tex1Dfetch(texvecino0GPU, icelz);
+  vecino1 = tex1Dfetch(texvecino1GPU, icelz);
+  vecino2 = tex1Dfetch(texvecino2GPU, icelz);
+  vecino3 = tex1Dfetch(texvecino3GPU, icelz);
+  vecino4 = tex1Dfetch(texvecino4GPU, icelz);
+  vecino5 = tex1Dfetch(texvecino5GPU, icelz);
+  vecinopxpy = tex1Dfetch(texvecinopxpyGPU, icelz);
+  vecinopxmy = tex1Dfetch(texvecinopxmyGPU, icelz);
+  vecinopxpz = tex1Dfetch(texvecinopxpzGPU, icelz);
+  vecinopxmz = tex1Dfetch(texvecinopxmzGPU, icelz);
+  vecinomxpy = tex1Dfetch(texvecinomxpyGPU, icelz);
+  vecinomxmy = tex1Dfetch(texvecinomxmyGPU, icelz);
+  vecinomxpz = tex1Dfetch(texvecinomxpzGPU, icelz);
+  vecinomxmz = tex1Dfetch(texvecinomxmzGPU, icelz);
+  vecinopypz = tex1Dfetch(texvecinopypzGPU, icelz);
+  vecinopymz = tex1Dfetch(texvecinopymzGPU, icelz);
+  vecinomypz = tex1Dfetch(texvecinomypzGPU, icelz);
+  vecinomymz = tex1Dfetch(texvecinomymzGPU, icelz);
+  vecinopxpypz = tex1Dfetch(texvecinopxpypzGPU, icelz);
+  vecinopxpymz = tex1Dfetch(texvecinopxpymzGPU, icelz);
+  vecinopxmypz = tex1Dfetch(texvecinopxmypzGPU, icelz);
+  vecinopxmymz = tex1Dfetch(texvecinopxmymzGPU, icelz);
+  vecinomxpypz = tex1Dfetch(texvecinomxpypzGPU, icelz);
+  vecinomxpymz = tex1Dfetch(texvecinomxpymzGPU, icelz);
+  vecinomxmypz = tex1Dfetch(texvecinomxmypzGPU, icelz);
+  vecinomxmymz = tex1Dfetch(texvecinomxmymzGPU, icelz);  
+  //DEFINE MORE NEIGHBORS
+  int vecinopzmxmypz = tex1Dfetch(texvecino5GPU, vecinomxmypz);
+  int vecinopzmxpz   = tex1Dfetch(texvecino5GPU, vecinomxpz);
+  int vecinopzmxpypz = tex1Dfetch(texvecino5GPU, vecinomxpypz);
+  int vecinopzmypz   = tex1Dfetch(texvecino5GPU, vecinomypz);
+  int vecinopzpz     = tex1Dfetch(texvecino5GPU, vecino5);
+  int vecinopzpypz   = tex1Dfetch(texvecino5GPU, vecinopypz);
+  int vecinopzpxmypz = tex1Dfetch(texvecino5GPU, vecinopxmypz);
+  int vecinopzpxpz   = tex1Dfetch(texvecino5GPU, vecinopxpz);
+  int vecinopzpxpypz = tex1Dfetch(texvecino5GPU, vecinopxpypz);
+
+  r =  (rx - rxcellGPU[icelz]);
+  rp = (rx - rxcellGPU[vecino3]);
+  rm = (rx - rxcellGPU[vecino2]);
+  r =  auxdx * (r - int(r*invlxGPU + 0.5*((r>0)-(r<0)))*lxGPU);
+  rm = auxdx * (rm - int(rm*invlxGPU + 0.5*((rm>0)-(rm<0)))*lxGPU);
+  rp = auxdx * (rp - int(rp*invlxGPU + 0.5*((rp>0)-(rp<0)))*lxGPU);
+  dlx = tex1D(texDelta, fabs(r));
+  dlxp = tex1D(texDelta, fabs(rp));
+  dlxm = tex1D(texDelta, fabs(rm));
+
+  r =  (ry - rycellGPU[icelz]);
+  rp = (ry - rycellGPU[vecino4]);
+  rm = (ry - rycellGPU[vecino1]); 
+  r =  auxdy * (r - int(r*invlyGPU + 0.5*((r>0)-(r<0)))*lyGPU);
+  rp = auxdy * (rp - int(rp*invlyGPU + 0.5*((rp>0)-(rp<0)))*lyGPU);
+  rm = auxdy * (rm - int(rm*invlyGPU + 0.5*((rm>0)-(rm<0)))*lyGPU);
+  dly = tex1D(texDelta, fabs(r));
+  dlyp = tex1D(texDelta, fabs(rp));
+  dlym = tex1D(texDelta, fabs(rm));
+
+  r =  (rz - rzcellGPU[icelz] - dzGPU*0.5);
+  rp = (rz - rzcellGPU[vecino5] - dzGPU*0.5);
+  rm = (rz - rzcellGPU[vecino0] - dzGPU*0.5);
+  r = auxdz * (r - int(r*invlzGPU + 0.5*((r>0)-(r<0)))*lzGPU);
+  rp = auxdz * (rp - int(rp*invlzGPU + 0.5*((rp>0)-(rp<0)))*lzGPU);
+  rm = auxdz * (rm - int(rm*invlzGPU + 0.5*((rm>0)-(rm<0)))*lzGPU);
+  dlz = tex1D(texDelta, fabs(r));
+  dlzp = tex1D(texDelta, fabs(rp));
+  dlzm = tex1D(texDelta, fabs(rm));
+  dlS = functionDeltaDerived(1.5*r);
+  dlpS = functionDeltaDerived(1.5*rp);
+  dlmS = functionDeltaDerived(1.5*rm);
+
+
+
+  spxpypz = dlxp * dlyp * dlpS * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+  
+  spxpy   = dlxp * dlyp * dlS  * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxpymz = dlxp * dlyp * dlmS * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxpz   = dlxp * dly  * dlpS * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+  
+  spx     = dlxp * dly  * dlS  * temperatureGPU * massfluid *  invdzGPU / 
+     (massParticleGPU+massfluid) ;//
+
+  spxmz   = dlxp * dly  * dlmS * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxmypz = dlxp * dlym * dlpS * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxmy   = dlxp * dlym * dlS  * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spxmymz = dlxp * dlym * dlmS * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spypz   = dlx  * dlyp * dlpS * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spy     = dlx  * dlyp * dlS  * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spymz   = dlx  * dlyp * dlmS * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  spz     = dlx  * dly  * dlpS * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+  
+  s       = dlx  * dly  * dlS  * temperatureGPU * massfluid *  invdzGPU / 
+     (massParticleGPU+massfluid) ;//
+  
+  smz     = dlx  * dly  * dlmS * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smypz   = dlx  * dlym * dlpS * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smy     = dlx  * dlym * dlS  * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smymz   = dlx  * dlym * dlmS * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxpypz = dlxm * dlyp * dlpS * temperatureGPU * massfluid *  invdzGPU / 
+     (massParticleGPU+massfluid) ;
+
+  smxpy   = dlxm * dlyp * dlS  * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxpymz = dlxm * dlyp * dlmS * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxpz   = dlxm * dly  * dlpS * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+  
+  smx     = dlxm * dly  * dlS  * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;//
+
+  smxmz   = dlxm * dly  * dlmS * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxmypz = dlxm * dlym * dlpS * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxmy   = dlxm * dlym * dlS  * temperatureGPU * massfluid *  invdzGPU / 
+    (massParticleGPU+massfluid) ;
+
+  smxmymz = dlxm * dlym * dlmS * temperatureGPU * massfluid *  invdzGPU / 
+     (massParticleGPU+massfluid) ;
+  
+
+
+  offset = nboundaryGPU;
+  fzboundaryGPU[offset+i] += spxpypz;
+  offset += nboundaryGPU+npGPU;//1
+  fzboundaryGPU[offset+i] += spxpy;
+  offset += nboundaryGPU+npGPU;//2
+  fzboundaryGPU[offset+i] += spxpymz;
+  offset += nboundaryGPU+npGPU;//3
+  fzboundaryGPU[offset+i] += spxpz;
+  offset += nboundaryGPU+npGPU;//4
+  fzboundaryGPU[offset+i] += spx;
+  offset += nboundaryGPU+npGPU;//5
+  fzboundaryGPU[offset+i] += spxmz;
+  offset += nboundaryGPU+npGPU;//6
+  fzboundaryGPU[offset+i] += spxmypz;
+  offset += nboundaryGPU+npGPU;//7
+  fzboundaryGPU[offset+i] += spxmy;
+  offset += nboundaryGPU+npGPU;//8
+  fzboundaryGPU[offset+i] += spxmymz;
+  offset += nboundaryGPU+npGPU;//9
+  fzboundaryGPU[offset+i] += spypz;
+  offset += nboundaryGPU+npGPU;//10
+  fzboundaryGPU[offset+i] += spy;
+  offset += nboundaryGPU+npGPU;//11
+  fzboundaryGPU[offset+i] += spymz;
+  offset += nboundaryGPU+npGPU;//12
+  fzboundaryGPU[offset+i] += spz;
+  offset += nboundaryGPU+npGPU;//13
+  fzboundaryGPU[offset+i] += s;
+  offset += nboundaryGPU+npGPU;//14
+  fzboundaryGPU[offset+i] += smz;
+  offset += nboundaryGPU+npGPU;//15
+  fzboundaryGPU[offset+i] += smypz;
+  offset += nboundaryGPU+npGPU;//16
+  fzboundaryGPU[offset+i] += smy;
+  offset += nboundaryGPU+npGPU;//17
+  fzboundaryGPU[offset+i] += smymz;
+  offset += nboundaryGPU+npGPU;//18
+  fzboundaryGPU[offset+i] += smxpypz;
+  offset += nboundaryGPU+npGPU;//19
+  fzboundaryGPU[offset+i] += smxpy;
+  offset += nboundaryGPU+npGPU;//20
+  fzboundaryGPU[offset+i] += smxpymz;
+  offset += nboundaryGPU+npGPU;//21
+  fzboundaryGPU[offset+i] += smxpz;
+  offset += nboundaryGPU+npGPU;//22
+  fzboundaryGPU[offset+i] += smx;
+  offset += nboundaryGPU+npGPU;//23
+  fzboundaryGPU[offset+i] += smxmz;
+  offset += nboundaryGPU+npGPU;//24
+  fzboundaryGPU[offset+i] += smxmypz;
+  offset += nboundaryGPU+npGPU;//25
+  fzboundaryGPU[offset+i] += smxmy;
+  offset += nboundaryGPU+npGPU;//26
+  fzboundaryGPU[offset+i] += smxmymz;
+
+
+
+
+  
+}
