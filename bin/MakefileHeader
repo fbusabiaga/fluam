@@ -75,6 +75,7 @@ HydroAnalisysINCL = -I$(SRC_HYDROLIB)
 #
 #Libraries -lfftw3 -lfftw3f
 LIBRARIES = -L/usr/local/cuda/lib64 -lcurand -L/usr/lib64/ -L./ -lgfortran -lcufft -lm 
+STATIC_LIBRARIES = 
 
 #
 #
