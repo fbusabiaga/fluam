@@ -13,7 +13,7 @@
 on the immersed boundary method. It offers fluid solvers for the compressible and
 incompressible Navier-Stokes equations,
 * **Staggered Schemes for Fluctuating Hydrodynamics**, F. Balboa Usabiaga, J. B. Bell, R. Delgado-Buscalioni, A. Donev, T. G. Fai, B. E. Griffith andC. S. Peskin. Multiscale Modeling & Simulation, **10** (3), 1369 (2012). 
-[DOI](https://dx.doi.org/10.1137/120864520)[arXiv](http://arxiv.org/abs/1108.5188)
+[DOI](https://dx.doi.org/10.1137/120864520) [arXiv](http://arxiv.org/abs/1108.5188)
  
 and particle solvers for regimes ranging from the acoustic time scales to the Stokes limit,
 * **Minimal model for acoustic forces on Brownian particles**, F. Balboa Usabiaga and R. Delgado-Buscalioni. Physical Review E, **88**, 063304 (2013). [http://arxiv.org/abs/1307.0702] 
