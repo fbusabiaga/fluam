@@ -16,9 +16,12 @@ incompressible Navier-Stokes equations,
 [DOI](https://dx.doi.org/10.1137/120864520) [arXiv](http://arxiv.org/abs/1108.5188)
  
 and particle solvers for regimes ranging from the acoustic time scales to the Stokes limit,
-* **Minimal model for acoustic forces on Brownian particles**, F. Balboa Usabiaga and R. Delgado-Buscalioni. Physical Review E, **88**, 063304 (2013). [http://arxiv.org/abs/1307.0702] 
-* **Inertial coupling method for particles in an incompressible fluctuating fluid**, F. Balboa Usabiaga, R. Delgado-Buscalioni, B. E. Griffith and A. Donev. Computer Methods in Applied Mechanics and Engineering, **269**, 139 (2014). [http://arxiv.org/abs/1212.6427]
-* **Brownian Dynamics without Green's Functions**, S. Delong, F. Balboa Usabiaga, R. Delgado-Buscalioni, B. E. Griffith and A. Donev. The Journal of Chemical Physics, **140** (13), 134110 (2014). [http://arxiv.org/abs/1401.4198]
+* **Minimal model for acoustic forces on Brownian particles**, F. Balboa Usabiaga and R. Delgado-Buscalioni. Physical Review E, **88**, 063304 (2013). 
+[DOI](https://dx.doi.org/10.1103/PhysRevE.88.063304) [arXiv](http://arxiv.org/abs/1307.0702)
+* **Inertial coupling method for particles in an incompressible fluctuating fluid**, F. Balboa Usabiaga, R. Delgado-Buscalioni, B. E. Griffith and A. Donev. Computer Methods in Applied Mechanics and Engineering, **269**, 139 (2014). 
+[DOI](https://dx.doi.org/10.1016/j.cma.2013.10.029) [arXiv](http://arxiv.org/abs/1212.6427)
+* **Brownian Dynamics without Green's Functions**, S. Delong, F. Balboa Usabiaga, R. Delgado-Buscalioni, B. E. Griffith and A. Donev. The Journal of Chemical Physics, **140** (13), 134110 (2014). 
+[DOI](https://dx.doi.org/10.1063/1.4869866) [arXiv](http://arxiv.org/abs/1401.4198)
 
 
 ##1. Installation instructions
