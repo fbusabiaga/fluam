@@ -188,7 +188,7 @@ bool loadDataMain(int argc, char* argv[]){
   mass = 0;
   nboundary = 0;
   bondedForces=0;
-  wbondedForcesVersion=0;
+  bondedForcesVersion=0;
   computeNonBondedForces=1;
   setVolumeParticle=0;
   //DEFAULT PARAMETERS 
