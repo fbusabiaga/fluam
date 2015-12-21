@@ -73,6 +73,7 @@ bool createBoundaries();
 bool createParticles();
 //NEW bonded forces
 bool initializeBondedForces();
+bool initializeBondedForcesOldVersion();
 bool freeBondedForces();
 bool createBondedForcesGPU();
 bool freeBondedForcesGPU();

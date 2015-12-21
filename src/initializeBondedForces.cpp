@@ -34,6 +34,12 @@ bool initializeBondedForces(){
   int trashInt;
   double trashDouble;
 
+  if(bondedForcesOldVersion){
+    initializeBondedForcesOldVersion();
+    return 1;
+  }
+  
+
   //OPEN FILE
   ifstream file(bondedForcesFile.c_str());
 
