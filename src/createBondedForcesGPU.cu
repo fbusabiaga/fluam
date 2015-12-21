@@ -26,7 +26,6 @@ __global__ void initBondedForcesVariables(bondedForcesVariables* bFV,
 					  double* kSpringParticleParticleGPU,
 					  int* bondsParticleFixedPointGPU,
 					  int* bondsParticleFixedPointOffsetGPU,
-					  //int* bondsIndexParticleFixedParticleGPU,
 					  double* r0ParticleFixedPointGPU,
 					  double* kSpringParticleFixedPointGPU,
 					  double* rxFixedPointGPU,
@@ -45,7 +44,6 @@ __global__ void initBondedForcesVariables(bondedForcesVariables* bFV,
 
   bFV->bondsParticleFixedPointGPU       = bondsParticleFixedPointGPU;
   bFV->bondsParticleFixedPointOffsetGPU = bondsParticleFixedPointOffsetGPU;
-  //bFV->bondsIndexParticleFixedPointGPU  = bondsIndexParticleFixedPointGPU;
   bFV->r0ParticleFixedPointGPU          = r0ParticleFixedPointGPU;
   bFV->kSpringParticleFixedPointGPU     = kSpringParticleFixedPointGPU;
   bFV->rxFixedPointGPU          = rxFixedPointGPU;
@@ -62,17 +60,13 @@ bool createBondedForcesGPU(){
   //Copy constant memory
   cudaMemcpyToSymbol(bondedForcesGPU,&bondedForces,sizeof(bool));
 
-  /*int aux[np];
-  for(int i=0;i<np;i++)
-  aux[i]=0;*/
-
   //Allocate memory
   cutilSafeCall(cudaMalloc((void**)&bFV,sizeof(bondedForcesVariables)));
   cutilSafeCall(cudaMalloc((void**)&bondsParticleParticleGPU,np*sizeof(int)));
   cutilSafeCall(cudaMalloc((void**)&bondsParticleParticleOffsetGPU,np*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&bondsIndexParticleParticleGPU,nbondsParticleParticle*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&r0ParticleParticleGPU,nbondsParticleParticle*sizeof(double)));
-  cutilSafeCall(cudaMalloc((void**)&kSpringParticleParticleGPU,nbondsParticleParticle*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&bondsIndexParticleParticleGPU,nbondsParticleParticle*2*sizeof(int)));
+  cutilSafeCall(cudaMalloc((void**)&r0ParticleParticleGPU,nbondsParticleParticle*2*sizeof(double)));
+  cutilSafeCall(cudaMalloc((void**)&kSpringParticleParticleGPU,nbondsParticleParticle*2*sizeof(double)));
 
   //Copy global memory
   cutilSafeCall(cudaMemcpy(bondsParticleParticleGPU,bondsParticleParticle,
@@ -80,11 +74,11 @@ bool createBondedForcesGPU(){
   cutilSafeCall(cudaMemcpy(bondsParticleParticleOffsetGPU,bondsParticleParticleOffset,
 			   np*sizeof(int),cudaMemcpyHostToDevice));
   cutilSafeCall(cudaMemcpy(bondsIndexParticleParticleGPU,bondsIndexParticleParticle,
-			   nbondsParticleParticle*sizeof(int),cudaMemcpyHostToDevice));
+			   nbondsParticleParticle*2*sizeof(int),cudaMemcpyHostToDevice));
   cutilSafeCall(cudaMemcpy(r0ParticleParticleGPU,r0ParticleParticle,
-			   nbondsParticleParticle*sizeof(double),cudaMemcpyHostToDevice));
+			   nbondsParticleParticle*2*sizeof(double),cudaMemcpyHostToDevice));
   cutilSafeCall(cudaMemcpy(kSpringParticleParticleGPU,kSpringParticleParticle,
-			   nbondsParticleParticle*sizeof(double),cudaMemcpyHostToDevice));
+			   nbondsParticleParticle*2*sizeof(double),cudaMemcpyHostToDevice));
 
 
 
@@ -93,7 +87,6 @@ bool createBondedForcesGPU(){
   //Allocate memory
   cutilSafeCall(cudaMalloc((void**)&bondsParticleFixedPointGPU,np*sizeof(int)));
   cutilSafeCall(cudaMalloc((void**)&bondsParticleFixedPointOffsetGPU,np*sizeof(int)));
-  //cutilSafeCall(cudaMalloc((void**)&bondsIndexParticleFixedPointGPU,nbondsParticleFixedPoint*sizeof(int)));
   cutilSafeCall(cudaMalloc((void**)&r0ParticleFixedPointGPU,nbondsParticleFixedPoint*sizeof(double)));
   cutilSafeCall(cudaMalloc((void**)&kSpringParticleFixedPointGPU,nbondsParticleFixedPoint*sizeof(double)));
   cutilSafeCall(cudaMalloc((void**)&rxFixedPointGPU,nbondsParticleFixedPoint*sizeof(double)));
@@ -105,8 +98,6 @@ bool createBondedForcesGPU(){
 			   np*sizeof(int),cudaMemcpyHostToDevice));
   cutilSafeCall(cudaMemcpy(bondsParticleFixedPointOffsetGPU,bondsParticleFixedPointOffset,
 			   np*sizeof(int),cudaMemcpyHostToDevice));
-  //cutilSafeCall(cudaMemcpy(bondsIndexParticleFixedPointGPU,bondsIndexParticleFixedPoint,
-  //		   nbondsParticleFixedPoint*sizeof(int),cudaMemcpyHostToDevice));
   cutilSafeCall(cudaMemcpy(r0ParticleFixedPointGPU,r0ParticleFixedPoint,
 			   nbondsParticleFixedPoint*sizeof(double),cudaMemcpyHostToDevice));
   cutilSafeCall(cudaMemcpy(kSpringParticleFixedPointGPU,kSpringParticleFixedPoint,
@@ -121,15 +112,6 @@ bool createBondedForcesGPU(){
 
 
 
-  /*cutilSafeCall(cudaMemcpy(bondsParticleParticleGPU,aux,np*sizeof(int),cudaMemcpyHostToDevice));
-  cutilSafeCall(cudaMemcpy(bondsParticleParticleOffsetGPU,aux,
-			   np*sizeof(int),cudaMemcpyHostToDevice));
-  cutilSafeCall(cudaMemcpy(bondsIndexParticleParticleGPU,aux,
-  nbondsParticleParticle*sizeof(int),cudaMemcpyHostToDevice));*/
-
-
-
-
   initBondedForcesVariables<<<1,1>>>(bFV,
 				     bondsParticleParticleGPU,
 				     bondsParticleParticleOffsetGPU,
@@ -138,7 +120,6 @@ bool createBondedForcesGPU(){
 				     kSpringParticleParticleGPU,
 				     bondsParticleFixedPointGPU,
 				     bondsParticleFixedPointOffsetGPU,
-				     //bondsIndexParticleFixedPointGPU,
 				     r0ParticleFixedPointGPU,
 				     kSpringParticleFixedPointGPU,
 				     rxFixedPointGPU,
