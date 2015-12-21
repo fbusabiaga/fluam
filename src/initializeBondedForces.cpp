@@ -34,7 +34,7 @@ bool initializeBondedForces(){
   int trashInt;
   double trashDouble;
 
-  if(bondedForcesOldVersion){
+  if(bondedForcesVersion){
     initializeBondedForcesOldVersion();
     return 1;
   }
