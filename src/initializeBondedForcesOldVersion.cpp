@@ -236,27 +236,3 @@ bool initializeBondedForcesOldVersion(){
 
 
 
-
-
-bool freeBondedForces(){
-
-  delete[] bondsParticleParticle;
-  delete[] bondsParticleFixedPoint;
-
-  delete[] bondsParticleParticleOffset;
-  delete[] bondsParticleFixedPointOffset;
-
-
-  delete[] bondsIndexParticleParticle;
-  delete[] kSpringParticleParticle;
-  delete[] r0ParticleParticle;
-  
-
-  //delete[] bondsIndexParticleFixedPoint;
-  delete[] kSpringParticleFixedPoint;
-  delete[] r0ParticleFixedPoint;
-  delete[] rxFixedPoint;
-  delete[] ryFixedPoint;
-  delete[] rzFixedPoint;
-  
-}
