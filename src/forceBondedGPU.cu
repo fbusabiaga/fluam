@@ -42,10 +42,6 @@ __device__ void forceBondedParticleParticleGPU(const int i,
 
     index = bFV->bondsIndexParticleParticleGPU[offset + j];
 
-    //if(i==0) index=1;
-    //if(i==1) index=0;
-
-
     //Particle bonded coordinates
     x = fetch_double(texrxboundaryGPU,nboundaryGPU+index);
     y = fetch_double(texryboundaryGPU,nboundaryGPU+index);

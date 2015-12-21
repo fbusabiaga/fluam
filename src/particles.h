@@ -54,6 +54,7 @@ EXTERN_PARTICLES bool setVolumeParticle;
 
 //NEW bonded forces
 EXTERN_PARTICLES bool bondedForces;
+EXTERN_PARTICLES bool bondedForcesVersion;
 EXTERN_PARTICLES string bondedForcesFile;
 EXTERN_PARTICLES int nbondsParticleParticle;
 EXTERN_PARTICLES int nbondsParticleFixedPoint;

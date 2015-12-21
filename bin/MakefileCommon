@@ -74,6 +74,7 @@ initializeFluidBinaryMixtureWall.o \
 createBoundaries.o \
 createParticles.o \
 initializeBondedForces.o \
+initializeBondedForcesOldForces.o \
 simpleCubic.o \
 freeParticles.o \
 schemeGiantFluctuations.o \
@@ -220,6 +221,9 @@ createParticles.o: createParticles.cpp header.h boundary.h particles.h; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
 initializeBondedForces.o: initializeBondedForces.cpp header.h boundary.h particles.h; \
+$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
+
+initializeBondedForcesOldVersion.o: initializeBondedForcesOldVersion.cpp header.h boundary.h particles.h; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
 simpleCubic.o: simpleCubic.cpp header.h cells.h particles.h; \

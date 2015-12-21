@@ -19,9 +19,6 @@
 
 
 
-//NEW bonded forces
-
-
 #include <cstring>
 #include <math.h>
 #include "header.h"
@@ -30,107 +27,69 @@
 #include "parameters.h"
 #include "cells.h"
 
-const string wnothing="#";
-
-const string wsigma="sigma";
-const string wrho="rho";
-const string wsigmap="sigmap";
-
-
 
 bool initializeBondedForces(){
   
-  int index1, index2, indexOld;
-  int nParticleParticleMemory=0;
-  int nParticleFixedPointMemory=0;
+  int index1, index2;
   int trashInt;
   double trashDouble;
-  indexOld=-1;
 
+  if(bondedForcesOldVersion){
+    initializeBondedForcesOldVersion();
+    return 1;
+  }
+  
 
   //OPEN FILE
   ifstream file(bondedForcesFile.c_str());
 
   //Number of particle-particle bonds
-  //IMPORTANT, each bonds should be count twice
   file >> nbondsParticleParticle;
   
   //Allocate memory
   bondsParticleParticle = new int [np];
   bondsParticleParticleOffset = new int [np];
 
-  //Initially any particle has bonds
+  //Initially no particle has bonds
   for(int i=0;i<np;i++)
     bondsParticleParticle[i] = 0;
 
   //Information bonds particle-particle
   for(int i=0;i<nbondsParticleParticle;i++){  
-    file >> index1 >> index2 >> trashDouble >> trashDouble;
-    //cout << "AAA " << index1 << "   " << index2 << "   " << trashDouble << endl << endl << endl;
-    if(index1<indexOld){
-      cout << "ERROR, bad sorting in  bonded Forces Particle-Particle" << endl;
-      return 0;
-    }
-    else if(index1!=indexOld){
-      bondsParticleParticleOffset[index1]=nParticleParticleMemory;
-      //nParticleParticleMemory++;//size for the array bondsIndexParticleParticle
-    }
-    nParticleParticleMemory++;
+    file >> index1 >> index2 >> trashDouble >> trashDouble;   
     bondsParticleParticle[index1]++;
-    indexOld=index1;
+    bondsParticleParticle[index2]++;
   }
-
-
-
-
-
-
   
 
 
-  indexOld=-1;
+
 
   //Number of particle-fixedPoints bonds
-  //IMPORTANT, each bonds should be count once
   file >> nbondsParticleFixedPoint;
-
-  //cout << "BBB " << nbondsParticleFixedPoint << endl << endl << endl;
 
   //Allocate memory
   bondsParticleFixedPoint = new int [np];
   bondsParticleFixedPointOffset = new int [np];
 
-  //Initially any particle has bonds
+  //Initially no particle has bonds
   for(int i=0;i<np;i++)
     bondsParticleFixedPoint[i] = 0;
 
   //Information bonds particle-fixedPoint
   for(int i=0;i<nbondsParticleFixedPoint;i++){  
-    file >> index1 >> trashDouble >> trashDouble >>
-      trashDouble >> trashDouble >> trashDouble;
-    //cout << "CCC " << index1 << endl << endl << endl;
-    if(index1<indexOld){
-      cout << "ERROR, bad sorting in  bonded Forces Particle-fixedPoint" << endl;
-      return 0;
-    }
-    else if(index1!=indexOld){
-      bondsParticleFixedPointOffset[index1]=nParticleFixedPointMemory;
-      //nParticleFixedPointMemory++;
-    }
-    nParticleFixedPointMemory++;
+    file >> index1 >> trashDouble >> trashDouble >> trashDouble >> trashDouble >> trashDouble;
     bondsParticleFixedPoint[index1]++;
-    index1=indexOld;
   }
-
-  //CLOSE FILE
+  
+  //Important, lear how to rewind a file
+  //CLOSE FILE 
   file.close();
-
-
+  
   //Allocate memory
-  bondsIndexParticleParticle = new int [nbondsParticleParticle];
-  kSpringParticleParticle = new double [nbondsParticleParticle];
-  r0ParticleParticle = new double [nbondsParticleParticle];
-
+  bondsIndexParticleParticle = new int [nbondsParticleParticle * 2];
+  kSpringParticleParticle = new double [nbondsParticleParticle * 2];
+  r0ParticleParticle = new double [nbondsParticleParticle * 2];
 
   //bondsIndexParticleFixedPoint = new int [nbondsParticleFixedPoint];  
   kSpringParticleFixedPoint = new double [nbondsParticleFixedPoint];
@@ -139,99 +98,72 @@ bool initializeBondedForces(){
   ryFixedPoint = new double [nbondsParticleFixedPoint];
   rzFixedPoint = new double [nbondsParticleFixedPoint];
 
-
-
+  //Compute offset
+  bondsParticleParticleOffset[0] = 0;
+  bondsParticleFixedPointOffset[0] = 0;
+  for(int i=1; i<np; i++){
+    bondsParticleParticleOffset[i] = bondsParticleParticleOffset[i-1] + bondsParticleParticle[i-1];
+    bondsParticleFixedPointOffset[i] = bondsParticleFixedPointOffset[i-1] + bondsParticleFixedPoint[i-1];
+  }
+  
+  //Create tmp offset
+  int *tmpOffset = new int [np];
+  for(int i=0;i<np;i++){
+    tmpOffset[i] = 0;
+  }
 
   //OPEN THE FILE AGAIN
   file.open(bondedForcesFile.c_str());
 
-
-
   //Number of particle-particle bonds
-  //IMPORTANT, each bonds should be count twice
   file >> nbondsParticleParticle;
 
-  //cout << "DDD " << nbondsParticleParticle << endl << endl << endl;
-
   //Information bonds particle-particle
-  int n=0;
-  indexOld=-1;
-  double a, b;
+  double k, r0;
   for(int i=0;i<nbondsParticleParticle;i++){  
-    //file >> index1 >> index2 >> a >> b ;
-    /*bondsIndexParticleParticle[bondsParticleParticleOffset[index1]+n] = index2;
-    kSpringParticleParticle[   bondsParticleParticleOffset[index1]+n] = a;
-    r0ParticleParticle[        bondsParticleParticleOffset[index1]+n] = b;*/
-
-    //cout << "EEE " << index1 << "   " << index2 << "   " << a << "   " << b << endl;
+    file >> index1 >> index2 >> k >> r0;
     
-    file >> index1;
-    if(index1==indexOld){
-      n++;
-    }
-    else{
-      n=0;
-    }
-    file >> bondsIndexParticleParticle[bondsParticleParticleOffset[index1]+n]
-	 >> kSpringParticleParticle[             bondsParticleParticleOffset[index1]+n]
-	 >> r0ParticleParticle[                  bondsParticleParticleOffset[index1]+n];
- 
-    /*cout << "FFF " << index1 << "   " 
-	 << bondsIndexParticleParticle[bondsParticleParticleOffset[index1]+n] << "   "
-	 << kSpringParticleParticle[             bondsParticleParticleOffset[index1]+n] << "   "
-	 << r0ParticleParticle[                  bondsParticleParticleOffset[index1]+n] << "   "
-	 << endl << endl;*/
-    indexOld=index1;
+    // Data for particle index1
+    bondsIndexParticleParticle[bondsParticleParticleOffset[index1]+tmpOffset[index1]] = index2;
+    kSpringParticleParticle[   bondsParticleParticleOffset[index1]+tmpOffset[index1]] = k;
+    r0ParticleParticle[        bondsParticleParticleOffset[index1]+tmpOffset[index1]] = r0;
+
+    // Data for particle index2
+    bondsIndexParticleParticle[bondsParticleParticleOffset[index2]+tmpOffset[index2]] = index1;
+    kSpringParticleParticle[   bondsParticleParticleOffset[index2]+tmpOffset[index2]] = k;
+    r0ParticleParticle[        bondsParticleParticleOffset[index2]+tmpOffset[index2]] = r0;
+
+    // Increase tmpOffset
+    tmpOffset[index1]++;
+    tmpOffset[index2]++;
   }
 
-
+  // Reset tmp offset to zero for particle-fixed point interactions
+  for(int i=0;i<np;i++){
+    tmpOffset[i] = 0;
+  }
 
   //Number of particle-fixedPoints bonds
-  //IMPORTANT, each bonds should be count once
   file >> nbondsParticleFixedPoint;
 
   //Information bonds particle-fixedPoint
-  n=0;
-  indexOld=-1;
   for(int i=0;i<nbondsParticleFixedPoint;i++){  
-    file >> index1;
-    if(index1==indexOld){
-      n++;
-    }
-    else{
-      n=0;
-    }
-    file >> kSpringParticleFixedPoint[             bondsParticleFixedPointOffset[index1]+n]
-	 >> r0ParticleFixedPoint[                  bondsParticleFixedPointOffset[index1]+n]
-	 >> rxFixedPoint[                          bondsParticleFixedPointOffset[index1]+n]
-	 >> ryFixedPoint[                          bondsParticleFixedPointOffset[index1]+n]
-	 >> rzFixedPoint[                          bondsParticleFixedPointOffset[index1]+n];
+    file >> index1 >> kSpringParticleFixedPoint[bondsParticleFixedPointOffset[index1]+tmpOffset[index1]]
+	 >> r0ParticleFixedPoint[               bondsParticleFixedPointOffset[index1]+tmpOffset[index1]]
+	 >> rxFixedPoint[                       bondsParticleFixedPointOffset[index1]+tmpOffset[index1]]
+	 >> ryFixedPoint[                       bondsParticleFixedPointOffset[index1]+tmpOffset[index1]]
+	 >> rzFixedPoint[                       bondsParticleFixedPointOffset[index1]+tmpOffset[index1]];
 
-    indexOld=index1;
+    // Increase tmpOffset
+    tmpOffset[index1]++;
   }
-
-
-
 
   //CLOSE FILE
   file.close();
 
-  cout << "nParticleParticeMemory    " << nParticleParticleMemory << endl;
-  /*for(int i=0;i<np;i++){
-    cout << "Particle     " << i << endl;
-    cout << "number bonds " << bondsParticleParticle[i] << endl;
-    cout << "offset       " << bondsParticleParticleOffset[i] << endl;
-    for(int j=0;j<bondsParticleParticle[i];j++){
-      cout << "link " << j << " index "<<bondsIndexParticleParticle[bondsParticleParticleOffset[i] + j]<<endl;
-      cout << "link " << j << " k     "<<kSpringParticleParticle[bondsParticleParticleOffset[i] + j] << endl;
-      cout << "link " << j << " r0    "<< r0ParticleParticle[bondsParticleParticleOffset[i] + j] << endl; 
-    }
-    cout << endl << endl;
-    }*/
-
-
-
-
+  // Free tmpOffset
+  delete[] tmpOffset;
+  
   cout << "INITALIZE BONDED FORCES :       DONE " << endl;
 
   return 1;
