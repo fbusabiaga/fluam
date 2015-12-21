@@ -74,7 +74,7 @@ initializeFluidBinaryMixtureWall.o \
 createBoundaries.o \
 createParticles.o \
 initializeBondedForces.o \
-initializeBondedForcesOldForces.o \
+initializeBondedForcesOldVersion.o \
 simpleCubic.o \
 freeParticles.o \
 schemeGiantFluctuations.o \
