@@ -20,28 +20,32 @@
 
 bool runSchemeStokesLimitBigSystem(){
    
-  int threadsPerBlock = 512;
+  int threadsPerBlock = 1024;
+  if((ncells/threadsPerBlock) < 1024) threadsPerBlock = 512;
   if((ncells/threadsPerBlock) < 512) threadsPerBlock = 256;
   if((ncells/threadsPerBlock) < 256) threadsPerBlock = 128;
   if((ncells/threadsPerBlock) < 64) threadsPerBlock = 64;
   if((ncells/threadsPerBlock) < 64) threadsPerBlock = 32;
   int numBlocks = (ncells-1)/threadsPerBlock + 1;
 
-  int threadsPerBlockBoundary = 512;
+  int threadsPerBlockBoundary = 1024;
+  if((nboundary/threadsPerBlockBoundary) < 1024) threadsPerBlockBoundary = 512;
   if((nboundary/threadsPerBlockBoundary) < 512) threadsPerBlockBoundary = 256;
   if((nboundary/threadsPerBlockBoundary) < 256) threadsPerBlockBoundary = 128;
   if((nboundary/threadsPerBlockBoundary) < 64) threadsPerBlockBoundary = 64;
   if((nboundary/threadsPerBlockBoundary) < 64) threadsPerBlockBoundary = 32;
   int numBlocksBoundary = (nboundary-1)/threadsPerBlockBoundary + 1;
 
-  int threadsPerBlockPartAndBoundary = 512;
+  int threadsPerBlockPartAndBoundary = 1024;
+  if(((np+nboundary)/threadsPerBlockPartAndBoundary) < 1024) threadsPerBlockPartAndBoundary = 512;
   if(((np+nboundary)/threadsPerBlockPartAndBoundary) < 512) threadsPerBlockPartAndBoundary = 256;
   if(((np+nboundary)/threadsPerBlockPartAndBoundary) < 256) threadsPerBlockPartAndBoundary = 128;
   if(((np+nboundary)/threadsPerBlockPartAndBoundary) < 64) threadsPerBlockPartAndBoundary = 64;
   if(((np+nboundary)/threadsPerBlockPartAndBoundary) < 64) threadsPerBlockPartAndBoundary = 32;
   int numBlocksPartAndBoundary = (np+nboundary-1)/threadsPerBlockPartAndBoundary + 1;
 
-  int threadsPerBlockParticles = 512;
+  int threadsPerBlockParticles = 1024;
+  if((np/threadsPerBlockParticles) < 1024) threadsPerBlockParticles = 512;
   if((np/threadsPerBlockParticles) < 512) threadsPerBlockParticles = 256;
   if((np/threadsPerBlockParticles) < 256) threadsPerBlockParticles = 128;
   if((np/threadsPerBlockParticles) < 64) threadsPerBlockParticles = 64;
@@ -50,7 +54,8 @@ bool runSchemeStokesLimitBigSystem(){
 
   int threadsPerBlockNeighbors, numBlocksNeighbors;
   if(ncells>numNeighbors){
-    threadsPerBlockNeighbors = 512;
+    threadsPerBlockNeighbors = 1024;
+    if((ncells/threadsPerBlockNeighbors) < 1024) threadsPerBlockNeighbors = 512;
     if((ncells/threadsPerBlockNeighbors) < 512) threadsPerBlockNeighbors = 256;
     if((ncells/threadsPerBlockNeighbors) < 256) threadsPerBlockNeighbors = 128;
     if((ncells/threadsPerBlockNeighbors) < 64) threadsPerBlockNeighbors = 64;
@@ -58,7 +63,8 @@ bool runSchemeStokesLimitBigSystem(){
     numBlocksNeighbors = (ncells-1)/threadsPerBlockNeighbors + 1;
   }
   else{
-    threadsPerBlockNeighbors = 512;
+    threadsPerBlockNeighbors = 1024;
+    if((numNeighbors/threadsPerBlockNeighbors) < 1024) threadsPerBlockNeighbors = 512;
     if((numNeighbors/threadsPerBlockNeighbors) < 512) threadsPerBlockNeighbors = 256;
     if((numNeighbors/threadsPerBlockNeighbors) < 256) threadsPerBlockNeighbors = 128;
     if((numNeighbors/threadsPerBlockNeighbors) < 64) threadsPerBlockNeighbors = 64;
