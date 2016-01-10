@@ -265,4 +265,11 @@ static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
 #include "boundaryParticlesFunctionStokesLimitFirstOrder.cu"
 #include "runSchemeStokesLimitFirstOrder.cu"
 
+//SchemeStokesLimitBigSystem
+#include "createBoundariesRK2BigSystemGPU.cu"
+#include "freeBoundariesRK2BigSystemGPU.cu"
+#include "stokesLimitFunctionsBigSystem.cu"
+#include "boundaryParticlesFunctionStokesLimitBigSystem.cu"
+#include "runSchemeStokesLimitBigSystem.cu"
+
 

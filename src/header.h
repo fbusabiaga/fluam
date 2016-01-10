@@ -304,8 +304,8 @@ bool freeMemoryStokesLimit();
 //stokesLimitBigSystem
 bool schemeStokesLimitBigSystem(); 
 bool freeMemoryStokesLimitBigSystem(); 
-/* bool createBoundariesRK2BigSystemGPU(); */
-/* bool freeBoundariesRK2BigSystemGPU(); */
-/* bool runSchemeStokesLimitBigSystem(); */
+bool createBoundariesRK2BigSystemGPU(); 
+bool freeBoundariesRK2BigSystemGPU(); 
+bool runSchemeStokesLimitBigSystem(); 
 
 

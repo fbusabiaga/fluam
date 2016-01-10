@@ -54,9 +54,8 @@ __global__ void findNeighborParticlesStokesLimit_1(particlesincell* pc,
     errorKernel[4] = 1;
     return;
   }
+
   pc->partInCellNonBonded[mNeighborsGPU*np+icel] = i;
-
-
 
 }
 

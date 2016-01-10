@@ -222,6 +222,7 @@ long long *stepGPU;
 __constant__ double densityConstGPU, dDensityGPU;
 
 vecinos *vec;
+vecinos *pVecinos, *pNeighbors;
 fvec *fb;
 particlesincell *pc;
 
