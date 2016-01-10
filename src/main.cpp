@@ -92,6 +92,9 @@ int main(int argc, char* argv[]){
   else if(stokesLimitFirstOrder==1){
     if(!schemeStokesLimitFirstOrder()) return 0;
   }
+  else if(stokesLimit==1 && bigSystem==1){
+    if(!schemeStokesLimitBigSystem()) return 0;
+  }
   else if(stokesLimit==1){
     if(!schemeStokesLimit()) return 0;
   }

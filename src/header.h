@@ -63,7 +63,7 @@ EXTERN_GLOBAL bool setGhost;
 EXTERN_GLOBAL bool setboundary;
 EXTERN_GLOBAL string fileCheckVelocity;
 EXTERN_GLOBAL bool setSaveVTK;
-EXTERN_GLOBAL bool computeNonBondedForces;
+EXTERN_GLOBAL bool computeNonBondedForces, bigSystem;
 
 
 bool loadDataMain(int argc, char* argv[]);
@@ -298,6 +298,14 @@ bool saveFunctionsSchemeStokesLimit(int index, long long step);
 bool runSchemeStokesLimit();
 bool createCellsStokesLimitGPU();
 bool freeCellsStokesLimitGPU();
+bool freeMemoryStokesLimit();
 
+
+//stokesLimitBigSystem
+bool schemeStokesLimitBigSystem(); 
+bool freeMemoryStokesLimitBigSystem(); 
+/* bool createBoundariesRK2BigSystemGPU(); */
+/* bool freeBoundariesRK2BigSystemGPU(); */
+/* bool runSchemeStokesLimitBigSystem(); */
 
 

@@ -91,7 +91,7 @@ bool schemeStokesLimit(){
     if(!freeParticles()) return 0;
 
   //Free memory
-  if(!freeMemoryQuasiNeutrallyBuoyant()) return 0;
+  if(!freeMemoryStokesLimit()) return 0;
   
   
   return 1;
