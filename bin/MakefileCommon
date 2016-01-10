@@ -403,7 +403,7 @@ updateFluidMomentumCoupling.cu saveFunctionsSchemeStokesLimit.cu runSchemeStokes
 boundaryParticlesFunctionStokesLimit.cu stokesLimitFunctions.cu createCellsStokesLimitGPU.cu \
 freeCellsStokesLimitGPU.cu schemeStokesLimitFirstOrder.cu runSchemeStokesLimitFirstOrder.cu \
 boundaryParticlesFunctionStokesLimitFirstOrder.cu createBoundariesRK2BigSystemGPU.cu \
-boundaryParticlesFunctionStokesLimitBigSystem.cu stokesLimitFunctionsBigSystem.cu; \
+boundaryParticlesFunctionStokesLimitBigSystem.cu stokesLimitFunctionsBigSystem.cu runSchemeStokesLimitBigSystem.cu ; \
 	$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
 
