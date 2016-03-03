@@ -154,7 +154,9 @@ const string wstokesLimitFirstOrder="stokesLimitFirstOrder";
 const string wstokesLimit="stokesLimit";
 const string wextraMobility="extraMobility";
 //stokesLimit Ends
-
+//MHD Begins
+const string wMHD="MHD";
+//MHD ends
 
 bool loadDataMain(int argc, char* argv[]){
 
@@ -267,6 +269,9 @@ bool loadDataMain(int argc, char* argv[]){
   extraMobility = 0;
   //stokesLimit Ends
 
+  //MHD Begins
+  MHD = 0;
+  //MHD Ends
   
   ifstream fileinput, fileoutput;
   string fileinputname;
@@ -586,6 +591,11 @@ bool loadDataMain(int argc, char* argv[]){
       }
     }
     //stokesLimit Ends
+    //MHD Begins
+    else if(word==wMHD){
+      MHD=1;
+    }
+    //MHD Ends
     else if(word.substr(0,1)==wnothing){
       getline(fileinput,word);
     }

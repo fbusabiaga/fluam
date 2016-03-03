@@ -300,7 +300,6 @@ bool createCellsStokesLimitGPU();
 bool freeCellsStokesLimitGPU();
 bool freeMemoryStokesLimit();
 
-
 //stokesLimitBigSystem
 bool schemeStokesLimitBigSystem(); 
 bool freeMemoryStokesLimitBigSystem(); 
@@ -308,4 +307,12 @@ bool createBoundariesRK2BigSystemGPU();
 bool freeBoundariesRK2BigSystemGPU(); 
 bool runSchemeStokesLimitBigSystem(); 
 
+//SchemeIncompressible
+bool schemeMHD();
+bool freeMemoryMHD();
+bool runSchemeMHD();
+bool saveFunctionsSchemeMHD(int index);
+bool createCellsMHD();
+bool createCellsMHDGPU();
+bool freeCellsMHDGPU();
 

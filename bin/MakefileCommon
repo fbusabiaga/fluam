@@ -83,6 +83,8 @@ initializeFluidGiantFluctuations.o \
 schemeContinuousGradient.o \
 saveFluidFinalConfiguration.o \
 saveFluidVTK.o \
+schemeMHD.o \
+createCellsMHD.o 
 
 
 #
@@ -316,7 +318,11 @@ $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 schemeContinuousGradient.o: schemeContinuousGradient.cu header.h cells.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
+schemeMHD.o: schemeMHD.cu header.h cells.h headerOtherFluidVariables.h ; \
+$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
+createCellsMHD.o: createCellsMHD.cpp header.h cells.h ; \
+$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
 #
 #
@@ -403,7 +409,9 @@ updateFluidMomentumCoupling.cu saveFunctionsSchemeStokesLimit.cu runSchemeStokes
 boundaryParticlesFunctionStokesLimit.cu stokesLimitFunctions.cu createCellsStokesLimitGPU.cu \
 freeCellsStokesLimitGPU.cu schemeStokesLimitFirstOrder.cu runSchemeStokesLimitFirstOrder.cu \
 boundaryParticlesFunctionStokesLimitFirstOrder.cu createBoundariesRK2BigSystemGPU.cu \
-boundaryParticlesFunctionStokesLimitBigSystem.cu stokesLimitFunctionsBigSystem.cu runSchemeStokesLimitBigSystem.cu ; \
+boundaryParticlesFunctionStokesLimitBigSystem.cu stokesLimitFunctionsBigSystem.cu runSchemeStokesLimitBigSystem.cu \
+saveFunctionsSchemeMHD.cu createCellsMHDGPU.cu freeCellsMHDGPU.cu gpuToHostMHD.cu kernelConstructWMHD.cu \
+runSchemeMHD.cu ; \
 	$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
 

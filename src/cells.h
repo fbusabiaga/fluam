@@ -38,6 +38,7 @@ EXTERN_CELLS double cVolume;
 EXTERN_CELLS double *cDensity;
 EXTERN_CELLS double *crx, *cry, *crz;
 EXTERN_CELLS double *cvx, *cvy, *cvz;
+EXTERN_CELLS double *cbx, *cby, *cbz;
 EXTERN_CELLS double vx0, vy0, vz0;
 //EXTERN_CELLS int** cellneighbour;
 

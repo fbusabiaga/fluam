@@ -122,4 +122,7 @@ EXTERN_OTHER_FLUID_V bool setExtraMobility;
 EXTERN_OTHER_FLUID_V double extraMobility;
 //stokesLimit Ends
 
+//Incompressible MHD
+EXTERN_OTHER_FLUID_V bool MHD;
+//Incompressible MHD
 

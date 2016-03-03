@@ -74,6 +74,9 @@ int main(int argc, char* argv[]){
   else if(incompressible){
     if(!schemeIncompressible()) return 0;
   }
+  else if(MHD){
+    if(!schemeMHD()) return 0;
+  }
   else if(incompressibleBinaryMixture){
     if(!schemeIncompressibleBinaryMixture()) return 0;
   }
