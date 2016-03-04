@@ -48,8 +48,7 @@ bool hydroAnalysisMHD(int counter){
     ofstream fileout(fileOutName.c_str());
     fileout << wordfile << endl;
     fileout.close();
-
-    //
+    
     nCells[0] = mx;
     nCells[1] = my;
     nCells[2] = mz;
@@ -58,6 +57,7 @@ bool hydroAnalysisMHD(int counter){
     systemLength[2] = lz;
     heatCapacity[0] = 1.;
     velocities = new double [NDIMS*mx*my*mz];
+
     if(temperature!=0){
       createHydroAnalysis_C(nCells,1,NDIMS,1,systemLength,heatCapacity,dt*samplefreq,0,densfluid/temperature,0);
     }
@@ -67,18 +67,17 @@ bool hydroAnalysisMHD(int counter){
   }
   else if(counter == 1){
     for(int i=0;i<ncells;i++) {
-      velocities[i] = cvx[i];
-      velocities[i+ncells] = cvy[i];
-      velocities[i+2*ncells] = cvz[i];
+      velocities[i]          = cbx[i];
+      velocities[i+ncells]   = cby[i];
+      velocities[i+2*ncells] = cbz[i];
     }
     updateHydroAnalysisIsothermal_C(velocities, cDensity);
-    //updateHydroAnalysisMixture_C(velocities, densities, densities);
+    // updateHydroAnalysisMixture_C(velocities, densities, densities);
   }
   else if(counter == 2){
     writeToFiles_C(-1); // Write to files
     destroyHydroAnalysis_C();
     delete[] velocities;
-    //delete[] concent;
   }
   else if(counter == 3){
     if(step==0){

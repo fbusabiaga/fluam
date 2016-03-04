@@ -77,24 +77,36 @@ bool runSchemeMHD(){
   //---------------------------------------------------------
   //Copy velocities to complex variable
   doubleToDoubleComplex<<<numBlocks,threadsPerBlock>>>(vxGPU,vyGPU,vzGPU,vxZ,vyZ,vzZ);
+  doubleToDoubleComplex<<<numBlocks,threadsPerBlock>>>(bxGPU,byGPU,bzGPU,WxZ,WyZ,WzZ);
 
   //Take velocities to fourier space
   cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_FORWARD);//W
   cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_FORWARD);//W
   cufftExecZ2Z(FFT,vzZ,vzZ,CUFFT_FORWARD);//W
   kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,-1);
-
+  cufftExecZ2Z(FFT,WxZ,WxZ,CUFFT_FORWARD);//W
+  cufftExecZ2Z(FFT,WyZ,WyZ,CUFFT_FORWARD);//W
+  cufftExecZ2Z(FFT,WzZ,WzZ,CUFFT_FORWARD);//W
+  kernelShift<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF,-1);
   //Project into divergence free space
+  // initializeMHD<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,WxZ,WyZ,WzZ,pF);
   projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
+  projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
+
 
   //Take velocities to real space
   kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,1);
   cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_INVERSE);
   cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_INVERSE);
   cufftExecZ2Z(FFT,vzZ,vzZ,CUFFT_INVERSE);
+  kernelShift<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF,1);
+  cufftExecZ2Z(FFT,WxZ,WxZ,CUFFT_INVERSE);
+  cufftExecZ2Z(FFT,WyZ,WyZ,CUFFT_INVERSE);
+  cufftExecZ2Z(FFT,WzZ,WzZ,CUFFT_INVERSE);
 
   //Copy velocities to real variables
   doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxGPU,vyGPU,vzGPU);
+  doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,bxGPU,byGPU,bzGPU);
   //---------------------------------------------------------
 
 
@@ -107,40 +119,66 @@ bool runSchemeMHD(){
     generateRandomNumbers(numberRandom);
 
     //First substep
-    kernelConstructW_1<<<numBlocks,threadsPerBlock>>>(vxGPU,vyGPU,vzGPU,vxZ,vyZ,vzZ,dRand);//W
+    kernelConstructWMHD_1<<<numBlocks,threadsPerBlock>>>(bxGPU,byGPU,bzGPU,
+     							 vxZ,vyZ,vzZ,
+							 WxZ,WyZ,WzZ,
+     							 dRand);//W
+
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_FORWARD);//W
     cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_FORWARD);//W
     cufftExecZ2Z(FFT,vzZ,vzZ,CUFFT_FORWARD);//W
     kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,-1);//W
-    kernelUpdateVIncompressible<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxZ,vyZ,vzZ,pF);//W
+    cufftExecZ2Z(FFT,WxZ,WxZ,CUFFT_FORWARD);//W
+    cufftExecZ2Z(FFT,WyZ,WyZ,CUFFT_FORWARD);//W
+    cufftExecZ2Z(FFT,WzZ,WzZ,CUFFT_FORWARD);//W
+    kernelShift<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF,-1);//W
+    kernelUpdateMHD<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,WxZ,WyZ,WzZ,pF);//W
     kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,1);
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_INVERSE);
     cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_INVERSE);
     cufftExecZ2Z(FFT,vzZ,vzZ,CUFFT_INVERSE);
+    kernelShift<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF,1);
+    cufftExecZ2Z(FFT,WxZ,WxZ,CUFFT_INVERSE);
+    cufftExecZ2Z(FFT,WyZ,WyZ,CUFFT_INVERSE);
+    cufftExecZ2Z(FFT,WzZ,WzZ,CUFFT_INVERSE);
     calculateVelocityPrediction<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,
-							       vxPredictionGPU,vyPredictionGPU,
-							       vzPredictionGPU);
+							       vxPredictionGPU,vyPredictionGPU,vzPredictionGPU);
+    calculateVectorFieldMidPoint<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,
+								bxGPU,byGPU,bzGPU,
+								bxPredictionGPU,byPredictionGPU,bzPredictionGPU);
+
      
     //Second substep
-    kernelConstructW_2<<<numBlocks,threadsPerBlock>>>(vxPredictionGPU,vyPredictionGPU,vzPredictionGPU,
-						      vxZ,vyZ,vzZ,dRand);//W
+    kernelConstructWMHD_2<<<numBlocks,threadsPerBlock>>>(bxGPU, byGPU, bzGPU,
+							 vxPredictionGPU,vyPredictionGPU,vzPredictionGPU,
+							 bxPredictionGPU,byPredictionGPU,bzPredictionGPU,
+							 vxZ,vyZ,vzZ,
+							 WxZ,WyZ,WzZ,
+							 dRand);//W
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_FORWARD);//W
     cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_FORWARD);//W
     cufftExecZ2Z(FFT,vzZ,vzZ,CUFFT_FORWARD);//W
     kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,-1);//W
-    kernelUpdateVIncompressible<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxZ,vyZ,vzZ,pF);//W
+    cufftExecZ2Z(FFT,WxZ,WxZ,CUFFT_FORWARD);//W
+    cufftExecZ2Z(FFT,WyZ,WyZ,CUFFT_FORWARD);//W
+    cufftExecZ2Z(FFT,WzZ,WzZ,CUFFT_FORWARD);//W
+    kernelShift<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF,-1);//W
+    kernelUpdateMHD<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,WxZ,WyZ,WzZ,pF);//W
     kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,1);
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_INVERSE);
     cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_INVERSE);
     cufftExecZ2Z(FFT,vzZ,vzZ,CUFFT_INVERSE);
-    doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,
-								   vxGPU,vyGPU,
-								   vzGPU);
+    kernelShift<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF,1);
+    cufftExecZ2Z(FFT,WxZ,WxZ,CUFFT_INVERSE);
+    cufftExecZ2Z(FFT,WyZ,WyZ,CUFFT_INVERSE);
+    cufftExecZ2Z(FFT,WzZ,WzZ,CUFFT_INVERSE);
+    doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxGPU,vyGPU,vzGPU);
+    doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,bxGPU,byGPU,bzGPU);
 
     step++;
     if(!(step%samplefreq)&&(step>0)){
       cout << "MHD " << step << endl;
-      if(!gpuToHostIncompressible()) return 0;
+      if(!gpuToHostMHD()) return 0;
       if(!saveFunctionsSchemeMHD(1)) return 0;
     }
   }

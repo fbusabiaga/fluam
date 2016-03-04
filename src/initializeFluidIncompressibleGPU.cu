@@ -30,8 +30,15 @@ bool initializeFluidIncompressibleGPU(){
     cutilSafeCall(cudaMemcpy(rzcellGPU,crz,ncells*sizeof(double),cudaMemcpyHostToDevice));
   }
 
-  if(incompressibleBinaryMixture || incompressibleBinaryMixtureMidPoint)
+  if(incompressibleBinaryMixture || incompressibleBinaryMixtureMidPoint){
     cutilSafeCall(cudaMemcpy(cGPU,c,ncells*sizeof(double),cudaMemcpyHostToDevice));
+  }
+
+  if(MHD){
+    cutilSafeCall(cudaMemcpy(bxGPU,cbx,ncells*sizeof(double),cudaMemcpyHostToDevice));
+    cutilSafeCall(cudaMemcpy(byGPU,cby,ncells*sizeof(double),cudaMemcpyHostToDevice));
+    cutilSafeCall(cudaMemcpy(bzGPU,cbz,ncells*sizeof(double),cudaMemcpyHostToDevice));
+  }
 
   
   cout << "INITIALIZE FLUID GPU :          DONE" << endl;

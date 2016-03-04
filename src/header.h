@@ -315,4 +315,4 @@ bool saveFunctionsSchemeMHD(int index);
 bool createCellsMHD();
 bool createCellsMHDGPU();
 bool freeCellsMHDGPU();
-
+bool hydroAnalysisMHD(int counter);

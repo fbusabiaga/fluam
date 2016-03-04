@@ -19,12 +19,14 @@
 
 
 bool gpuToHostMHD(){
+
   cutilSafeCall(cudaMemcpy(cvx,vxGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
   cutilSafeCall(cudaMemcpy(cvy,vyGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
   cutilSafeCall(cudaMemcpy(cvz,vzGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
 
-  if(incompressibleBinaryMixture || incompressibleBinaryMixtureMidPoint)
-    cutilSafeCall(cudaMemcpy(c,cGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
+  cutilSafeCall(cudaMemcpy(cbx,bxGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
+  cutilSafeCall(cudaMemcpy(cby,byGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
+  cutilSafeCall(cudaMemcpy(cbz,bzGPU,ncells*sizeof(double),cudaMemcpyDeviceToHost));
   
   return 1;
 }

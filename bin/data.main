@@ -6,30 +6,30 @@ MHD
 
 
 densfluid               1
-shearviscosity          1
+shearviscosity          0
 bulkviscosity           0
+diffusion		0
 
-
-temperature             1e-06
+temperature             0e-06
 numstepsRelaxation	0
-numsteps                10000
+numsteps                10
 
-dt			0.05
+dt			1e-03
 
-samplefreq              100
-savefreq		0
+samplefreq              1
+savefreq		1
 
-initfluid 		0
+initfluid 		4
 
 
 #presionparameters a0 a1 a2
-pressureparameters    	0	16	0
+pressureparameters    	1	8	1
 
 
 outputname		../data/MHD/run1
 
 
-#saveVTK		0
+saveVTK			1
 
 
 cells			128	128	1

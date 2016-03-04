@@ -42,6 +42,7 @@ bool createCellsMHDGPU(){
   cutilSafeCall(cudaMemcpyToSymbol(shearviscosityGPU,&shearviscosity,sizeof(double)));
   cutilSafeCall(cudaMemcpyToSymbol(temperatureGPU,&temperature,sizeof(double)));
   cutilSafeCall(cudaMemcpyToSymbol(thermostatGPU,&thermostat,sizeof(bool)));
+  cutilSafeCall(cudaMemcpyToSymbol(diffusionGPU,&diffusion,sizeof(double)));
 
   cutilSafeCall(cudaMemcpyToSymbol(densfluidGPU,&densfluid,sizeof(double)));
 

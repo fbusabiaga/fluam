@@ -120,15 +120,15 @@ bool temperatureFunction(int index){
     if(incompressibleBinaryMixture)
       cout << "CONCENTRATION " << concentrationTotal << endl;
     cout << "TEMPERATURE FLUID " << 
-       t << 
-       " " << 
-       t_mean_fluid/double(n) << 
-       " " << 
-       (t_mean_fluid/double(n) - temperature)/temperature << 
-       " " << 
-       sqrt(sigma_t_fluid/double(n))/temperature << 
-       "  " << 
-       n << endl;
+      t << 
+      " " << 
+      t_mean_fluid/double(n) << 
+      " " << 
+      (t_mean_fluid/double(n) - temperature)/(temperature ? temperature : 1) << 
+      " " << 
+      sqrt(sigma_t_fluid/double(n))/(temperature ? temperature : 1) << 
+      "  " << 
+      n << endl;
     
     cout << "tx                " << tx << " " << txm/double(n) << endl;
     cout << "ty                " << ty << " " << tym/double(n) << endl;
@@ -149,9 +149,9 @@ bool temperatureFunction(int index){
     fileSave << "TEMPERATURE FLUID " << 
       t_mean_fluid/double(n) << 
       " " << 
-      (t_mean_fluid/double(n) - temperature)/temperature << 
+      (t_mean_fluid/double(n) - temperature)/(temperature ? temperature : 1) << 
       " " << 
-      sqrt(sigma_t_fluid/double(n))/temperature << 
+      sqrt(sigma_t_fluid/double(n))/(temperature ? temperature : 1) << 
       "  " << 
       n << endl;
     

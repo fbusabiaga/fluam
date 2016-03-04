@@ -1,6 +1,8 @@
 &hydroAnalysisOptions ! Anton's analysis code!
    staggeredVelocities = -1 ! Are velocities on a staggered grid or not
    
+   writeSnapshotVTK=T ! Save snapshots of the instantaneous fields
+
    ! Means file: column 1=y, 2=rho, 3=v_x, 4=v_y, 5=T, 6=c
    storeConserved = F ! Leave at F
    writeMeansVTK = F ! Write the means to a VTK file
@@ -35,7 +37,7 @@
    
    outputFolder = "/sibm/fbalboa/fluam/data/MHD"
    filePrefix = "run1" ! Prefix for all file names
-   axisToPrint = 3 ! 1=x, 2=y, 3=z axis
+   axisToPrint = 2 ! 1=x, 2=y, 3=z axis
    periodic = T ! Is the system periodic along the y axes
 /
 

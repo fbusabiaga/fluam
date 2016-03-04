@@ -25,23 +25,36 @@ bool saveFunctionsSchemeMHD(int index){
   if(index==0){
     if(!saveSeed()) return 0;
     if(!temperatureFunction(index)) return 0;
-    //if(!saveCellsAlongZ(index)) return 0;
-    if(!hydroAnalysisIncompressible(0)) return 0;
+    if(!hydroAnalysisMHD(0)) return 0;
     if(!saveTime(index)) return 0;
   }
   //Use save functions
   else if(index==1){
     if(!temperatureFunction(index)) return 0;
-    //if(!saveCellsAlongZ(index)) return 0;
-    if(!hydroAnalysisIncompressible(1)) return 0;
+    if(samplefreq>0){
+      if(!hydroAnalysisMHD(1)) return 0;
+    }  
+    // if((savefreq>0)){
+    //   if((step%savefreq)==0 || (step%(savefreq-1))==0 ) // Save a snapshot of spectral average data
+    // 	if(!hydroAnalysisMHD(3)) return 0;
+    // }
+    // else if(savefreq<0){
+    //   if((step%abs(savefreq))==0) // Save a snapshot and do some analysis right now 
+    // 	if(!hydroAnalysisIncompressibleBinaryMixture(4)) return 0;
+    // }
+    if(setSaveVTK)
+      if((savefreq!=0))
+	if((step%savefreq)==0)
+	  if(!saveFluidVTK(0)) return 0;
   }
   //Close save functions
   else if(index==2){
     if(!saveTime(index)) return 0;
     if(!temperatureFunction(index)) return 0;
-    //if(!saveCellsAlongZ(index)) return 0;
-    if(!hydroAnalysisIncompressible(2)) return 0;
-    if(!saveFluidFinalConfiguration()) return 0;
+    if(!hydroAnalysisMHD(2)) return 0;
+    // if(!saveFluidFinalConfiguration()) return 0;
+    if(setSaveVTK)
+      if(!saveFluidVTK(1)) return 0;
   }
   else{
     cout << "SAVE FUNCTIONS ERROR, INDEX !=0,1,2 " << endl;

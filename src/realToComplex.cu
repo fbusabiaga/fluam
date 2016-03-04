@@ -605,3 +605,20 @@ __global__ void setFieldToZeroInput(double* vxGPU,
 }
 
 
+__global__ void calculateVectorFieldMidPoint(const cufftDoubleComplex* vxNew, 
+					     const cufftDoubleComplex* vyNew,
+					     const cufftDoubleComplex* vzNew, 
+					     const double* vxOld, 
+					     const double* vyOld, 
+					     const double* vzOld,
+					     double* vxMidPoint,
+					     double* vyMidPoint,
+					     double* vzMidPoint){
+
+  int j = blockDim.x * blockIdx.x + threadIdx.x;
+  if(j>=ncellsGPU) return;   
+
+  vxMidPoint[j] = 0.5 * ( (vxNew[j].x / double(ncellsGPU)) + vxOld[j]);
+  vyMidPoint[j] = 0.5 * ( (vyNew[j].x / double(ncellsGPU)) + vyOld[j]);
+  vzMidPoint[j] = 0.5 * ( (vzNew[j].x / double(ncellsGPU)) + vzOld[j]);  
+}

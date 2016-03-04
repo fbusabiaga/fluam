@@ -127,25 +127,14 @@ bool initializeFluid(){
 	cvz[i] = v0 * sin(k*(crz[i]+0.5*lz/double(mz)));
 	break;
       case 4:
-	//c[0].density = 1.2;
-	//c[0].mass = c[0].density * c[0].volume;
-	cvx[i] = 0.425;
-	cvy[i] = 0.;
-	cvz[i] = 0.;
-	/*c[555].v[0] = 2.;
-	  c[555].v[1] = 2.;
-	  c[555].v[2] = 2.;
-	  c[0] .v[0] = -2.;
-	  c[0] .v[1] = -2.;
-	  c[0] .v[2] = -2.;*/
-	//c[0].v[0] = 10.;
-	break;
-      default:
-	for(int i=0;i<ncells;i++){
-	  cvx[i] = 0;
-	  cvy[i] = 0;
-	  cvz[i] = 0;
-	}
+	k = 2 * pi / lx;
+	cvx[i] = -pressurea0 * sin(k*crx[i]) * cos(k*crz[i]);
+	cvy[i] = pressurea0 * cos(k*crx[i]) * sin(k*cry[i]);
+	cvz[i] = 0;// pressurea0 * cos(k*crx[i]) * sin(k*crz[i]);
+	k = (2 * pi / lx) * pressurea1;
+	cbx[i] = 0;
+	cby[i] = pressurea2 * cos(k*crx[i]);
+	cbz[i] = 0;// pressurea2 * cos(k*crx[i]);
 	break;
       }
       //c[i].p[0] = c[i].v[0] * c[i].mass;

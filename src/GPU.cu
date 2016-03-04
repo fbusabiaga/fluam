@@ -280,4 +280,6 @@ static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
 #include "gpuToHostMHD.cu"
 #include "kernelConstructWMHD.cu"
 // #include "kernelUpdateVIncompressible.cu"
+#include "initializeMHD.cu"
+#include "kernelUpdateMHD.cu"
 #include "runSchemeMHD.cu"

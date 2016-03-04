@@ -96,7 +96,8 @@ ifneq ($(SRC_HYDROLIB),)
       hydroAnalysisGhost.o \
       hydroAnalysisIncompressible.o \
       hydroAnalysisIncompressibleBinaryMixture.o \
-      hydroAnalysisParticlesWall.o 
+      hydroAnalysisParticlesWall.o \
+      hydroAnalysisMHD.o 
 endif
 
 #
@@ -348,6 +349,9 @@ hydroAnalysis.h cells.h \
 header.h fluid.h headerOtherFluidVariables.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  $(HydroAnalisysINCL) -c $<
 
+hydroAnalysisMHD.o: hydroAnalysisMHD.cu hydroAnalysis.h cells.h header.h fluid.h headerOtherFluidVariables.h ; \
+$(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  $(HydroAnalisysINCL) -c $<
+
 endif
 
 
@@ -411,7 +415,7 @@ freeCellsStokesLimitGPU.cu schemeStokesLimitFirstOrder.cu runSchemeStokesLimitFi
 boundaryParticlesFunctionStokesLimitFirstOrder.cu createBoundariesRK2BigSystemGPU.cu \
 boundaryParticlesFunctionStokesLimitBigSystem.cu stokesLimitFunctionsBigSystem.cu runSchemeStokesLimitBigSystem.cu \
 saveFunctionsSchemeMHD.cu createCellsMHDGPU.cu freeCellsMHDGPU.cu gpuToHostMHD.cu kernelConstructWMHD.cu \
-runSchemeMHD.cu ; \
+runSchemeMHD.cu initializeMHD.cu kernelUpdateMHD.cu ; \
 	$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
 

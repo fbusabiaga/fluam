@@ -41,8 +41,6 @@ bool saveFluidVTK(int option){
     s << index;
     string st = s.str();
     savefile = outputname + "." + st + ".fluid.vtk";
-
-
   }
   else if(option==1){
     //Save final snapshot without index  
@@ -61,10 +59,10 @@ bool saveFluidVTK(int option){
   file.open(savefile.c_str());  
   
   //Vector for the velocity
-  double *vectorVelocities; 
-  //vectorVelocities = new double [3*mx*my*mz]; //Use this for 3D
-  vectorVelocities = new double [3*mx*mz]; //Use this for projection in 2D
-
+  double *vectorVelocities, *b; 
+  vectorVelocities = new double [3*mx*my*mz]; //Use this for 3D
+  //vectorVelocities = new double [3*mx*my]; //Use this for projection in 2D
+  
   int nvars;
   int *vardims;
   int *centering;
@@ -74,6 +72,7 @@ bool saveFluidVTK(int option){
   char nameVelocity[] = {"velocity"};
   char nameDensity[] = {"density"};
   char nameConcentration[] = {"concentration"};
+  char nameB[] = {"b"};
 
   //Determine number of variables
   if(setContinuousGradient ||
@@ -130,6 +129,22 @@ bool saveFluidVTK(int option){
     vars[0] = vectorVelocities;
     vars[1] = c;
   }
+  else if(MHD){
+    b = new double [3*mx*my*mz]; //Use this for projection in 2D
+    nvars = 2; 
+    vardims = new int[2];
+    vardims[0] = 3;
+    vardims[1] = 3;
+    centering = new int [2];
+    centering[0] = 0;
+    centering[1] = 0;
+    varnames = new char* [2];
+    varnames[0] = &nameVelocity[0];
+    varnames[1] = &nameB[0];
+    vars = new double* [2];
+    vars[0] = vectorVelocities;
+    vars[1] = b;
+  }
   else{
     nvars = 1; //velocity
     vardims = new int[1];
@@ -142,15 +157,14 @@ bool saveFluidVTK(int option){
     vars[0] = vectorVelocities;
   }
      
-  //int dims[] = {mx+1, my+1, mz+1};
-  int dims[] = {mx+1, mz+1, 1}; //Use this for projection in 2D
+  int dims[] = {mx+1, my+1, mz+1};
+  //int dims[] = {mx+1, mz+1, 1}; //Use this for projection in 2D
 
 
   //For vtk the velovity is in the
   //center of each cell, we need to
   //interpolate
   if(setparticles==0){
-
     for(int i=0;i<ncells;i++){
       int fz = i/(mx*my);
       int fy = (i % (mx*my))/mx;
@@ -167,12 +181,15 @@ bool saveFluidVTK(int option){
       int vecino2 = fz*mx*my   + fy*mx   + fxm1;
       int vecino1 = fz*mx*my   + fym1*mx + fx;
       int vecino0 = fzm1*mx*my + fy*mx   + fx;    
-      
-      
-      
+           
       vectorVelocities[3*i]   = 0.5*(cvx[vecino2]+cvx[i]) ;
       vectorVelocities[1+3*i] = 0.5*(cvy[vecino1]+cvy[i]) ;
       vectorVelocities[2+3*i] = 0.5*(cvz[vecino0]+cvz[i]) ;
+      if(MHD){
+	b[3*i]   = 0.5*(cbx[vecino2]+cbx[i]) ;
+	b[1+3*i] = 0.5*(cby[vecino1]+cby[i]) ;
+	b[2+3*i] = 0.5*(cbz[vecino0]+cbz[i]) ;
+      }
     }
   }
   else{
@@ -193,19 +210,15 @@ bool saveFluidVTK(int option){
       int fz = i/(mx*my);
       int fy = (i % (mx*my))/mx;
       int fx = i % mx;
-      
-
     
       int fzm1 = ((fz-1+mz) % mz) ;
       int fym1 = ((fy-1+my) % my) ;
       int fxm1 = ((fx-1+mx) % mx);
-            
-      
+                
       int vecino2 = fz*mx*my      + fy*mx      + fxm1;
       int vecino1 = fz*mx*my      + fym1*mx    + fx;
       int vecino0 = fzm1*mx*my    + fy*mx      + fx;    
       
-
       int kxNew = (fx - kxP + mx/2 + mx) % mx;
       int kyNew = (fy - kyP + my/2 + my) % my;
       int kzNew = (fz - kzP + mz/2 + mz) % mz;
@@ -241,16 +254,11 @@ bool saveFluidVTK(int option){
   delete[] centering;
   delete[] varnames;
   delete[] vars;
-
-  
+  if(MHD){
+    delete[] b;
+  }  
   file.close();
-    
-
-
-
-
-
-
+   
   return 1;
 
 }

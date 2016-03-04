@@ -1,4 +1,4 @@
-// Filename: kernelUpdateIncompressibleBinaryMixture.cu
+// Filename: kernelUpdateMHD.cu
 //
 // Copyright (c) 2010-2016, Florencio Balboa Usabiaga
 //
@@ -18,11 +18,14 @@
 // along with Fluam. If not, see <http://www.gnu.org/licenses/>.
 
 
-__global__ void kernelUpdateIncompressibleBinaryMixture(cufftDoubleComplex *vxZ, 
-							cufftDoubleComplex *vyZ,
-							cufftDoubleComplex *vzZ, 
-							cufftDoubleComplex *cZ,
-							prefactorsFourier *pF){
+__global__ void kernelUpdateMHD(cufftDoubleComplex *vxZ, 
+				cufftDoubleComplex *vyZ,
+				cufftDoubleComplex *vzZ, 
+				cufftDoubleComplex *WxZ, 
+				cufftDoubleComplex *WyZ,
+				cufftDoubleComplex *WzZ, 
+				prefactorsFourier *pF){
+
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if(i>=ncellsGPU) return;   
 
@@ -44,12 +47,14 @@ __global__ void kernelUpdateIncompressibleBinaryMixture(cufftDoubleComplex *vxZ,
 
   //Construct denominator
   double denominator = 1 - 0.5 * dtGPU * shearviscosityGPU * L / densfluidGPU;
-  double denominatorConcentration = 1 - 0.5 * dtGPU * diffusionGPU * L ;
+  double denominatorB = 1 - 0.5 * dtGPU * diffusionGPU * L ;
 
   //Construct GW
-  cufftDoubleComplex GW;
+  cufftDoubleComplex GW, GB;
   GW.x = pF->gradKx[kx].y * vxZ[i].x + pF->gradKy[ky].y * vyZ[i].x + pF->gradKz[kz].y * vzZ[i].x;
   GW.y = pF->gradKx[kx].y * vxZ[i].y + pF->gradKy[ky].y * vyZ[i].y + pF->gradKz[kz].y * vzZ[i].y;
+  GB.x = pF->gradKx[kx].y * WxZ[i].x + pF->gradKy[ky].y * WyZ[i].x + pF->gradKz[kz].y * WzZ[i].x;
+  GB.y = pF->gradKx[kx].y * WxZ[i].y + pF->gradKy[ky].y * WyZ[i].y + pF->gradKz[kz].y * WzZ[i].y;
   
   if(i==0){
     //vxZ[i].x = WxZ[i].x;
@@ -66,43 +71,22 @@ __global__ void kernelUpdateIncompressibleBinaryMixture(cufftDoubleComplex *vxZ,
     vyZ[i].y = (vyZ[i].y + pF->gradKy[ky].y * GW.y / GG) / denominator;
     vzZ[i].x = (vzZ[i].x + pF->gradKz[kz].y * GW.x / GG) / denominator;
     vzZ[i].y = (vzZ[i].y + pF->gradKz[kz].y * GW.y / GG) / denominator;
-    cZ[i].x = cZ[i].x / denominatorConcentration ;
-    cZ[i].y = cZ[i].y / denominatorConcentration ;   
-  } 
-}
 
+    WxZ[i].x = (WxZ[i].x + pF->gradKx[kx].y * GB.x / GG) / denominatorB;
+    WxZ[i].y = (WxZ[i].y + pF->gradKx[kx].y * GB.y / GG) / denominatorB;
+    WyZ[i].x = (WyZ[i].x + pF->gradKy[ky].y * GB.x / GG) / denominatorB;
+    WyZ[i].y = (WyZ[i].y + pF->gradKy[ky].y * GB.y / GG) / denominatorB;
+    WzZ[i].x = (WzZ[i].x + pF->gradKz[kz].y * GB.x / GG) / denominatorB;
+    WzZ[i].y = (WzZ[i].y + pF->gradKz[kz].y * GB.y / GG) / denominatorB;
 
-// ==================================
-// A. Donev
-// Crank-Nicolson for concentration only
-// ==================================
-
-__global__ void kernelUpdateIncompressibleBinaryConcentration(cufftDoubleComplex *cZ,
-							      prefactorsFourier *pF){
-  int i = blockDim.x * blockIdx.x + threadIdx.x;
-  if(i>=ncellsGPU) return;   
-
-  //Find mode
-  int kx, ky, kz;
-  kz = i / (mxGPU*myGPU);
-  ky = (i % (mxGPU*myGPU)) / mxGPU;
-  kx = i % mxGPU;
-  
-  //Construct L
-  double L;
-  L = -((pF->gradKx[kx].y) * (pF->gradKx[kx].y)) - 
-    ((pF->gradKy[ky].y) * (pF->gradKy[ky].y)) -
-    ((pF->gradKz[kz].y) * (pF->gradKz[kz].y));
-
-  //Construct denominator
-  double denominatorConcentration = 1 - 0.5 * dtGPU * diffusionGPU * L ;
-  
-  if(i==0){
-    // Zero mode
-  }
-  else{
-    cZ[i].x = cZ[i].x / denominatorConcentration ;
-    cZ[i].y = cZ[i].y / denominatorConcentration ;   
+    // WxZ[i].x = WxZ[i].x / denominatorB;
+    // WxZ[i].y = WxZ[i].y / denominatorB;   
+    // WyZ[i].x = WyZ[i].x / denominatorB;
+    // WyZ[i].y = WyZ[i].y / denominatorB;   
+    // WzZ[i].x = WzZ[i].x / denominatorB;
+    // WzZ[i].y = WzZ[i].y / denominatorB;   
   }
   
 }
+
+
