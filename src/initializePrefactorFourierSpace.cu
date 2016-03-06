@@ -70,4 +70,55 @@ __global__ void initializePrefactorFourierSpace_2(prefactorsFourier *pF){
 
 
 
+__global__ void initializePrefactorFourierSpaceSpectral_2(prefactorsFourier *pF){
+  
+  int j = blockDim.x * blockIdx.x + threadIdx.x;
+  double pi = 4. * atan(1.);
+  
+  if(j<mxGPU){
+    pF->gradKx[j].x = 0;
+    if(j < (mxGPU+1)/2){
+      pF->gradKx[j].y = 2 * pi * j / lxGPU;
+      pF->expKx[j].x = cos(pi*j/double(mxGPU));
+      pF->expKx[j].y = sin(pi*j/double(mxGPU));
+    }
+    else{
+      pF->gradKx[j].y = 2 * pi * (j-mxGPU) / lxGPU;
+      pF->expKx[j].x = cos(pi*(j-mxGPU)/double(mxGPU));
+      pF->expKx[j].y = sin(pi*(j-mxGPU)/double(mxGPU));
+    }
+  }
+
+  if(j<myGPU){
+    pF->gradKy[j].x = 0;
+    if(j < (myGPU+1)/2){
+      pF->gradKy[j].y = 2 * pi * j / lyGPU;
+      pF->expKy[j].x = cos(pi*j/double(myGPU));
+      pF->expKy[j].y = sin(pi*j/double(myGPU));
+    }
+    else{
+      pF->gradKy[j].y = 2 * pi * (j-myGPU) / lyGPU;
+      pF->expKy[j].x = cos(pi*(j-myGPU)/double(myGPU));
+      pF->expKy[j].y = sin(pi*(j-myGPU)/double(myGPU));
+    }
+  }
+
+  if(j<mzGPU){
+    pF->gradKz[j].x = 0;
+    if(j < (mzGPU+1)/2){
+      pF->gradKz[j].y = 2 * pi * j / lzGPU;
+      pF->expKz[j].x = cos(pi*j/double(mzGPU));
+      pF->expKz[j].y = sin(pi*j/double(mzGPU));
+    }
+    else{
+      pF->gradKz[j].y = 2 * pi * (j-mzGPU) / lzGPU;
+      pF->expKz[j].x = cos(pi*(j-mzGPU)/double(mzGPU));
+      pF->expKz[j].y = sin(pi*(j-mzGPU)/double(mzGPU));
+    }
+  }
+
+}
+
+
+
 

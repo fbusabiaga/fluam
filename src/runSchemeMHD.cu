@@ -66,7 +66,8 @@ bool runSchemeMHD(){
     numBlocksdim = (mz-1)/threadsPerBlockdim + 1;
   }
   initializePrefactorFourierSpace_1<<<1,1>>>(gradKx,gradKy,gradKz,expKx,expKy,expKz,pF);
-  initializePrefactorFourierSpace_2<<<numBlocksdim,threadsPerBlockdim>>>(pF);
+  initializePrefactorFourierSpaceSpectral_2<<<numBlocksdim,threadsPerBlockdim>>>(pF);
+  // initializePrefactorFourierSpace_2<<<numBlocksdim,threadsPerBlockdim>>>(pF);
 
 
 
@@ -105,8 +106,8 @@ bool runSchemeMHD(){
   cufftExecZ2Z(FFT,WzZ,WzZ,CUFFT_INVERSE);
 
   //Copy velocities to real variables
-  doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxGPU,vyGPU,vzGPU);
-  doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,bxGPU,byGPU,bzGPU);
+  // doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxGPU,vyGPU,vzGPU);
+  // doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,bxGPU,byGPU,bzGPU);
   //---------------------------------------------------------
 
 
@@ -174,6 +175,166 @@ bool runSchemeMHD(){
     cufftExecZ2Z(FFT,WzZ,WzZ,CUFFT_INVERSE);
     doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxGPU,vyGPU,vzGPU);
     doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,bxGPU,byGPU,bzGPU);
+
+    step++;
+    if(!(step%samplefreq)&&(step>0)){
+      cout << "MHD " << step << endl;
+      if(!gpuToHostMHD()) return 0;
+      if(!saveFunctionsSchemeMHD(1)) return 0;
+    }
+  }
+
+  freeRandomNumbersGPU();
+  //Free FFT
+  cufftDestroy(FFT);
+
+  return 1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+bool runSchemeMHDRK3(){
+  int threadsPerBlock = 512;
+  if((ncells/threadsPerBlock) < 512) threadsPerBlock = 256;
+  if((ncells/threadsPerBlock) < 256) threadsPerBlock = 128;
+  if((ncells/threadsPerBlock) < 64) threadsPerBlock = 64;
+  if((ncells/threadsPerBlock) < 64) threadsPerBlock = 32;
+  int numBlocks = (ncells-1)/threadsPerBlock + 1;
+
+  step = -numstepsRelaxation;
+
+  //initialize random numbers
+  size_t numberRandom = 6 * ncells;
+  if(!initializeRandomNumbersGPU(numberRandom,seed)) return 0;
+
+  //Initialize textures cells
+  if(!texturesCells()) return 0;
+
+  initializeVecinos<<<numBlocks,threadsPerBlock>>>(vecino1GPU,vecino2GPU,vecino3GPU,vecino4GPU,
+						   vecinopxpyGPU,vecinopxmyGPU,vecinopxpzGPU,vecinopxmzGPU,
+						   vecinomxpyGPU,vecinomxmyGPU,vecinomxpzGPU,vecinomxmzGPU,
+						   vecinopypzGPU,vecinopymzGPU,vecinomypzGPU,vecinomymzGPU,
+						   vecinopxpypzGPU,vecinopxpymzGPU,vecinopxmypzGPU,
+						   vecinopxmymzGPU,
+						   vecinomxpypzGPU,vecinomxpymzGPU,vecinomxmypzGPU,
+						   vecinomxmymzGPU);
+  initializeVecinos2<<<numBlocks,threadsPerBlock>>>(vecino0GPU,vecino1GPU,vecino2GPU,
+						    vecino3GPU,vecino4GPU,vecino5GPU);
+
+
+  //Initialize plan
+  cufftHandle FFT;
+  cufftPlan3d(&FFT,mz,my,mx,CUFFT_Z2Z);
+  
+  //Initialize factors for update in fourier space
+  int threadsPerBlockdim, numBlocksdim;
+  if((mx>=my)&&(mx>=mz)){
+    threadsPerBlockdim = 128;
+    numBlocksdim = (mx-1)/threadsPerBlockdim + 1;
+  }
+  else if((my>=mz)){
+    threadsPerBlockdim = 128;
+    numBlocksdim = (my-1)/threadsPerBlockdim + 1;
+  }
+  else{
+    threadsPerBlockdim = 128;
+    numBlocksdim = (mz-1)/threadsPerBlockdim + 1;
+  }
+  initializePrefactorFourierSpace_1<<<1,1>>>(gradKx,gradKy,gradKz,expKx,expKy,expKz,pF);
+  initializePrefactorFourierSpaceSpectral_2<<<numBlocksdim,threadsPerBlockdim>>>(pF);
+
+
+
+
+
+
+  // A. Donev: Project the initial velocity to make sure it is div-free
+  //---------------------------------------------------------
+  //Copy velocities to complex variable
+  doubleToDoubleComplex<<<numBlocks,threadsPerBlock>>>(vxGPU,vyGPU,vzGPU,vxZ,vyZ,vzZ);
+  doubleToDoubleComplex<<<numBlocks,threadsPerBlock>>>(bxGPU,byGPU,bzGPU,WxZ,WyZ,WzZ);
+
+  //Take velocities to fourier space
+  cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_FORWARD);//W
+  cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_FORWARD);//W
+  cufftExecZ2Z(FFT,vzZ,vzZ,CUFFT_FORWARD);//W
+  kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,-1);
+  cufftExecZ2Z(FFT,WxZ,WxZ,CUFFT_FORWARD);//W
+  cufftExecZ2Z(FFT,WyZ,WyZ,CUFFT_FORWARD);//W
+  cufftExecZ2Z(FFT,WzZ,WzZ,CUFFT_FORWARD);//W
+  kernelShift<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF,-1);
+  //Project into divergence free space
+  // initializeMHD<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,WxZ,WyZ,WzZ,pF);
+  projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
+  projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
+
+
+  //Take velocities to real space
+  kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,1);
+  cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_INVERSE);
+  cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_INVERSE);
+  cufftExecZ2Z(FFT,vzZ,vzZ,CUFFT_INVERSE);
+  kernelShift<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF,1);
+  cufftExecZ2Z(FFT,WxZ,WxZ,CUFFT_INVERSE);
+  cufftExecZ2Z(FFT,WyZ,WyZ,CUFFT_INVERSE);
+  cufftExecZ2Z(FFT,WzZ,WzZ,CUFFT_INVERSE);
+
+  //Copy velocities to real variables
+  doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxGPU,vyGPU,vzGPU);
+  doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,bxGPU,byGPU,bzGPU);
+  //---------------------------------------------------------
+
+
+
+
+  
+
+  while(step<numsteps){
+
+    // FIRST SUB-STEP
+    // 1. Compute W
+
+    // 2. Compute div(W)
+
+    // 3. Compute pressure
+
+    // 4. Compute fields update
+
+
+    // SECOND SUB-STEP
+    // 1. Compute W
+
+    // 2. Compute div(W)
+
+    // 3. Compute pressure
+
+    // 4. Compute fields update
+
+
+    // THIRD SUB-STEP
+    // 1. Compute W
+
+    // 2. Compute div(W)
+
+    // 3. Compute pressure
+
+    // 4. Compute fields update
 
     step++;
     if(!(step%samplefreq)&&(step>0)){

@@ -53,6 +53,7 @@ __global__ void kernelUpdateMHD(cufftDoubleComplex *vxZ,
   cufftDoubleComplex GW, GB;
   GW.x = pF->gradKx[kx].y * vxZ[i].x + pF->gradKy[ky].y * vyZ[i].x + pF->gradKz[kz].y * vzZ[i].x;
   GW.y = pF->gradKx[kx].y * vxZ[i].y + pF->gradKy[ky].y * vyZ[i].y + pF->gradKz[kz].y * vzZ[i].y;
+
   GB.x = pF->gradKx[kx].y * WxZ[i].x + pF->gradKy[ky].y * WyZ[i].x + pF->gradKz[kz].y * WzZ[i].x;
   GB.y = pF->gradKx[kx].y * WxZ[i].y + pF->gradKy[ky].y * WyZ[i].y + pF->gradKz[kz].y * WzZ[i].y;
   
