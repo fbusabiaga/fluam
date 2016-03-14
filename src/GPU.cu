@@ -144,6 +144,7 @@ static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
 #include "runSchemeContinuousGradient.cu"
 
 //SchemeIncompressible
+#include "fieldsFunctions.cu"
 #include <cufft.h>
 #include "projectionDivergenceFree.cu"
 #include "saveFunctionsSchemeIncompressible.cu"

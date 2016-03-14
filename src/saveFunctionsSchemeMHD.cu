@@ -26,6 +26,8 @@ bool saveFunctionsSchemeMHD(int index){
     if(!saveSeed()) return 0;
     if(!temperatureFunction(index)) return 0;
     if(!hydroAnalysisMHD(0)) return 0;
+    if(!statisticsMHD(0)) return 0;
+    if(!saveFluidVTK(0)) return 0;
     if(!saveTime(index)) return 0;
   }
   //Use save functions
@@ -46,6 +48,7 @@ bool saveFunctionsSchemeMHD(int index){
       if((savefreq!=0))
 	if((step%savefreq)==0)
 	  if(!saveFluidVTK(0)) return 0;
+    if(!statisticsMHD(1)) return 0;
   }
   //Close save functions
   else if(index==2){
@@ -55,6 +58,7 @@ bool saveFunctionsSchemeMHD(int index){
     // if(!saveFluidFinalConfiguration()) return 0;
     if(setSaveVTK)
       if(!saveFluidVTK(1)) return 0;
+    if(!statisticsMHD(2)) return 0;
   }
   else{
     cout << "SAVE FUNCTIONS ERROR, INDEX !=0,1,2 " << endl;

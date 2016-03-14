@@ -45,7 +45,6 @@ __global__ void projectionDivergenceFree(cufftDoubleComplex *vxZ,
   GW.y = pF->gradKx[kx].y * vxZ[i].y + pF->gradKy[ky].y * vyZ[i].y + pF->gradKz[kz].y * vzZ[i].y;
 
 
-
   if(i==0){
     vxZ[i].x = vxZ[i].x;
     vxZ[i].y = vxZ[i].y;
@@ -64,11 +63,7 @@ __global__ void projectionDivergenceFree(cufftDoubleComplex *vxZ,
   }
 
 
-  
-
-
-
-
+  return;
 }
 
 

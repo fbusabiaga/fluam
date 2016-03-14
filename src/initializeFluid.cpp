@@ -127,14 +127,21 @@ bool initializeFluid(){
 	cvz[i] = v0 * sin(k*(crz[i]+0.5*lz/double(mz)));
 	break;
       case 4:
+	double dx = lx / mx * 1;
+	double dy = ly / my * 1;
+	double dz = lz / mz;
 	k = 2 * pi / lx;
-	cvx[i] = -pressurea0 * sin(k*crx[i]) * cos(k*cry[i]);
-	cvy[i] =  pressurea0 * cos(k*crx[i]) * sin(k*cry[i]);
+	cvx[i] = -pressurea0 * sin(k*(crx[i] + 0.5*dx)) * cos(k*cry[i]);
+	cvy[i] =  pressurea0 * cos(k*crx[i])            * sin(k*(cry[i] + 0.5*dy));
 	cvz[i] = 0;// pressurea0 * cos(k*crx[i]) * sin(k*crz[i]);
 	k = (2 * pi / lx) * pressurea1;
 	cbx[i] = 0;
-	cby[i] = pressurea2 * cos(k*crx[i]);
+	cby[i] = pressurea2 * cos(k*(crx[i] + 0.5*dx));
 	cbz[i] = 0;// pressurea2 * cos(k*crx[i]);
+
+	cbx[i] = -sin(k*(crx[i] + 0.5*dx)) * cos(k*cry[i]);
+	cby[i] =  cos(k*crx[i])            * sin(k*(cry[i] + 0.5*dy));
+	cbz[i] = 0;// pressurea0 * cos(k*crx[i]) * sin(k*crz[i]);
 	break;
       }
       //c[i].p[0] = c[i].v[0] * c[i].mass;

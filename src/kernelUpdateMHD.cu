@@ -91,3 +91,98 @@ __global__ void kernelUpdateMHD(cufftDoubleComplex *vxZ,
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+__global__ void filterTwoThirds(cufftDoubleComplex *vxZ,
+				cufftDoubleComplex *vyZ,
+				cufftDoubleComplex *vzZ,
+				prefactorsFourier *pF){
+
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=ncellsGPU) return;   
+
+  double pi = 4. * atan(1.);
+
+  // Find mode
+  int nx, ny, nz;
+  nz = i / (mxGPU*myGPU);
+  ny = (i % (mxGPU*myGPU)) / mxGPU;
+  nx = i % mxGPU;
+
+  // Find mode in intervale (-pi/L, pi/L)
+  double kx = pF->gradKx[nx].y;
+  double ky = pF->gradKx[ny].y;
+  double kz = pF->gradKx[nz].y;
+  double k = kx*kx + ky*ky + kz*kz;  
+
+  // Set k_max to the standard 2/3 rule
+  double k_x_max = (2.0/3.0) * pi * invdxGPU; // right value is 2*pi/3.0 * invdxGPU
+  double k_y_max = (2.0/3.0) * pi * invdyGPU;
+  double k_z_max = (2.0/3.0) * pi * invdzGPU;
+
+  // For k>m_max set modes to zero 
+  if((abs(kx) >= k_x_max) || (abs(ky) >= k_y_max) || (abs(kz) >= k_z_max) || (k >= k_x_max*k_y_max)){
+    vxZ[i].x = 0;
+    vxZ[i].y = 0;
+    vyZ[i].x = 0;
+    vyZ[i].y = 0;
+    vzZ[i].x = 0;
+    vzZ[i].y = 0;
+  }
+
+  return;
+}
+
+
+
+
+__global__ void filterExponential(cufftDoubleComplex *vxZ,
+				  cufftDoubleComplex *vyZ,
+				  cufftDoubleComplex *vzZ,
+				  prefactorsFourier *pF){
+
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=ncellsGPU) return;   
+
+  double pi = 4. * atan(1.);
+
+  // Find mode
+  int nx, ny, nz;
+  nz = i / (mxGPU*myGPU);
+  ny = (i % (mxGPU*myGPU)) / mxGPU;
+  nx = i % mxGPU;
+
+  // Find mode in intervale (-pi/L, pi/L)
+  double kx = pF->gradKx[nx].y;
+  double ky = pF->gradKx[ny].y;
+  double kz = pF->gradKx[nz].y;
+  double k = kx*kx + ky*ky + kz*kz;  
+
+  // Set k_max to the standard 2/3 rule
+  double k_x_max = pi * invdxGPU; // right value is 2*pi/3.0 * invdxGPU
+  double k_y_max = pi * invdyGPU;
+  double k_z_max = pi * invdzGPU;
+
+  double factor = exp(-36.0 * pow(k/(k_x_max*k_y_max), 36));
+
+  // Scale all modes
+  vxZ[i].x *= factor;
+  vxZ[i].y *= factor;
+  vyZ[i].x *= factor;
+  vyZ[i].y *= factor;
+  vzZ[i].x *= factor;
+  vzZ[i].y *= factor;
+  
+  return;
+}

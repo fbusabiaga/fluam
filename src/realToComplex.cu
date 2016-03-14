@@ -57,6 +57,24 @@ __global__ void doubleComplexToDoubleNormalized(cufftDoubleComplex* vxUpI,
 
 
 
+__global__ void doubleComplexToDouble(cufftDoubleComplex* vxUpI, 
+				      cufftDoubleComplex* vyUpI,
+				      cufftDoubleComplex* vzUpI, 
+				      double* vxGPU, 
+				      double* vyGPU, 
+				      double* vzGPU){
+  int j = blockDim.x * blockIdx.x + threadIdx.x;
+  if(j>=ncellsGPU) return;   
+  
+  vxGPU[j] = vxUpI[j].x ;
+  vyGPU[j] = vyUpI[j].x ;
+  vzGPU[j] = vzUpI[j].x ;
+
+}
+
+
+
+
 
 
 

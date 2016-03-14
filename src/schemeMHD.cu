@@ -39,7 +39,7 @@ bool schemeMHD(){
   if(!saveFunctionsSchemeMHD(0)) return 0;
   
   //Run the simulation
-  if(!runSchemeMHD()) return 0;
+  if(!runSchemeMHDRK3()) return 0;
       
   //Close save functions
   if(!saveFunctionsSchemeMHD(2)) return 0;

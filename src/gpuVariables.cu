@@ -366,4 +366,4 @@ double *ryFixedPointGPU;
 double *rzFixedPointGPU;
 __constant__ bool particlesWallGPU;
 __constant__ bool computeNonBondedForcesGPU;
-
+__device__ double max_dev;

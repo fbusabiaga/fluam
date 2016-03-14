@@ -58,6 +58,7 @@ const string wnumsteps="numsteps";
 const string wnumstepsRelaxation="numstepsRelaxation";
 const string wnothing="#";
 const string wdt="dt";
+const string wCFLadvective="CFLadvective";
 const string wsamplefreq="samplefreq";
 const string wsavefreq="savefreq";
 const string wpressureparameters="pressureparameters";
@@ -354,6 +355,10 @@ bool loadDataMain(int argc, char* argv[]){
     else if(word==wdt){
       fileinput >> dt;
     }
+    else if(word==wCFLadvective){
+      fileinput >> CFLadvective;
+    }
+
     else if(word==wsamplefreq){
       fileinput >> samplefreq;
     }
