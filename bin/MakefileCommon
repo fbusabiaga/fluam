@@ -84,8 +84,8 @@ schemeContinuousGradient.o \
 saveFluidFinalConfiguration.o \
 saveFluidVTK.o \
 schemeMHD.o \
-createCellsMHD.o 
-
+createCellsMHD.o \
+statisticsMHD.o 
 
 #
 #
@@ -325,6 +325,9 @@ $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 createCellsMHD.o: createCellsMHD.cpp header.h cells.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
+statisticsMHD.o: statisticsMHD.cpp header.h fluid.h cells.h ; \
+$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
+
 #
 #
 #If we have HydroGrid
@@ -415,7 +418,7 @@ freeCellsStokesLimitGPU.cu schemeStokesLimitFirstOrder.cu runSchemeStokesLimitFi
 boundaryParticlesFunctionStokesLimitFirstOrder.cu createBoundariesRK2BigSystemGPU.cu \
 boundaryParticlesFunctionStokesLimitBigSystem.cu stokesLimitFunctionsBigSystem.cu runSchemeStokesLimitBigSystem.cu \
 saveFunctionsSchemeMHD.cu createCellsMHDGPU.cu freeCellsMHDGPU.cu gpuToHostMHD.cu kernelConstructWMHD.cu \
-runSchemeMHD.cu initializeMHD.cu kernelUpdateMHD.cu ; \
+runSchemeMHD.cu initializeMHD.cu kernelUpdateMHD.cu fieldsFunctions.cu ; \
 	$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
 
