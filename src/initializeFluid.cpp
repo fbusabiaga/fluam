@@ -139,9 +139,9 @@ bool initializeFluid(){
 	cby[i] = pressurea2 * cos(k*(crx[i] + 0.5*dx));
 	cbz[i] = 0;// pressurea2 * cos(k*crx[i]);
 
-	cbx[i] = -sin(k*(crx[i] + 0.5*dx)) * cos(k*cry[i]);
-	cby[i] =  cos(k*crx[i])            * sin(k*(cry[i] + 0.5*dy));
-	cbz[i] = 0;// pressurea0 * cos(k*crx[i]) * sin(k*crz[i]);
+	// cbx[i] = -pressurea2 * sin(k*(crx[i] + 0.5*dx)) * cos(k*cry[i]);
+	// cby[i] =  pressurea2 * cos(k*crx[i])            * sin(k*(cry[i] + 0.5*dy));
+	// cbz[i] = 0;// pressurea0 * cos(k*crx[i]) * sin(k*crz[i]);
 	break;
       }
       //c[i].p[0] = c[i].v[0] * c[i].mass;

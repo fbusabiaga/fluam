@@ -38,7 +38,12 @@ inline void __cutilSafeCall(cudaError_t i, const char *file, const int line ){
 
 
 //GPU staff
-//#include <cutil_inline.h>
+#include <thrust/version.h>
+#include <thrust/reduce.h>
+#include <thrust/extrema.h>
+#include <thrust/device_vector.h>
+#include <thrust/transform_reduce.h>
+#include <thrust/functional.h>
 #include <cufft.h>
 #include "curand.h"
 #include "curand_kernel.h"
@@ -48,6 +53,14 @@ inline void __cutilSafeCall(cudaError_t i, const char *file, const int line ){
 #include "initGhostIndexGPU.cu"
 #include "pressureGPU.cu"
 
+template<typename T>
+struct absolute_value : public unary_function<T,T>
+{
+  __host__ __device__ T operator()(const T &x) const
+    {
+      return x < T(0) ? -x : x;
+    }
+};
 
 static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
   int2 v = tex1Dfetch(t,i);

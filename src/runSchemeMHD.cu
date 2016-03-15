@@ -302,17 +302,76 @@ bool runSchemeMHDRK3(){
 
     // Set time step
     if(1){
-      double max_host;
-      kernelMaxElement<<<1,1>>>(vxGPU,vyGPU,vzGPU,bxGPU,byGPU,bzGPU);
-      cudaMemcpyFromSymbol(&max_host, max_dev, sizeof(double));
-      if(max_host > 0){
-	dt = CFLadvective * lx / (max_host * mx);
+      double max_v_old = 0;
+      double max_v = 0;
+      { // vx
+	thrust::device_vector<double> vec(vxGPU, vxGPU + ncells);
+	max_v = thrust::transform_reduce(vec.begin(), vec.end(), absolute_value<double>(), double(0), thrust::maximum<double>());
+	if(max_v > max_v_old){
+	  max_v_old = max_v;
+	}
+      }
+      { // vy
+	thrust::device_vector<double> vec(vyGPU, vyGPU + ncells);
+	max_v = thrust::transform_reduce(vec.begin(), vec.end(), absolute_value<double>(), double(0), thrust::maximum<double>());
+	if(max_v > max_v_old){
+	  max_v_old = max_v;
+	}
+      }
+      { // vz
+	thrust::device_vector<double> vec(vzGPU, vzGPU + ncells);
+	max_v = thrust::transform_reduce(vec.begin(), vec.end(), absolute_value<double>(), double(0), thrust::maximum<double>());
+	if(max_v > max_v_old){
+	  max_v_old = max_v;
+	}
+      }
+      { // bx
+	thrust::device_vector<double> vec(bxGPU, bxGPU + ncells);
+	max_v = thrust::transform_reduce(vec.begin(), vec.end(), absolute_value<double>(), double(0), thrust::maximum<double>());
+	if(max_v > max_v_old){
+	  max_v_old = max_v;
+	}
+      }
+      { // by
+	thrust::device_vector<double> vec(byGPU, byGPU + ncells);
+	max_v = thrust::transform_reduce(vec.begin(), vec.end(), absolute_value<double>(), double(0), thrust::maximum<double>());
+	if(max_v > max_v_old){
+	  max_v_old = max_v;
+	}
+      }
+      { // bz
+	thrust::device_vector<double> vec(bzGPU, bzGPU + ncells);
+	max_v = thrust::transform_reduce(vec.begin(), vec.end(), absolute_value<double>(), double(0), thrust::maximum<double>());
+	if(max_v > max_v_old){
+	  max_v_old = max_v;
+	}
+      }
+
+      // Set time step
+      if(max_v_old > 0){
+	dt = CFLadvective * lx / (max_v_old * mx);
       }
       else{
 	dt = CFLadvective * lx / (1.0 * mx);
       }
+      if( dt > (0.1 * densfluid * lx * lx / (shearviscosity*mx*mx)) ){
+	dt = 0.1 * densfluid * lx * lx / (shearviscosity*mx*mx);
+      }
+      if( dt > (0.1 * lx * lx / (diffusion*mx*mx)) ){
+	dt = 0.1 * lx * lx / (diffusion*mx*mx);
+      }
+      
+      // double max_host;
+      // kernelMaxElement<<<1,1>>>(vxGPU,vyGPU,vzGPU,bxGPU,byGPU,bzGPU);
+      // cudaMemcpyFromSymbol(&max_host, max_dev, sizeof(double));
+      // if(max_host > 0){
+      // 	dt = CFLadvective * lx / (max_host * mx);
+      // }
+      // else{
+      // 	dt = CFLadvective * lx / (1.0 * mx);
+      // }
+      
       cutilSafeCall(cudaMemcpyToSymbol(dtGPU,&dt,sizeof(double)));
-      // cout << "max_host = " << max_host << "  dt = " << dt << endl;
       currentTime += (long double)dt;
     }
 
@@ -361,7 +420,7 @@ bool runSchemeMHDRK3(){
     filterExponential<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
     filterExponential<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
     projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
-    // projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
+    projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
     kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,1);
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_INVERSE);
     cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_INVERSE);
@@ -397,7 +456,7 @@ bool runSchemeMHDRK3(){
     filterExponential<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
     filterExponential<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
     projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
-    // projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
+    projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
     kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,1);
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_INVERSE);
     cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_INVERSE);
