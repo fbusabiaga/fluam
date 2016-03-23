@@ -256,8 +256,8 @@ bool runSchemeMHDRK3(){
     numBlocksdim = (mz-1)/threadsPerBlockdim + 1;
   }
   initializePrefactorFourierSpace_1<<<1,1>>>(gradKx,gradKy,gradKz,expKx,expKy,expKz,pF);
-  initializePrefactorFourierSpaceSpectral_2<<<numBlocksdim,threadsPerBlockdim>>>(pF);
-  // initializePrefactorFourierSpace_2<<<numBlocksdim,threadsPerBlockdim>>>(pF);
+  // initializePrefactorFourierSpaceSpectral_2<<<numBlocksdim,threadsPerBlockdim>>>(pF);
+  initializePrefactorFourierSpace_2<<<numBlocksdim,threadsPerBlockdim>>>(pF);
 
 
   // A. Donev: Project the initial velocity to make sure it is div-free
@@ -388,8 +388,8 @@ bool runSchemeMHDRK3(){
     cufftExecZ2Z(FFT,WyZ,WyZ,CUFFT_FORWARD);//W
     cufftExecZ2Z(FFT,WzZ,WzZ,CUFFT_FORWARD);//W
     kernelShift<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF,-1);//W
-    filterExponential<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
-    filterExponential<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
+    // filterExponential<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
+    // filterExponential<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
     projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
     projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
     kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,1);
@@ -403,7 +403,7 @@ bool runSchemeMHDRK3(){
     doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxPredictionGPU,vyPredictionGPU,vzPredictionGPU);
     doubleComplexToDoubleNormalized<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,bxPredictionGPU,byPredictionGPU,bzPredictionGPU);
 
-
+    
     // SECOND SUB-STEP
     kernelConstructWMHD_explicit<<<numBlocks,threadsPerBlock>>>(vxPredictionGPU,vyPredictionGPU,vzPredictionGPU,
 								bxPredictionGPU,byPredictionGPU,bzPredictionGPU,
@@ -417,8 +417,8 @@ bool runSchemeMHDRK3(){
     cufftExecZ2Z(FFT,WyZ,WyZ,CUFFT_FORWARD);//W
     cufftExecZ2Z(FFT,WzZ,WzZ,CUFFT_FORWARD);//W
     kernelShift<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF,-1);//W
-    filterExponential<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
-    filterExponential<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
+    // filterExponential<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
+    // filterExponential<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
     projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
     projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
     kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,1);
@@ -453,8 +453,8 @@ bool runSchemeMHDRK3(){
     cufftExecZ2Z(FFT,WyZ,WyZ,CUFFT_FORWARD);//W
     cufftExecZ2Z(FFT,WzZ,WzZ,CUFFT_FORWARD);//W
     kernelShift<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF,-1);//W
-    filterExponential<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
-    filterExponential<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
+    // filterExponential<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
+    // filterExponential<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
     projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
     projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
     kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,1);
@@ -475,7 +475,7 @@ bool runSchemeMHDRK3(){
      						   bxPredictionGPU,byPredictionGPU,bzPredictionGPU, 
      						   bxGPU,byGPU,bzGPU, 
 						   1.0/3.0, 2.0/3.0);
-
+    
     if(0){
       //Copy velocities to complex variable
       doubleToDoubleComplex<<<numBlocks,threadsPerBlock>>>(vxGPU,vyGPU,vzGPU,vxZ,vyZ,vzZ);
@@ -494,8 +494,6 @@ bool runSchemeMHDRK3(){
       // initializeMHD<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,WxZ,WyZ,WzZ,pF);
       projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
       projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
-
-
       //Take velocities to real space
       kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,1);
       cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_INVERSE);

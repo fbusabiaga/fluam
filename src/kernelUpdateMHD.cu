@@ -167,14 +167,14 @@ __global__ void filterExponential(cufftDoubleComplex *vxZ,
   double kx = pF->gradKx[nx].y;
   double ky = pF->gradKx[ny].y;
   double kz = pF->gradKx[nz].y;
-  double k = kx*kx + ky*ky + kz*kz;  
+  double k2 = kx*kx + ky*ky + kz*kz;  
 
   // Set k_max to the standard 2/3 rule
   double k_x_max = pi * invdxGPU; // right value is 2*pi/3.0 * invdxGPU
   double k_y_max = pi * invdyGPU;
   double k_z_max = pi * invdzGPU;
 
-  double factor = exp(-36.0 * pow(k/(k_x_max*k_y_max), 36));
+  double factor = exp(-36.0 * pow(k2/(k_x_max*k_y_max), 18)); // exponent 36 but k2 has already a exponent 2
 
   // Scale all modes
   vxZ[i].x *= factor;
