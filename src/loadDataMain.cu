@@ -157,6 +157,7 @@ const string wextraMobility="extraMobility";
 //stokesLimit Ends
 //MHD Begins
 const string wMHD="MHD";
+const string wtotalTime="totalTime";
 //MHD ends
 
 bool loadDataMain(int argc, char* argv[]){
@@ -272,6 +273,7 @@ bool loadDataMain(int argc, char* argv[]){
 
   //MHD Begins
   MHD = 0;
+  totalTime = 0;
   //MHD Ends
   
   ifstream fileinput, fileoutput;
@@ -599,6 +601,9 @@ bool loadDataMain(int argc, char* argv[]){
     //MHD Begins
     else if(word==wMHD){
       MHD=1;
+    }
+    else if(word==wtotalTime){
+      fileinput >> totalTime;
     }
     //MHD Ends
     else if(word.substr(0,1)==wnothing){

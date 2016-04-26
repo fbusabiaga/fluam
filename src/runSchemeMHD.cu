@@ -298,7 +298,7 @@ bool runSchemeMHDRK3(){
   
 
   currentTime = 0;
-  while(step<numsteps){
+  while(step<numsteps and currentTime<totalTime){
 
     // Set time step
     if(1){
@@ -388,8 +388,8 @@ bool runSchemeMHDRK3(){
     cufftExecZ2Z(FFT,WyZ,WyZ,CUFFT_FORWARD);//W
     cufftExecZ2Z(FFT,WzZ,WzZ,CUFFT_FORWARD);//W
     kernelShift<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF,-1);//W
-    // filterExponential<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
-    // filterExponential<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
+    filterExponential<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
+    filterExponential<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
     projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
     projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
     kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,1);
@@ -417,8 +417,8 @@ bool runSchemeMHDRK3(){
     cufftExecZ2Z(FFT,WyZ,WyZ,CUFFT_FORWARD);//W
     cufftExecZ2Z(FFT,WzZ,WzZ,CUFFT_FORWARD);//W
     kernelShift<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF,-1);//W
-    // filterExponential<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
-    // filterExponential<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
+    filterExponential<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
+    filterExponential<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
     projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
     projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
     kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,1);
@@ -453,8 +453,8 @@ bool runSchemeMHDRK3(){
     cufftExecZ2Z(FFT,WyZ,WyZ,CUFFT_FORWARD);//W
     cufftExecZ2Z(FFT,WzZ,WzZ,CUFFT_FORWARD);//W
     kernelShift<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF,-1);//W
-    // filterExponential<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
-    // filterExponential<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
+    filterExponential<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
+    filterExponential<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
     projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF);
     projectionDivergenceFree<<<numBlocks,threadsPerBlock>>>(WxZ,WyZ,WzZ,pF);
     kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,1);
