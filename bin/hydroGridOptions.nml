@@ -36,7 +36,7 @@
    nSavedSnapshots=100
    
    outputFolder = "/sibm/fbalboa/fluam/data/MHD"
-   filePrefix = "run1" ! Prefix for all file names
+   filePrefix = "run1001" ! Prefix for all file names
    axisToPrint = 2 ! 1=x, 2=y, 3=z axis
    periodic = T ! Is the system periodic along the y axes
 /

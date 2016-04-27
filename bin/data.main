@@ -6,27 +6,28 @@ MHD
 
 
 densfluid               1
-shearviscosity          0
+shearviscosity          0e-02
 bulkviscosity           0
-diffusion		0
+diffusion		0e-02
 
-temperature             0e-06
+temperature             0
 numstepsRelaxation	0
-numsteps                10
+numsteps                800
 
 dt			1e-03
+CFLadvective		0.1
 
-samplefreq              1
+samplefreq              80
 savefreq		1
 
 initfluid 		4
 
 
 #presionparameters a0 a1 a2
-pressureparameters    	1	8	1
+pressureparameters    	1	2	1
 
 
-outputname		../data/MHD/run1
+outputname		../data/run0
 
 
 saveVTK			1
@@ -34,8 +35,14 @@ saveVTK			1
 
 cells			128	128	1
 celldimension		6.28318530718	6.28318530718	0.0490873852123
-#seed			1
+#cells			256		256		1
+#celldimension		6.28318530718	6.28318530718	0.0245436926062
+#cells			512		512		1
+#celldimension		6.28318530718	6.28318530718	0.0122718463031
+#cells			1024		1024		1
+#celldimension		6.28318530718	6.28318530718	0.00613592315154
 
+#seed			1
 
 #fluid			/home/floren/gblob/data/gVsReynolds/quasiNeutrallyBuoyant/run57.fluidFinalConfiguration
 #backgroundvelocity 	0  0	    0

@@ -135,12 +135,22 @@ bool initializeFluid(){
 	cvy[i] =  pressurea0 * cos(k*crx[i])            * sin(k*(cry[i] + 0.5*dy));
 	cvz[i] =  0;
 	k = (2 * pi / lx) * pressurea1;
-
-
+	int N = 1;
+	double k_0 = 2 * pi / lx;
+	double D_N = (1.0 
+		      + 2.0 * cos(1.0 * k_0 * (crx[i] + 0.5*dx))
+		      + 2.0 * cos(2.0 * k_0 * (crx[i] + 0.5*dx))
+		      + 2.0 * cos(3.0 * k_0 * (crx[i] + 0.5*dx))
+		      + 2.0 * cos(4.0 * k_0 * (crx[i] + 0.5*dx))
+		      + 2.0 * cos(5.0 * k_0 * (crx[i] + 0.5*dx))
+		      + 2.0 * cos(6.0 * k_0 * (crx[i] + 0.5*dx))
+		      + 2.0 * cos(7.0 * k_0 * (crx[i] + 0.5*dx))
+		      + 2.0 * cos(8.0 * k_0 * (crx[i] + 0.5*dx))) / sqrt(17.0);
 	cbx[i] = 0;
-	cby[i] = pressurea2 * cos(k*(crx[i] + 0.5*dx));
+	cby[i] = D_N * pressurea2 * cos(k*(crx[i] + 0.5*dx));
 	cbz[i] = 0;
 
+	// NOT TO USE
 	// cbx[i] = -pressurea2 * sin(k*(crx[i] + 0.5*dx)) * cos(k*cry[i]);
 	// cby[i] =  pressurea2 * cos(k*crx[i])            * sin(k*(cry[i] + 0.5*dy));
 	// cbz[i] = 0;// pressurea0 * cos(k*crx[i]) * sin(k*crz[i]);

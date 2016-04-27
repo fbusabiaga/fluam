@@ -25,7 +25,7 @@ bool saveFunctionsSchemeMHD(int index){
   if(index==0){
     if(!saveSeed()) return 0;
     if(!temperatureFunction(index)) return 0;
-    if(!hydroAnalysisMHD(0)) return 0;
+    // if(!hydroAnalysisMHD(0)) return 0;
     if(!statisticsMHD(0)) return 0;
     if(!saveFluidVTK(0)) return 0;
     if(!saveTime(index)) return 0;
@@ -34,7 +34,7 @@ bool saveFunctionsSchemeMHD(int index){
   else if(index==1){
     if(!temperatureFunction(index)) return 0;
     if(samplefreq>0){
-      if(!hydroAnalysisMHD(1)) return 0;
+      // if(!hydroAnalysisMHD(1)) return 0;
     }  
     // if((savefreq>0)){
     //   if((step%savefreq)==0 || (step%(savefreq-1))==0 ) // Save a snapshot of spectral average data
@@ -54,7 +54,7 @@ bool saveFunctionsSchemeMHD(int index){
   else if(index==2){
     if(!saveTime(index)) return 0;
     if(!temperatureFunction(index)) return 0;
-    if(!hydroAnalysisMHD(2)) return 0;
+    // if(!hydroAnalysisMHD(2)) return 0;
     // if(!saveFluidFinalConfiguration()) return 0;
     if(setSaveVTK)
       if(!saveFluidVTK(1)) return 0;
