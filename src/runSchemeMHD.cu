@@ -298,8 +298,8 @@ bool runSchemeMHDRK3(){
   
 
   currentTime = 0;
+  long double saveTime = 0;
   while(step<numsteps and currentTime<totalTime){
-
     // Set time step
     if(1){
       double max_v_old = 0;
@@ -372,7 +372,6 @@ bool runSchemeMHDRK3(){
       // }
       
       cutilSafeCall(cudaMemcpyToSymbol(dtGPU,&dt,sizeof(double)));
-      currentTime += (long double)dt;
     }
 
     // FIRST SUB-STEP
@@ -512,7 +511,11 @@ bool runSchemeMHDRK3(){
 
     
     step++;
-    if(!(step%samplefreq)&&(step>0)){
+    currentTime += (long double)dt;
+    saveTime += (long double)dt;
+    // if(!(step%samplefreq)&&(step>0)){
+    if((step>0) && (saveTime > 0.01)){
+      saveTime = 0;
       cout << "MHD " << step << " dt = " << dt << " current time = " << currentTime << endl;
       if(!gpuToHostMHD()) return 0;
       if(!saveFunctionsSchemeMHD(1)) return 0;
