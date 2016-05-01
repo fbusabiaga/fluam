@@ -137,9 +137,9 @@ bool initializeFluid(){
 	k = (2 * pi / lx) * pressurea1;
 	int N = 1;
 	double k_0 = 2 * pi / lx;
-	double D_N = 0;
+	double D_N = 64;
 	for(int j=0; j<=N; j++){
-	  D_N += 2.0 * cos(j * k_0 * (crx[i] + 0.5*dx))
+	  D_N += 2.0 * cos(j * k_0 * (crx[i] + 0.5*dx));
 	}
 	D_N /= sqrt(1.0 + 2.0 * N);
 
