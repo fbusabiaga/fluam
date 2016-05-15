@@ -173,7 +173,7 @@ bool statisticsMHD(int index){
       Jb_2_N[1] += Jb[1];
       Jb_2_N[2] += Jb[2];
     }
-    if(fabs(crx[i]+0.5*dx - 0) <= distance_1_N){
+    else if(fabs(crx[i]+0.5*dx - 0) <= distance_1_N){
       // Jv
       Jv[1] = (cvx[vecino4] - cvx[i]) / dy;
       Jv[2] = (cvy[vecino3] - cvy[i]) / dx;
