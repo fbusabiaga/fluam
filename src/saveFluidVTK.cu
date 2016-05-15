@@ -174,10 +174,6 @@ bool saveFluidVTK(int option){
       int fym1 = ((fy-1+my) % my) ;
       int fxm1 = ((fx-1+mx) % mx);
       
-      
-      fz = fz ;
-      fy = fy ;
-      
       int vecino2 = fz*mx*my   + fy*mx   + fxm1;
       int vecino1 = fz*mx*my   + fym1*mx + fx;
       int vecino0 = fzm1*mx*my + fy*mx   + fx;    

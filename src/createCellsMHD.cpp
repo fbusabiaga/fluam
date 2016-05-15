@@ -67,7 +67,7 @@ bool createCellsMHD(){
   cDensity = new double [ncellst];
   
   for(int i=0;i<ncellst;i++){
-    
+  
     crx[i] = (modu(i,mx) + 0.5) * dx - 0.5 * lx;
     cry[i] = (modu(i,mx*myt)/mx + 0.5) * dy - 0.5 * ly;
     crz[i] = (i/(mx*myt) + 0.5) * dz - 0.5 * lz;

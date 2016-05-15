@@ -66,6 +66,7 @@ EXTERN_GLOBAL bool setboundary;
 EXTERN_GLOBAL string fileCheckVelocity;
 EXTERN_GLOBAL bool setSaveVTK;
 EXTERN_GLOBAL bool computeNonBondedForces, bigSystem;
+EXTERN_GLOBAL int kernelWidthN;
 
 
 bool loadDataMain(int argc, char* argv[]);

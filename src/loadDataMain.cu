@@ -158,6 +158,7 @@ const string wextraMobility="extraMobility";
 //MHD Begins
 const string wMHD="MHD";
 const string wtotalTime="totalTime";
+const string wkernelWidthN="kernelWidthN";
 //MHD ends
 
 bool loadDataMain(int argc, char* argv[]){
@@ -274,6 +275,7 @@ bool loadDataMain(int argc, char* argv[]){
   //MHD Begins
   MHD = 0;
   totalTime = 0;
+  kernelWidthN = 0;
   //MHD Ends
   
   ifstream fileinput, fileoutput;
@@ -604,6 +606,9 @@ bool loadDataMain(int argc, char* argv[]){
     }
     else if(word==wtotalTime){
       fileinput >> totalTime;
+    }
+    else if(word==wkernelWidthN){
+      fileinput >> kernelWidthN;
     }
     //MHD Ends
     else if(word.substr(0,1)==wnothing){

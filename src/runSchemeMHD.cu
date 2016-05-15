@@ -352,13 +352,13 @@ bool runSchemeMHDRK3(){
 	dt = CFLadvective * lx / (max_v_old * mx);
       }
       else{
-	dt = CFLadvective * lx / (1.0 * mx);
+	dt = 1.0;
       }
-      if( dt > (0.1 * densfluid * lx * lx / (shearviscosity*mx*mx)) ){
-	dt = 0.1 * densfluid * lx * lx / (shearviscosity*mx*mx);
+      if( dt > (0.05 * densfluid * lx * lx / (shearviscosity*mx*mx)) ){
+	dt = 0.05 * densfluid * lx * lx / (shearviscosity*mx*mx);
       }
-      if( dt > (0.1 * lx * lx / (diffusion*mx*mx)) ){
-	dt = 0.1 * lx * lx / (diffusion*mx*mx);
+      if( dt > (0.05 * lx * lx / (diffusion*mx*mx)) ){
+	dt = 0.05 * lx * lx / (diffusion*mx*mx);
       }
       
       // double max_host;

@@ -136,7 +136,7 @@ bool initializeFluid(){
 	cvz[i] =  0;
 	k = (2 * pi / lx) * pressurea1;
 	double k_0 = 2 * pi / lx;
-	int N = 64;
+	int N = kernelWidthN ;
 	double D_N = 1;
 	for(int j=1; j<=N; j++){
 	  D_N += 2.0 * cos(j * k_0 * (crx[i] + 0.5*dx));
