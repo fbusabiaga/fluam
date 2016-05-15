@@ -68,10 +68,6 @@ bool statisticsMHD(int index){
     
     // Diagonal elements defined in the cell centers
     if(fabs(crx[i] - 0) <= distance_4_N){
-      if(fabs(crx[i] - 0) > max){
-	cout << "max --------------------- " << i << "  " << fabs(crx[i] - 0) << "  " << distance_4_N << endl;
-	max = fabs(crx[i] - 0);
-      }
       // Jv
       Jv[0] = (cvx[i]-cvx[vecino2]) / dx;
       Jv[3] = (cvy[i]-cvy[vecino1]) / dy;
