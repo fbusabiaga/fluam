@@ -47,7 +47,6 @@ bool statisticsMHD(int index){
   // Loop to compute Jv and Jb
   double max=0;
   double min= 100;
-  cout << "-------------------- distance_4_N " << distance_4_N << endl;
   for(int i=0; i<ncells; i++){
     int fz = i/(mx*my);
     int fy = (i % (mx*my))/mx;
@@ -77,8 +76,6 @@ bool statisticsMHD(int index){
       Jv_2_N[3] += Jv[3];
       Jv_4_N[0] += Jv[0];
       Jv_4_N[3] += Jv[3];
-      // cout << "000000 " << Jv[0] << "   " << Jv_4_N[0] << endl;
-      // cout << "333333 " << Jv[3] << "   " << Jv_4_N[3] << endl;
       Jcount_1_N[0] += 1.0; 
       Jcount_1_N[3] += 1.0; 
       Jcount_2_N[0] += 1.0; 
