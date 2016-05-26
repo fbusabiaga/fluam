@@ -36,9 +36,9 @@ bool freeCellsMHDGPU(){
   cutilSafeCall(cudaFree(bzPredictionGPU));
 
 
-  cutilSafeCall(cudaFree(rxcellGPU));
-  cutilSafeCall(cudaFree(rycellGPU));
-  cutilSafeCall(cudaFree(rzcellGPU));
+  // cutilSafeCall(cudaFree(rxcellGPU));
+  // cutilSafeCall(cudaFree(rycellGPU));
+  // cutilSafeCall(cudaFree(rzcellGPU));
 
   cutilSafeCall(cudaUnbindTexture(texvecino0GPU));
   cutilSafeCall(cudaUnbindTexture(texvecino1GPU));

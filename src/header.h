@@ -38,7 +38,7 @@ EXTERN_GLOBAL double identity_prefactor;
 EXTERN_GLOBAL int setDevice;
 EXTERN_GLOBAL bool setparticles;
 EXTERN_GLOBAL bool thermostat;
-EXTERN_GLOBAL double CFLadvective;
+EXTERN_GLOBAL double CFLadvective, CFLdiffusive;
 EXTERN_GLOBAL double dt, totalTime;
 EXTERN_GLOBAL long double currentTime;
 EXTERN_GLOBAL long long numsteps;

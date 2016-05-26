@@ -220,7 +220,7 @@ bool runSchemeMHDRK3(){
 
   //initialize random numbers
   size_t numberRandom = 6 * ncells;
-  if(!initializeRandomNumbersGPU(numberRandom,seed)) return 0;
+  // if(!initializeRandomNumbersGPU(numberRandom,seed)) return 0;
 
   //Initialize textures cells
   if(!texturesCells()) return 0;
@@ -354,11 +354,11 @@ bool runSchemeMHDRK3(){
       else{
 	dt = 1.0;
       }
-      if( dt > (0.05 * densfluid * lx * lx / (shearviscosity*mx*mx)) ){
-	dt = 0.05 * densfluid * lx * lx / (shearviscosity*mx*mx);
+      if( dt > (CFLdiffusive * densfluid * lx * lx / (shearviscosity*mx*mx)) ){
+	dt = CFLdiffusive * densfluid * lx * lx / (shearviscosity*mx*mx);
       }
-      if( dt > (0.05 * lx * lx / (diffusion*mx*mx)) ){
-	dt = 0.05 * lx * lx / (diffusion*mx*mx);
+      if( dt > (CFLdiffusive * lx * lx / (diffusion*mx*mx)) ){
+	dt = CFLdiffusive * lx * lx / (diffusion*mx*mx);
       }
       
       // double max_host;
@@ -514,7 +514,7 @@ bool runSchemeMHDRK3(){
     currentTime += (long double)dt;
     saveTime += (long double)dt;
     // if(!(step%samplefreq)&&(step>0)){
-    if((step>0) && (saveTime > 0.01)){
+    if((step>0) && (saveTime > 0.001)){
       saveTime = 0;
       cout << "MHD " << step << " dt = " << dt << " current time = " << currentTime << endl;
       if(!gpuToHostMHD()) return 0;
@@ -522,7 +522,7 @@ bool runSchemeMHDRK3(){
     }
   }
 
-  freeRandomNumbersGPU();
+  // freeRandomNumbersGPU();
   //Free FFT
   cufftDestroy(FFT);
 

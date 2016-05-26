@@ -59,6 +59,7 @@ const string wnumstepsRelaxation="numstepsRelaxation";
 const string wnothing="#";
 const string wdt="dt";
 const string wCFLadvective="CFLadvective";
+const string wCFLdiffusive="CFLdiffusive";
 const string wsamplefreq="samplefreq";
 const string wsavefreq="savefreq";
 const string wpressureparameters="pressureparameters";
@@ -276,6 +277,8 @@ bool loadDataMain(int argc, char* argv[]){
   MHD = 0;
   totalTime = 0;
   kernelWidthN = 0;
+  CFLadvective = 0.1;
+  CFLdiffusive = 0.1;
   //MHD Ends
   
   ifstream fileinput, fileoutput;
@@ -362,7 +365,9 @@ bool loadDataMain(int argc, char* argv[]){
     else if(word==wCFLadvective){
       fileinput >> CFLadvective;
     }
-
+    else if(word==wCFLdiffusive){
+      fileinput >> CFLdiffusive;
+    }
     else if(word==wsamplefreq){
       fileinput >> samplefreq;
     }

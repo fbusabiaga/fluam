@@ -60,9 +60,9 @@ bool createCellsMHDGPU(){
   cutilSafeCall(cudaMalloc((void**)&bzPredictionGPU,ncells*sizeof(double)));
 
  
-  cutilSafeCall(cudaMalloc((void**)&rxcellGPU,ncells*sizeof(double)));
-  cutilSafeCall(cudaMalloc((void**)&rycellGPU,ncells*sizeof(double)));
-  cutilSafeCall(cudaMalloc((void**)&rzcellGPU,ncells*sizeof(double)));
+  // cutilSafeCall(cudaMalloc((void**)&rxcellGPU,ncells*sizeof(double)));
+  // cutilSafeCall(cudaMalloc((void**)&rycellGPU,ncells*sizeof(double)));
+  // cutilSafeCall(cudaMalloc((void**)&rzcellGPU,ncells*sizeof(double)));
 
   //FACT1 DIFFERENT FOR INCOMPRESSIBLE
   double fact1 = sqrt((4.*temperature*shearviscosity*dt)/(cVolume*densfluid*densfluid));

@@ -66,137 +66,280 @@ bool statisticsMHD(int index){
     int vecino0 = fzm1*mx*my + fy*mx   + fx;    
     
     // Diagonal elements defined in the cell centers
-    if(fabs(crx[i] - 0) <= distance_4_N){
+    if(fabs(crx[i] - 0) <= distance_1_N){
       // Jv
       Jv[0] = (cvx[i]-cvx[vecino2]) / dx;
       Jv[3] = (cvy[i]-cvy[vecino1]) / dy;
-      Jv_1_N[0] += Jv[0];
-      Jv_1_N[3] += Jv[3];
-      Jv_2_N[0] += Jv[0];
-      Jv_2_N[3] += Jv[3];
-      Jv_4_N[0] += Jv[0];
-      Jv_4_N[3] += Jv[3];
-      Jcount_1_N[0] += 1.0; 
-      Jcount_1_N[3] += 1.0; 
-      Jcount_2_N[0] += 1.0; 
-      Jcount_2_N[3] += 1.0; 
-      Jcount_4_N[0] += 1.0; 
-      Jcount_4_N[3] += 1.0; 
+      if(fabs(Jv[0]) > Jv_1_N[0]){
+	Jv_1_N[0] = fabs(Jv[0]);
+      }
+      if(fabs(Jv[0]) > Jv_2_N[0]){
+	Jv_2_N[0] = fabs(Jv[0]);
+      }
+      if(fabs(Jv[0]) > Jv_4_N[0]){
+	Jv_4_N[0] = fabs(Jv[0]);
+      }
+      if(fabs(Jv[3]) > Jv_1_N[3]){
+	Jv_1_N[3] = fabs(Jv[3]);
+      }
+      if(fabs(Jv[3]) > Jv_2_N[3]){
+	Jv_2_N[3] = fabs(Jv[3]);
+      }
+      if(fabs(Jv[3]) > Jv_4_N[3]){
+	Jv_4_N[3] = fabs(Jv[3]);
+      }
+      // Jv_1_N[3] += Jv[3];
+      // Jv_2_N[0] += Jv[0];
+      // Jv_2_N[3] += Jv[3];
+      // Jv_4_N[0] += Jv[0];
+      // Jv_4_N[3] += Jv[3];
+      // Jcount_1_N[0] += 1.0; 
+      // Jcount_1_N[3] += 1.0; 
+      // Jcount_2_N[0] += 1.0; 
+      // Jcount_2_N[3] += 1.0; 
+      // Jcount_4_N[0] += 1.0; 
+      // Jcount_4_N[3] += 1.0; 
       // Jb
       Jb[0] = (cbx[i]-cbx[vecino2]) / dx;
       Jb[3] = (cby[i]-cby[vecino1]) / dy;
-      Jb_1_N[0] += Jb[0];
-      Jb_1_N[3] += Jb[3];
-      Jb_2_N[0] += Jb[0];
-      Jb_2_N[3] += Jb[3];
-      Jb_4_N[0] += Jb[0];
-      Jb_4_N[3] += Jb[3];
+      if(fabs(Jb[0]) > Jb_1_N[0]){
+	Jb_1_N[0] = fabs(Jb[0]);
+      }
+      if(fabs(Jb[0]) > Jb_2_N[0]){
+	Jb_2_N[0] = fabs(Jb[0]);
+      }
+      if(fabs(Jb[0]) > Jb_4_N[0]){
+	Jb_4_N[0] = fabs(Jb[0]);
+      }
+      if(fabs(Jb[3]) > Jb_1_N[3]){
+	Jb_1_N[3] = fabs(Jb[3]);
+      }
+      if(fabs(Jb[3]) > Jb_2_N[3]){
+	Jb_2_N[3] = fabs(Jb[3]);
+      }
+      if(fabs(Jb[3]) > Jb_4_N[3]){
+	Jb_4_N[3] = fabs(Jb[3]);
+      }
+      // Jb_1_N[0] += Jb[0];
+      // Jb_1_N[3] += Jb[3];
+      // Jb_2_N[0] += Jb[0];
+      // Jb_2_N[3] += Jb[3];
+      // Jb_4_N[0] += Jb[0];
+      // Jb_4_N[3] += Jb[3];
     }
     else if(fabs(crx[i] - 0) <= distance_2_N){
       // Jv
       Jv[0] = (cvx[i]-cvx[vecino2]) / dx;
       Jv[3] = (cvy[i]-cvy[vecino1]) / dy;
-      Jv_1_N[0] += Jv[0];
-      Jv_1_N[3] += Jv[3];
-      Jv_2_N[0] += Jv[0];
-      Jv_2_N[3] += Jv[3];
-      Jcount_1_N[0] += 1.0; 
-      Jcount_1_N[3] += 1.0; 
-      Jcount_2_N[0] += 1.0; 
-      Jcount_2_N[3] += 1.0; 
+      if(fabs(Jv[0]) > Jv_2_N[0]){
+	Jv_2_N[0] = fabs(Jv[0]);
+      }
+      if(fabs(Jv[0]) > Jv_4_N[0]){
+	Jv_4_N[0] = fabs(Jv[0]);
+      }
+      if(fabs(Jv[3]) > Jv_2_N[3]){
+	Jv_2_N[3] = fabs(Jv[3]);
+      }
+      if(fabs(Jv[3]) > Jv_4_N[3]){
+	Jv_4_N[3] = fabs(Jv[3]);
+      }
+      // Jv_1_N[0] += Jv[0];
+      // Jv_1_N[3] += Jv[3];
+      // Jv_2_N[0] += Jv[0];
+      // Jv_2_N[3] += Jv[3];
+      // Jcount_1_N[0] += 1.0; 
+      // Jcount_1_N[3] += 1.0; 
+      // Jcount_2_N[0] += 1.0; 
+      // Jcount_2_N[3] += 1.0; 
       // Jb
       Jb[0] = (cbx[i]-cbx[vecino2]) / dx;
       Jb[3] = (cby[i]-cby[vecino1]) / dy;
-      Jb_1_N[0] += Jb[0];
-      Jb_1_N[3] += Jb[3];
-      Jb_2_N[0] += Jb[0];
-      Jb_2_N[3] += Jb[3];
+      if(fabs(Jb[0]) > Jb_2_N[0]){
+	Jb_2_N[0] = fabs(Jb[0]);
+      }
+      if(fabs(Jb[0]) > Jb_4_N[0]){
+	Jb_4_N[0] = fabs(Jb[0]);
+      }
+      if(fabs(Jb[3]) > Jb_2_N[3]){
+	Jb_2_N[3] = fabs(Jb[3]);
+      }
+      if(fabs(Jb[3]) > Jb_4_N[3]){
+	Jb_4_N[3] = fabs(Jb[3]);
+      }
+      // Jb_1_N[0] += Jb[0];
+      // Jb_1_N[3] += Jb[3];
+      // Jb_2_N[0] += Jb[0];
+      // Jb_2_N[3] += Jb[3];
     }
-    else if(fabs(crx[i] - 0) <= distance_1_N){
+    else if(fabs(crx[i] - 0) <= distance_4_N){
       // Jv
       Jv[0] = (cvx[i]-cvx[vecino2]) / dx;
       Jv[3] = (cvy[i]-cvy[vecino1]) / dy;
-      Jv_1_N[0] += Jv[0];
-      Jv_1_N[3] += Jv[3];
-      Jcount_1_N[0] += 1.0; 
-      Jcount_1_N[3] += 1.0; 
+      if(fabs(Jv[0]) > Jv_4_N[0]){
+	Jv_4_N[0] = fabs(Jv[0]);
+      }
+      if(fabs(Jv[3]) > Jv_4_N[3]){
+	Jv_4_N[3] = fabs(Jv[3]);
+      }
+      // Jv_1_N[0] += Jv[0];
+      // Jv_1_N[3] += Jv[3];
+      // Jcount_1_N[0] += 1.0; 
+      // Jcount_1_N[3] += 1.0; 
       // Jb
       Jb[0] = (cbx[i]-cbx[vecino2]) / dx;
       Jb[3] = (cby[i]-cby[vecino1]) / dy;
-      Jb_1_N[0] += Jb[0];
-      Jb_1_N[3] += Jb[3];
+      if(fabs(Jb[0]) > Jb_4_N[0]){
+	Jb_4_N[0] = fabs(Jb[0]);
+      }
+      if(fabs(Jb[3]) > Jb_4_N[3]){
+	Jb_4_N[3] = fabs(Jb[3]);
+      }
+      // Jb_1_N[0] += Jb[0];
+      // Jb_1_N[3] += Jb[3];
     }
     // Off-diagonal elements defined on the cell corners (in 2D)
-    if(fabs(crx[i]+0.5*dx - 0) <= distance_4_N){
+    if(fabs(crx[i]+0.5*dx - 0) <= distance_1_N){
       // Jv
       Jv[1] = (cvx[vecino4] - cvx[i]) / dy;
       Jv[2] = (cvy[vecino3] - cvy[i]) / dx;
-      Jv_1_N[1] += Jv[1];
-      Jv_1_N[2] += Jv[2];
-      Jv_2_N[1] += Jv[1];
-      Jv_2_N[2] += Jv[2];
-      Jv_4_N[1] += Jv[1];
-      Jv_4_N[2] += Jv[2];
-      Jcount_1_N[1] += 1.0; 
-      Jcount_1_N[2] += 1.0; 
-      Jcount_2_N[1] += 1.0; 
-      Jcount_2_N[2] += 1.0; 
-      Jcount_4_N[1] += 1.0; 
-      Jcount_4_N[2] += 1.0; 
+      if(fabs(Jv[1]) > Jv_1_N[1]){
+	Jv_1_N[1] = fabs(Jv[1]);
+      }
+      if(fabs(Jv[1]) > Jv_2_N[1]){
+	Jv_2_N[1] = fabs(Jv[1]);
+      }
+      if(fabs(Jv[1]) > Jv_4_N[1]){
+	Jv_4_N[1] = fabs(Jv[1]);
+      }
+      if(fabs(Jv[2]) > Jv_1_N[2]){
+	Jv_1_N[2] = fabs(Jv[2]);
+      }
+      if(fabs(Jv[2]) > Jv_2_N[2]){
+	Jv_2_N[2] = fabs(Jv[2]);
+      }
+      if(fabs(Jv[2]) > Jv_4_N[2]){
+	Jv_4_N[2] = fabs(Jv[2]);
+      }
+      // Jv_1_N[1] += Jv[1];
+      // Jv_1_N[2] += Jv[2];
+      // Jv_2_N[1] += Jv[1];
+      // Jv_2_N[2] += Jv[2];
+      // Jv_4_N[1] += Jv[1];
+      // Jv_4_N[2] += Jv[2];
+      // Jcount_1_N[1] += 1.0; 
+      // Jcount_1_N[2] += 1.0; 
+      // Jcount_2_N[1] += 1.0; 
+      // Jcount_2_N[2] += 1.0; 
+      // Jcount_4_N[1] += 1.0; 
+      // Jcount_4_N[2] += 1.0; 
       // Jb
       Jb[1] = (cbx[vecino4] - cbx[i]) / dy;
       Jb[2] = (cby[vecino3] - cby[i]) / dx;
-      Jb_1_N[1] += Jb[1];
-      Jb_1_N[2] += Jb[2];
-      Jb_2_N[1] += Jb[1];
-      Jb_2_N[2] += Jb[2];
-      Jb_4_N[1] += Jb[1];
-      Jb_4_N[2] += Jb[2];
+      if(fabs(Jb[1]) > Jb_1_N[1]){
+	Jb_1_N[1] = fabs(Jb[1]);
+      }
+      if(fabs(Jb[1]) > Jb_2_N[1]){
+	Jb_2_N[1] = fabs(Jb[1]);
+      }
+      if(fabs(Jb[1]) > Jb_4_N[1]){
+	Jb_4_N[1] = fabs(Jb[1]);
+      }
+      if(fabs(Jb[2]) > Jb_1_N[2]){
+	Jb_1_N[2] = fabs(Jb[2]);
+      }
+      if(fabs(Jb[2]) > Jb_2_N[2]){
+	Jb_2_N[2] = fabs(Jb[2]);
+      }
+      if(fabs(Jb[2]) > Jb_4_N[2]){
+	Jb_4_N[2] = fabs(Jb[2]);
+      }
+      // Jb_1_N[1] += Jb[1];
+      // Jb_1_N[2] += Jb[2];
+      // Jb_2_N[1] += Jb[1];
+      // Jb_2_N[2] += Jb[2];
+      // Jb_4_N[1] += Jb[1];
+      // Jb_4_N[2] += Jb[2];
     }
     else if(fabs(crx[i]+0.5*dx - 0) <= distance_2_N){
       // Jv
       Jv[1] = (cvx[vecino4] - cvx[i]) / dy;
       Jv[2] = (cvy[vecino3] - cvy[i]) / dx;
-      Jv_1_N[1] += Jv[1];
-      Jv_1_N[2] += Jv[2];
-      Jv_2_N[1] += Jv[1];
-      Jv_2_N[2] += Jv[2];
-      Jcount_1_N[1] += 1.0; 
-      Jcount_1_N[2] += 1.0; 
-      Jcount_2_N[1] += 1.0; 
-      Jcount_2_N[2] += 1.0; 
+      if(fabs(Jv[1]) > Jv_2_N[1]){
+	Jv_2_N[1] = fabs(Jv[1]);
+      }
+      if(fabs(Jv[1]) > Jv_4_N[1]){
+	Jv_4_N[1] = fabs(Jv[1]);
+      }
+      if(fabs(Jv[2]) > Jv_2_N[2]){
+	Jv_2_N[2] = fabs(Jv[2]);
+      }
+      if(fabs(Jv[2]) > Jv_4_N[2]){
+	Jv_4_N[2] = fabs(Jv[2]);
+      }
+      // Jv_1_N[1] += Jv[1];
+      // Jv_1_N[2] += Jv[2];
+      // Jv_2_N[1] += Jv[1];
+      // Jv_2_N[2] += Jv[2];
+      // Jcount_1_N[1] += 1.0; 
+      // Jcount_1_N[2] += 1.0; 
+      // Jcount_2_N[1] += 1.0; 
+      // Jcount_2_N[2] += 1.0; 
       // Jb
       Jb[1] = (cbx[vecino4] - cbx[i]) / dy;
       Jb[2] = (cby[vecino3] - cby[i]) / dx;
-      Jb_1_N[1] += Jb[1];
-      Jb_1_N[2] += Jb[2];
-      Jb_2_N[1] += Jb[1];
-      Jb_2_N[2] += Jb[2];
+      if(fabs(Jb[1]) > Jb_2_N[1]){
+	Jb_2_N[1] = fabs(Jb[1]);
+      }
+      if(fabs(Jb[1]) > Jb_4_N[1]){
+	Jb_4_N[1] = fabs(Jb[1]);
+      }
+      if(fabs(Jb[2]) > Jb_2_N[2]){
+	Jb_2_N[2] = fabs(Jb[2]);
+      }
+      if(fabs(Jb[2]) > Jb_4_N[2]){
+	Jb_4_N[2] = fabs(Jb[2]);
+      }
+      // Jb_1_N[1] += Jb[1];
+      // Jb_1_N[2] += Jb[2];
+      // Jb_2_N[1] += Jb[1];
+      // Jb_2_N[2] += Jb[2];
     }
-    else if(fabs(crx[i]+0.5*dx - 0) <= distance_1_N){
+    else if(fabs(crx[i]+0.5*dx - 0) <= distance_4_N){
       // Jv
       Jv[1] = (cvx[vecino4] - cvx[i]) / dy;
       Jv[2] = (cvy[vecino3] - cvy[i]) / dx;
-      Jv_1_N[1] += Jv[1];
-      Jv_1_N[2] += Jv[2];
-      Jcount_1_N[1] += 1.0; 
-      Jcount_1_N[2] += 1.0; 
+      if(fabs(Jv[1]) > Jv_4_N[1]){
+	Jv_4_N[1] = fabs(Jv[1]);
+      }
+      if(fabs(Jv[2]) > Jv_4_N[2]){
+	Jv_4_N[2] = fabs(Jv[2]);
+      }
+      // Jv_1_N[1] += Jv[1];
+      // Jv_1_N[2] += Jv[2];
+      // Jcount_1_N[1] += 1.0; 
+      // Jcount_1_N[2] += 1.0; 
       // Jb
       Jb[1] = (cbx[vecino4] - cbx[i]) / dy;
       Jb[2] = (cby[vecino3] - cby[i]) / dx;
-      Jb_1_N[1] += Jb[1];
-      Jb_1_N[2] += Jb[2];
+      if(fabs(Jb[1]) > Jb_4_N[1]){
+	Jb_4_N[1] = fabs(Jb[1]);
+      }
+      if(fabs(Jb[2]) > Jb_4_N[2]){
+	Jb_4_N[2] = fabs(Jb[2]);
+      }
+      // Jb_1_N[1] += Jb[1];
+      // Jb_1_N[2] += Jb[2];
     }
   }
   // Normalize Jacobians
-  for(int i=0; i<4; i++){
-    Jv_1_N[i] /= Jcount_1_N[i];
-    Jv_2_N[i] /= Jcount_2_N[i];
-    Jv_4_N[i] /= Jcount_4_N[i];
-    Jb_1_N[i] /= Jcount_1_N[i];
-    Jb_2_N[i] /= Jcount_2_N[i];
-    Jb_4_N[i] /= Jcount_4_N[i];
-  }
+  // for(int i=0; i<4; i++){
+  // Jv_1_N[i] /= Jcount_1_N[i];
+  // Jv_2_N[i] /= Jcount_2_N[i];
+  // Jv_4_N[i] /= Jcount_4_N[i];
+  // Jb_1_N[i] /= Jcount_1_N[i];
+  // Jb_2_N[i] /= Jcount_2_N[i];
+  // Jb_4_N[i] /= Jcount_4_N[i];
+  // }
   
 
 
@@ -204,32 +347,39 @@ bool statisticsMHD(int index){
     string savefile;
     savefile = outputname +  ".statisticsMHD.dat";
     fileStatisticsMHD.open(savefile.c_str());
+    fileStatisticsMHD.precision(10);
     fileStatisticsMHD << "# Columns: step, time, energy fluid, energy b, total energy "  << endl;
     fileStatisticsMHD << step << "  " << currentTime << "  " << energyFluid << "  " << energyB << "  " << totalEnergy << endl;   
     // Jv
     savefile = outputname +  ".jacobianV_1_N.dat";
     fileJacobianV_1_N.open(savefile.c_str());
+    fileJacobianV_1_N.precision(10);
     fileJacobianV_1_N << "# Columns: step, time, Jv_xx, Jv_xy, Jv_yx, Jv_yy" << endl;
     fileJacobianV_1_N << step << "  " << currentTime << "  " << Jv_1_N[0] << "  " << Jv_1_N[1] << "  " << Jv_1_N[2] << "  " << Jv_1_N[3] << endl;
     savefile = outputname +  ".jacobianV_2_N.dat";
     fileJacobianV_2_N.open(savefile.c_str());
+    fileJacobianV_2_N.precision(10);
     fileJacobianV_2_N << "# Columns: step, time, Jv_xx, Jv_xy, Jv_yx, Jv_yy" << endl;
     fileJacobianV_2_N << step << "  " << currentTime << "  " << Jv_2_N[0] << "  " << Jv_2_N[1] << "  " << Jv_2_N[2] << "  " << Jv_2_N[3] << endl;
     savefile = outputname +  ".jacobianV_4_N.dat";
     fileJacobianV_4_N.open(savefile.c_str());
+    fileJacobianV_4_N.precision(10);
     fileJacobianV_4_N << "# Columns: step, time, Jv_xx, Jv_xy, Jv_yx, Jv_yy" << endl;
     fileJacobianV_4_N << step << "  " << currentTime << "  " << Jv_4_N[0] << "  " << Jv_4_N[1] << "  " << Jv_4_N[2] << "  " << Jv_4_N[3] << endl;
     // Jb
     savefile = outputname +  ".jacobianB_1_N.dat";
     fileJacobianB_1_N.open(savefile.c_str());
+    fileJacobianB_1_N.precision(10);
     fileJacobianB_1_N << "# Columns: step, time, Jb_xx, Jb_xy, Jb_yx, Jb_yy" << endl;
     fileJacobianB_1_N << step << "  " << currentTime << "  " << Jb_1_N[0] << "  " << Jb_1_N[1] << "  " << Jb_1_N[2] << "  " << Jb_1_N[3] << endl;
     savefile = outputname +  ".jacobianB_2_N.dat";
     fileJacobianB_2_N.open(savefile.c_str());
+    fileJacobianB_2_N.precision(10);
     fileJacobianB_2_N << "# Columns: step, time, Jb_xx, Jb_xy, Jb_yx, Jb_yy" << endl;
     fileJacobianB_2_N << step << "  " << currentTime << "  " << Jb_2_N[0] << "  " << Jb_2_N[1] << "  " << Jb_2_N[2] << "  " << Jb_2_N[3] << endl;
     savefile = outputname +  ".jacobianB_4_N.dat";
     fileJacobianB_4_N.open(savefile.c_str());
+    fileJacobianB_4_N.precision(10);
     fileJacobianB_4_N << "# Columns: step, time, Jb_xx, Jb_xy, Jb_yx, Jb_yy" << endl;
     fileJacobianB_4_N << step << "  " << currentTime << "  " << Jb_4_N[0] << "  " << Jb_4_N[1] << "  " << Jb_4_N[2] << "  " << Jb_4_N[3] << endl;
   }

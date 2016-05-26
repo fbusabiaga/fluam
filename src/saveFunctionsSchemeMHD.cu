@@ -27,7 +27,8 @@ bool saveFunctionsSchemeMHD(int index){
     if(!temperatureFunction(index)) return 0;
     // if(!hydroAnalysisMHD(0)) return 0;
     if(!statisticsMHD(0)) return 0;
-    if(!saveFluidVTK(0)) return 0;
+    if(setSaveVTK)
+      if(!saveFluidVTK(0)) return 0;
     if(!saveTime(index)) return 0;
   }
   //Use save functions
