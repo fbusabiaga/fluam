@@ -17,7 +17,8 @@ endif
 
 
 
-OBJS = main.o 
+OBJS = main.o \
+Mesh.o 
 
 #
 #
