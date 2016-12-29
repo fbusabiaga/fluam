@@ -17,8 +17,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Fluam. If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "header.h"
+// #include "Mesh.h"
+#include "MeshRectangularStaggered.h"
+
+using namespace fluam;
 
 int main(int argc, char* argv[]){
 
@@ -33,6 +36,19 @@ int main(int argc, char* argv[]){
   // if(!initializeRandomNumber()) return 0;
 
   //Choose scheme
+
+  Mesh grid();
+  intd cells = make_int3(32,32,32);
+  reald L;
+  L.x = 32;
+  L.y = 32;
+  L.z = 32;
+  MeshRectangularStaggered gridStaggered(cells, L);
+  // MeshRectangularStaggered gridStaggered();
+
+  cout << gridStaggered.get_ncells() << endl;
+  cout << gridStaggered.get_L().z << endl;
+
 
   cout << "END" << endl;
   return 1;

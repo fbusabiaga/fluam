@@ -18,7 +18,8 @@ endif
 
 
 OBJS = main.o \
-Mesh.o 
+Mesh.o \
+MeshRectangularStaggered.o 
 
 #
 #

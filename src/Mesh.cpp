@@ -6,4 +6,8 @@ namespace fluam{
     
   }
 
+  Mesh::~Mesh(){
+    
+  }
+
 }
