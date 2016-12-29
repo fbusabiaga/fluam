@@ -10,16 +10,11 @@ SRC_FLUAM=../src/
 #SRC_HYDROLIB=../../HydroGrid/
 
 
-#
-#
-#Fortran compiler
-FC = gfortran
 
-#
-#
-#Cuda compiler
+# Set compilers for Fortran, C++ and cuda
+FC = gfortran
+CXX = g++
 NVCC = nvcc
-#NVCC = cuda-gdb
 
 
 #
