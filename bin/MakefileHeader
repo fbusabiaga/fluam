@@ -25,7 +25,8 @@ NVCC = nvcc
 #
 #
 #Cuda flags
-NVCCFLAGS = -O -arch=sm_20 --compiler-bindir /usr/bin/gcc $(CUDALIB)
+NVCCFLAGS = -x cu -O -arch=sm_20 --compiler-bindir /usr/bin/gcc $(CUDALIB) -dc 
+NVCCFLAGSLINK =  -O -arch=sm_20 --compiler-bindir /usr/bin/gcc $(CUDALIB) 
 
 #
 #

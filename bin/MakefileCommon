@@ -51,18 +51,16 @@ endif
 
 
 
-all : $(OBJS) ; $(NVCC) $(NVCCFLAGS) -o  $(EFILE) $(OBJS) $(STATIC_LIBRARIES) $(LIBRARIES) 
+all : $(OBJS) ; $(NVCC) $(NVCCFLAGSLINK) -o  $(EFILE) $(OBJS) $(STATIC_LIBRARIES) $(LIBRARIES) 
 
 
 
 # main.o : main.cpp header.h ; \
 # $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
-%.o:%.cu
-	$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) -c $< -o $@
-%.o:%.cpp 
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-%.o:%.f90
+%.o: %.cpp 
+	$(NVCC) $(NVCCFLAGS) $< -o $@
+%.o: %.f90
 	$(FC) $(FCFLAGS) -O3 -c $< -o $@
 
 
