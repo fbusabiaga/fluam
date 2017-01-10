@@ -1,6 +1,6 @@
 // Filename: header.h
 //
-// Copyright (c) 2010-2016, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2017, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -230,7 +230,11 @@ bool schemeQuasiNeutrallyBuoyant4pt2D();
 bool freeMemoryQuasiNeutrallyBuoyant4pt2D();
 bool runSchemeQuasiNeutrallyBuoyant4pt2D();
 
-
+//SchemeQuasi2D
+bool schemeQuasi2D();
+bool freeMemoryQuasi2D();
+bool runSchemeQuasi2D();
+ 
 //schemeCompressibleParticles
 bool schemeCompressibleParticles();
 bool freeMemoryCompressibleParticles();

@@ -1,6 +1,6 @@
 // Filename: loadDataMain.cu
 //
-// Copyright (c) 2010-2016, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2017, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -121,9 +121,12 @@ const string wquasiNeutrallyBuoyant="quasiNeutrallyBuoyant";
 //quasiNeutrallyBuoyant2D Begins
 const string wquasiNeutrallyBuoyant2D="quasiNeutrallyBuoyant2D";
 //quasiNeutrallyBuoyant2D Ends
+//quasiNeutrallyBuoyant4pt2D Begins
 const string wquasiNeutrallyBuoyant4pt2D="quasiNeutrallyBuoyant4pt2D";
 //quasiNeutrallyBuoyant4pt2D Ends
-//quasiNeutrallyBuoyant4pt2D Begins
+//quasi2D Begins
+const string wquasi2D="quasi2D";
+//quasi2D Ends
 //IMEX-RK Begins
 const string wIMEXRK="IMEXRK";
 //IMEX-RK Ends
@@ -237,6 +240,10 @@ bool loadDataMain(int argc, char* argv[]){
   //quasiNeutrallyBuoyant4pt2D Begins
   quasiNeutrallyBuoyant4pt2D = 0;
   //quasiNeutrallyBuoyant4pt2D Ends
+
+  //quasi2D Begins
+  quasi2D = 0;
+  //quasi2D Ends
 
   //particlesWall Begins
   particlesWall = 0;
@@ -520,6 +527,11 @@ bool loadDataMain(int argc, char* argv[]){
       quasiNeutrallyBuoyant4pt2D=1;
     }
     //quasiNeutrallyBuoyant4pt2D Ends
+    //quasi2D Begins
+    else if(word==wquasi2D){
+      quasi2D=1;
+    }
+    //quasi2D Ends
     //IMEXRK Begins
     else if(word==wIMEXRK){
       IMEXRK=1;

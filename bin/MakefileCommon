@@ -43,6 +43,7 @@ schemeIncompressibleBoundary.o \
 schemeQuasiNeutrallyBuoyant.o \
 schemeQuasiNeutrallyBuoyant2D.o \
 schemeQuasiNeutrallyBuoyant4pt2D.o \
+schemeQuasi2D.o \
 schemeTestJPS.o \
 schemeStokesLimitFirstOrder.o \
 schemeStokesLimit.o \
@@ -188,6 +189,10 @@ particles.h headerOtherFluidVariables.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
 schemeQuasiNeutrallyBuoyant.o: schemeQuasiNeutrallyBuoyant.cu header.h cells.h \
+boundary.h particles.h headerOtherFluidVariables.h ; \
+$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
+
+schemeQuasi2D.o: schemeQuasi2D.cu header.h cells.h \
 boundary.h particles.h headerOtherFluidVariables.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
@@ -368,7 +373,7 @@ gpuToHostIncompressibleBoundary.cu boundaryParticlesFunctionIncompressible.cu no
 saveFunctionsSchemeIncompressibleBoundary.cu projectionDivergenceFree.cu checkVelocity.cu \
 forceIncompressibleBoundaryGPU.cu createBoundariesRK2GPU.cu createBoundaries4ptGPU.cu freeBoundariesRK2GPU.cu \
 gpuToHostIncompressibleBoundaryRK2.cu runSchemeQuasiNeutrallyBuoyant.cu runSchemeQuasiNeutrallyBuoyant2D.cu \
-runSchemeQuasiNeutrallyBuoyant4pt2D.cu kernelSpreadParticles.cu \
+runSchemeQuasiNeutrallyBuoyant4pt2D.cu runSchemeQuasi2D.cu kernelSpreadParticles.cu \
 kernelConstructWQuasiNeutrallyBuoyant.cu \
 kernelCorrectionVQuasiNeutrallyBuoyant.cu quasiNeutrallyBuoyantFunctions.cu firstStepQuasiNeutrallyBuoyant.cu \
 firstStepQuasiNeutrallyBuoyant2D.cu firstStepQuasiNeutrallyBuoyant4pt2D.cu calculateAdvectionFluid.cu \

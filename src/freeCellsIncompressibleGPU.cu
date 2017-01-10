@@ -110,7 +110,7 @@ bool freeCellsIncompressibleGPU(){
   cutilSafeCall(cudaFree(vzZ));
 
 
-  if(quasiNeutrallyBuoyant || quasiNeutrallyBuoyant2D){
+  if(quasiNeutrallyBuoyant || quasiNeutrallyBuoyant2D || quasi2D){
     cudaFree(advXGPU);
     cudaFree(advYGPU);
     cudaFree(advZGPU);

@@ -130,6 +130,9 @@ bool createParticles(){
     // (8.0/3.0)^dimensions times the volume of a fluid cell.
     volumeParticle = 64.0 / 9.0 ; 
   }
+  else if(quasi2D){
+    volumeParticle = 4;
+  }
   else{
     volumeParticle = 8;
   }

@@ -146,7 +146,7 @@ bool createCellsIncompressibleGPU(){
   cutilSafeCall(cudaMalloc((void**)&vyZ,ncells*sizeof(cufftDoubleComplex)));
   cutilSafeCall(cudaMalloc((void**)&vzZ,ncells*sizeof(cufftDoubleComplex))); 
 
-  if(quasiNeutrallyBuoyant || quasiNeutrallyBuoyant2D || quasiNeutrallyBuoyant4pt2D){
+  if(quasiNeutrallyBuoyant || quasiNeutrallyBuoyant2D || quasiNeutrallyBuoyant4pt2D || quasi2D){
     cutilSafeCall(cudaMalloc((void**)&advXGPU,ncells*sizeof(double)));
     cutilSafeCall(cudaMalloc((void**)&advYGPU,ncells*sizeof(double)));
     cutilSafeCall(cudaMalloc((void**)&advZGPU,ncells*sizeof(double)));

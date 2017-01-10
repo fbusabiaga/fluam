@@ -24,7 +24,7 @@ bool initializeFluidIncompressibleGPU(){
   cutilSafeCall(cudaMemcpy(vyGPU,cvy,ncells*sizeof(double),cudaMemcpyHostToDevice));
   cutilSafeCall(cudaMemcpy(vzGPU,cvz,ncells*sizeof(double),cudaMemcpyHostToDevice));
 
-  if(quasiNeutrallyBuoyant || quasiNeutrallyBuoyant2D || quasiNeutrallyBuoyant4pt2D || stokesLimit){
+  if(quasiNeutrallyBuoyant || quasiNeutrallyBuoyant2D || quasiNeutrallyBuoyant4pt2D || stokesLimit || quasi2D){
     cutilSafeCall(cudaMemcpy(rxcellGPU,crx,ncells*sizeof(double),cudaMemcpyHostToDevice));
     cutilSafeCall(cudaMemcpy(rycellGPU,cry,ncells*sizeof(double),cudaMemcpyHostToDevice));
     cutilSafeCall(cudaMemcpy(rzcellGPU,crz,ncells*sizeof(double),cudaMemcpyHostToDevice));

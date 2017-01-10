@@ -193,6 +193,8 @@ static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
 #include "firstStepQuasiNeutrallyBuoyant4pt2D.cu"
 #include "runSchemeQuasiNeutrallyBuoyant4pt2D.cu"
 
+//SchemeQuasi2D
+#include "runSchemeQuasi2D.cu"
 
 //SchemeCompressibleParticles
 #include "calculateVelocityAtHalfTimeStepCompressibleParticles.cu"

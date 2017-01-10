@@ -1,6 +1,6 @@
 // Filename: main.cpp
 //
-// Copyright (c) 2010-2016, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2017, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -88,6 +88,9 @@ int main(int argc, char* argv[]){
   }
   else if(quasiNeutrallyBuoyant4pt2D){
     if(!schemeQuasiNeutrallyBuoyant4pt2D()) return 0;
+  }
+  else if(quasi2D){
+    if(!schemeQuasi2D()) return 0;
   }
   else if(stokesLimitFirstOrder==1){
     if(!schemeStokesLimitFirstOrder()) return 0;
