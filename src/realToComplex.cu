@@ -604,4 +604,19 @@ __global__ void setFieldToZeroInput(double* vxGPU,
 
 }
 
+__global__ void setFieldToZeroInput(cufftDoubleComplex* vxZ,
+				    cufftDoubleComplex* vyZ,
+				    cufftDoubleComplex* vzZ){
+
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=ncellsGPU) return;   
+
+  vxZ[i].x = 0;
+  vxZ[i].y = 0;
+  vyZ[i].x = 0;
+  vyZ[i].y = 0;
+  vzZ[i].x = 0;
+  vzZ[i].y = 0;
+}
+
 

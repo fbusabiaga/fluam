@@ -402,7 +402,7 @@ runSchemeMomentumCoupling.cu boundaryParticlesFunctionMomentumCoupling.cu nonBon
 updateFluidMomentumCoupling.cu saveFunctionsSchemeStokesLimit.cu runSchemeStokesLimit.cu \
 boundaryParticlesFunctionStokesLimit.cu stokesLimitFunctions.cu createCellsStokesLimitGPU.cu \
 freeCellsStokesLimitGPU.cu schemeStokesLimitFirstOrder.cu runSchemeStokesLimitFirstOrder.cu \
-boundaryParticlesFunctionStokesLimitFirstOrder.cu ; \
+boundaryParticlesFunctionStokesLimitFirstOrder.cu quasi2DFunctions.cu ; \
 	$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
 

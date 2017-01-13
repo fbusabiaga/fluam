@@ -45,7 +45,7 @@ bool schemeQuasi2D(){
   if(!initializeFluid()) return 0;
 
   //Create fluid cells in the GPU
-  if(!createCellsIncompressibleGPU()) return 0;
+  if(!createCellsQuasi2DGPU()) return 0;
 
   //Initialize fluid in the GPU
   if(!initializeFluidIncompressibleGPU()) return 0;

@@ -231,6 +231,7 @@ bool freeMemoryQuasiNeutrallyBuoyant4pt2D();
 bool runSchemeQuasiNeutrallyBuoyant4pt2D();
 
 //SchemeQuasi2D
+bool createCellsQuasi2DGPU();
 bool schemeQuasi2D();
 bool freeMemoryQuasi2D();
 bool runSchemeQuasi2D();

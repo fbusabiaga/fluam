@@ -54,7 +54,10 @@ bool runSchemeQuasi2D(){
   step = -numstepsRelaxation;
 
   //initialize random numbers
-  size_t numberRandom = 6 * ncells;
+  size_t numberRandom = 3 * ncells + 2 * np;
+  if (numberRandom % 2){
+    numberRandom += 1;
+  }
   if(!initializeRandomNumbersGPU(numberRandom,seed)) return 0;
 
   //Initialize textures cells
@@ -95,7 +98,7 @@ bool runSchemeQuasi2D(){
 
   //Initialize plan
   cufftHandle FFT;
-  cufftPlan3d(&FFT,mz,my,mx,CUFFT_Z2Z);
+  cufftPlan2d(&FFT,my,mx,CUFFT_Z2Z);
 
   //Initialize factors for fourier space update
   int threadsPerBlockdim, numBlocksdim;
@@ -124,31 +127,64 @@ bool runSchemeQuasi2D(){
 
 
 
-
-
   while(step<numsteps){
-    
-    //
-    // Generate random numbers
-    // generateRandomNumbers(numberRandom);
-    
-
-    //
-    // STEP 1: UPDATE PARTICLE POSITIONS TO  q^{n+1/2}
-    // Clear neighbor lists
-    // countToZero<<<numBlocksNeighbors,threadsPerBlockNeighbors>>>(pc);
-
-
-
-
-
-								    
-    step++;
     if(!(step%samplefreq)&&(step>0)){
       cout << "QuasiNeutrallyBuoyant 2D " << step << endl;
-      if(!gpuToHostIncompressibleBoundaryRK2(numBlocksParticles,threadsPerBlockParticles)) return 0;
-      if(!saveFunctionsSchemeIncompressibleBoundary2D(1,step)) return 0;
+      if(!gpuToHostStokesLimit()) return 0;
+      if(!saveFunctionsSchemeStokesLimit(1,step)) return 0;
     }
+
+    // Generate random numbers
+    generateRandomNumbers(numberRandom);
+    
+    // Clear neighbor lists
+    countToZero<<<numBlocksNeighbors,threadsPerBlockNeighbors>>>(pc);
+    
+    // Set field to zero
+    setFieldToZeroInput<<<numBlocks, threadsPerBlock>>>(vxZ, vyZ, vzZ);
+
+    // Fill neighbor lists
+    findNeighborListsQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>
+      (pc, 
+       errorKernel,
+       rxcellGPU,
+       rycellGPU,
+       rzcellGPU,
+       rxboundaryGPU,  // q^{n}
+       ryboundaryGPU, 
+       rzboundaryGPU);
+
+    // Compute and Spread forces 
+    // f = S*F
+    kernelSpreadParticlesForceQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
+										       rycellGPU,
+										       rzcellGPU,
+										       fxboundaryGPU,
+										       fyboundaryGPU,
+										       fzboundaryGPU,
+										       vxZ,
+										       vyZ,
+										       pc,
+										       errorKernel,
+										       bFV);    
+    // Transform force density field to Fourier space
+    cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_FORWARD);
+    cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_FORWARD);
+
+    // Compute deterministic fluid velocity
+    kernelUpdateVQuasi2D<<<numBlocksParticles, threadsPerBlockParticles>>>(vxZ,vyZ);
+
+    // Transform velocity field to real space
+    cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_INVERSE);
+    cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_INVERSE);
+								    
+    step++;
+  }
+
+  if(!(step%samplefreq)&&(step>0)){
+    cout << "QuasiNeutrallyBuoyant 2D " << step << endl;
+    if(!gpuToHostStokesLimit()) return 0;
+    if(!saveFunctionsSchemeStokesLimit(1,step)) return 0;
   }
 
   //Free FFT

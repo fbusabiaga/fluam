@@ -48,10 +48,22 @@ inline void __cutilSafeCall(cudaError_t i, const char *file, const int line ){
 #include "initGhostIndexGPU.cu"
 #include "pressureGPU.cu"
 
-
 static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
   int2 v = tex1Dfetch(t,i);
   return __hiloint2double(v.y,v.x);
+}
+
+__device__ double atomicAdd(double* address, double val){
+  unsigned long long int* address_as_ull =
+    (unsigned long long int*)address;
+  unsigned long long int old = *address_as_ull, assumed;
+  do {
+    assumed = old;
+    old = atomicCAS(address_as_ull, assumed,
+		    __double_as_longlong(val +
+					 __longlong_as_double(assumed)));
+  } while (assumed != old);
+  return __longlong_as_double(old);
 }
 
 //schmeRK3
@@ -193,9 +205,6 @@ static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
 #include "firstStepQuasiNeutrallyBuoyant4pt2D.cu"
 #include "runSchemeQuasiNeutrallyBuoyant4pt2D.cu"
 
-//SchemeQuasi2D
-#include "runSchemeQuasi2D.cu"
-
 //SchemeCompressibleParticles
 #include "calculateVelocityAtHalfTimeStepCompressibleParticles.cu"
 #include "nonBondedForceCompressibleParticles.cu"
@@ -267,4 +276,9 @@ static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
 #include "boundaryParticlesFunctionStokesLimitFirstOrder.cu"
 #include "runSchemeStokesLimitFirstOrder.cu"
 
+//SchemeQuasi2D
+// #include "boundaryParticlesFunctionQuasi2D.cu"
+#include "createCellsQuasi2DGPU.cu"
+#include "quasi2DFunctions.cu"
+#include "runSchemeQuasi2D.cu"
 
