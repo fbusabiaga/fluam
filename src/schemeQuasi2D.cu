@@ -58,14 +58,15 @@ bool schemeQuasi2D(){
     if(!createBondedForcesGPU()) return 0;
 
   //Initialize save functions
-  if(!saveFunctionsSchemeIncompressibleBoundary2D(0,0)) return 0;
-
+  // if(!saveFunctionsSchemeIncompressibleBoundary2D(0,0)) return 0;
+  if(!saveFunctionsSchemeStokesLimit(0,0)) return 0;
 
   //Run the simulation
   if(!runSchemeQuasi2D()) return 0;
   
   //Close save functions
-  if(!saveFunctionsSchemeIncompressibleBoundary2D(2,0)) return 0;
+  // if(!saveFunctionsSchemeIncompressibleBoundary2D(2,0)) return 0;
+  if(!saveFunctionsSchemeStokesLimit(2,0)) return 0;
 
   //New bonded forces
   if(bondedForces)

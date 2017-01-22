@@ -30,13 +30,13 @@ densfluid               1
 shearviscosity          1
 #Temperature in energy units (T -> k_B*T)
 temperature             0.01
-hydrodynamicRadius	1.0
+hydrodynamicRadius	0.0530516476973
 
 
 #Number of fluid cells in the directions x, y and z
-cells			128   128	1
+cells			2048  2048	 1
 #Dimensions of the simulation box
-celldimension		32	32	1
+celldimension		20 20	1
 
 
 #Fluid initial conditions

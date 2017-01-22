@@ -43,12 +43,12 @@ bool freeBoundariesQuasi2DGPU(){
   cutilSafeCall(cudaFree(fyboundaryGPU));
   cutilSafeCall(cudaFree(fzboundaryGPU));
 
-  cutilSafeCall(cudaUnbindTexture(texCountParticlesInCellX));
+  /*cutilSafeCall(cudaUnbindTexture(texCountParticlesInCellX));
   cutilSafeCall(cudaUnbindTexture(texCountParticlesInCellY));
   cutilSafeCall(cudaUnbindTexture(texCountParticlesInCellZ));
   cutilSafeCall(cudaUnbindTexture(texPartInCellX));
   cutilSafeCall(cudaUnbindTexture(texPartInCellY));
-  cutilSafeCall(cudaUnbindTexture(texPartInCellZ));
+  cutilSafeCall(cudaUnbindTexture(texPartInCellZ));*/
   cutilSafeCall(cudaUnbindTexture(texCountParticlesInCellNonBonded));
   cutilSafeCall(cudaUnbindTexture(texPartInCellNonBonded));
 

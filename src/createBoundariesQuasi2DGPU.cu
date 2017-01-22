@@ -80,9 +80,9 @@ bool createBoundariesQuasi2DGPU(){
   cudaMemcpy(countparticlesincellZ,aux,ncells*sizeof(int),cudaMemcpyHostToDevice);
   delete[] aux;
 
-  cudaMalloc((void**)&partincellX,maxNumberPartInCell*ncells*sizeof(int));
+  /*cudaMalloc((void**)&partincellX,maxNumberPartInCell*ncells*sizeof(int));
   cudaMalloc((void**)&partincellY,maxNumberPartInCell*ncells*sizeof(int));
-  cudaMalloc((void**)&partincellZ,maxNumberPartInCell*ncells*sizeof(int));
+  cudaMalloc((void**)&partincellZ,maxNumberPartInCell*ncells*sizeof(int));*/
   
 
   //texrxboundaryGPU
@@ -102,7 +102,7 @@ bool createBoundariesQuasi2DGPU(){
   cutilSafeCall( cudaBindTexture(0,texrzboundaryGPU,rzboundaryGPU,(nboundary+np)*sizeof(double)));
 
   //texCountParticlesInCellX;
-  texCountParticlesInCellX.normalized = false;
+  /*texCountParticlesInCellX.normalized = false;
   texCountParticlesInCellX.addressMode[0] = cudaAddressModeClamp;//Wrap and Clamp
   texCountParticlesInCellX.filterMode = cudaFilterModePoint;//cudaFilterModeLinear and cudaFilterModePoint
   cutilSafeCall( cudaBindTexture(0,texCountParticlesInCellX,countparticlesincellX,ncells*sizeof(int)));
@@ -130,7 +130,7 @@ bool createBoundariesQuasi2DGPU(){
   texPartInCellZ.normalized = false;
   texPartInCellZ.addressMode[0] = cudaAddressModeClamp;//Wrap and Clamp
   texPartInCellZ.filterMode = cudaFilterModePoint;//cudaFilterModeLinear and cudaFilterModePoint
-  cutilSafeCall( cudaBindTexture(0,texPartInCellZ,partincellZ,maxNumberPartInCell*ncells*sizeof(int)));
+  cutilSafeCall( cudaBindTexture(0,texPartInCellZ,partincellZ,maxNumberPartInCell*ncells*sizeof(int)));*/
 
   if(setparticles){
     int mxPart = int(lx/cutoff);
