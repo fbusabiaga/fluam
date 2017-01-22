@@ -6,19 +6,17 @@ __global__ void findNeighborListsQuasi2D(particlesincell* pc,
 					 const double* rxboundaryGPU,  //q^{n}
 					 const double* ryboundaryGPU, 
 					 const double* rzboundaryGPU){
-					 
-  
+
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if(i>=(npGPU)) return;   
-
   
   double rx = fetch_double(texrxboundaryGPU,nboundaryGPU+i);
   double ry = fetch_double(texryboundaryGPU,nboundaryGPU+i);
-  
-  double r;
-  int icel;
+
+  int icel, np;
 
   // Particle location in grid cells
+  double r;
   {
     r = rx;
     r = r - (int(r*invlxGPU + 0.5*((r>0)-(r<0)))) * lxGPU;
@@ -29,16 +27,17 @@ __global__ void findNeighborListsQuasi2D(particlesincell* pc,
     int jy   = int(r * invdyGPU + 0.5*mytGPU) % mytGPU;
 
     icel  = jx + jy * mxGPU;
+    // printf("rx = %f,  ry = %f \n", rx, ry);
+    // printf("jx = %i,  jy = %i,  icel = %i \n", jx, jy, icel);
   }
-  int np = atomicAdd(&pc->countparticlesincellX[icel],1);
+  np = atomicAdd(&pc->countparticlesincellX[icel],1);
   if(np >= maxNumberPartInCellGPU){
     errorKernel[0]=1;
     errorKernel[1]=maxNumberPartInCellGPU;
     return;
   }
   pc->partincellX[ncellstGPU*np+icel] = nboundaryGPU+i; 
- 
-
+  
   // Particle location in cells for neighbor lists
   {
     double invdx = double(mxNeighborsGPU)/lxGPU;
@@ -57,7 +56,8 @@ __global__ void findNeighborListsQuasi2D(particlesincell* pc,
     return;
   }
   pc->partInCellNonBonded[mNeighborsGPU*np+icel] = i;
-  
+
+  // printf("np = %i,  icel = %i \n", np, icel);
 }
 
 
@@ -77,8 +77,8 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if(i>=(npGPU)) return;   
   
-  double fx = 0.;
-  double fy = 0.;
+  double fx = 1.0;
+  double fy = 1.0;
   double f;
  
 
@@ -113,7 +113,7 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
   int vecinopxpy, vecinopxmy;
   int vecinomxpy, vecinomxmy;  
   int icel;
-  double r, rp, rm;
+  double r;
 
   {
     double invdx = double(mxNeighborsGPU)/lxGPU;
@@ -258,9 +258,6 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
     }
   }
 
-  double dlx, dlxp, dlxm;
-  double dly, dlyp, dlym;
-
   {
     r = rx;
     r = r - (int(r*invlxGPU + 0.5*((r>0)-(r<0)))) * lxGPU;
@@ -275,24 +272,31 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
 
   // Loop over neighbor cells
   {
-    double rx_distance, ry_distance, norm, old;
-    int kx, ky, k, kx_neigh, ky_neigh;
-    ky = i / mxGPU;
-    kx = i % mxGPU;
+    double rx_distance, ry_distance, norm;
+    int kx, ky, kx_neigh, ky_neigh, icel_neigh;
+    ky = icel / mxGPU;
+    kx = icel % mxGPU;
     // double icel_double = double(icel);
-    for(int ix=-kernelWidthGPU; ix<kernelWidthGPU; ix++){
+    for(int ix=-kernelWidthGPU; ix<=kernelWidthGPU; ix++){
       kx_neigh = (kx + ix + mxGPU) % mxGPU;
-      rx_distance = rx - (kx_neigh * lxGPU / mxGPU);
-      for(int iy=-kernelWidthGPU; iy<kernelWidthGPU; iy++){
+      rx_distance = rx - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
+      for(int iy=-kernelWidthGPU; iy<=kernelWidthGPU; iy++){
 	ky_neigh = (ky + iy + myGPU) % myGPU;
-	ry_distance = ry - (ky_neigh * lyGPU / myGPU);
+	icel_neigh = kx_neigh + ky_neigh * mxGPU;
+
+	ry_distance = ry - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
 	r2 = rx_distance*rx_distance + ry_distance*ry_distance;
 	norm = GaussianKernel2DGPU(r2, GaussianVarianceGPU);
-	old = atomicAdd(&vxZ[i].x, norm * fx);
-	old = atomicAdd(&vyZ[i].x, norm * fy);
+
+	atomicAdd(&vxZ[icel_neigh].x, norm * fx);
+	atomicAdd(&vyZ[icel_neigh].x, norm * fy);
+	// printf("kx = %i,  ky = %i \n", kx_neigh, ky_neigh);
+	// printf("rx = %f,  ry = %f,  r2 = %f \n", rx_distance, ry_distance, r2);
+	// printf("norm = %f, old_x = %f \n", norm, old_x);
       }
     }
   } 
+  // printf("fx = %f,  fy = %f \n", fx, fy);
 }
 
 
@@ -318,11 +322,109 @@ __global__ void kernelUpdateVQuasi2D(cufftDoubleComplex *vxZ,
   double ky = wy * 2 * pi / lyGPU;
   double k_inv = rsqrt(kx*kx + ky*ky);
   double k3_inv = k_inv * k_inv * k_inv;
+  cufftDoubleComplex Wx, Wy;
 
-  vxZ[i].x = (k3_inv / shearviscosityGPU) * 0.5 * ky * (ky*vxZ[i].x - kx*vyZ[i].x) + 0.25 * kx * (kx*vxZ[i].x + ky*vyZ[i].x);
-  vxZ[i].y = (k3_inv / shearviscosityGPU) * 0.5 * ky * (ky*vxZ[i].y - kx*vyZ[i].y) + 0.25 * kx * (kx*vxZ[i].y + ky*vyZ[i].y);
+  if(i == 0){
+    vxZ[i].x = 0;
+    vxZ[i].y = 0;
+    vyZ[i].x = 0;
+    vyZ[i].y = 0;
+  }
+  else{
+    Wx.x = (k3_inv / shearviscosityGPU) * (0.5 * ky * (ky*vxZ[i].x - kx*vyZ[i].x) + 0.25 * kx * (kx*vxZ[i].x + ky*vyZ[i].x));
+    Wx.y = (k3_inv / shearviscosityGPU) * (0.5 * ky * (ky*vxZ[i].y - kx*vyZ[i].y) + 0.25 * kx * (kx*vxZ[i].y + ky*vyZ[i].y));   
+    Wy.x = (k3_inv / shearviscosityGPU) * (0.5 * (-kx) * (ky*vxZ[i].x - kx*vyZ[i].x) + 0.25 * ky * (kx*vxZ[i].x + ky*vyZ[i].x));
+    Wy.y = (k3_inv / shearviscosityGPU) * (0.5 * (-kx) * (ky*vxZ[i].y - kx*vyZ[i].y) + 0.25 * ky * (kx*vxZ[i].y + ky*vyZ[i].y));
+
+    /*Wx.x = (k3_inv / shearviscosityGPU) * (0.25 * kx * (kx*vxZ[i].x + ky*vyZ[i].x));
+      Wx.y = (k3_inv / shearviscosityGPU) * (0.25 * kx * (kx*vxZ[i].y + ky*vyZ[i].y));   
+      Wy.x = (k3_inv / shearviscosityGPU) * (0.25 * ky * (kx*vxZ[i].x + ky*vyZ[i].x));
+      Wy.y = (k3_inv / shearviscosityGPU) * (0.25 * ky * (kx*vxZ[i].y + ky*vyZ[i].y));*/
+
+    /*Wx.x = (k3_inv / shearviscosityGPU) * (0.5 * ky * (ky*vxZ[i].x - kx*vyZ[i].x) );
+    Wx.y = (k3_inv / shearviscosityGPU) * (0.5 * ky * (ky*vxZ[i].y - kx*vyZ[i].y) );   
+    Wy.x = (k3_inv / shearviscosityGPU) * (0.5 * (-kx) * (ky*vxZ[i].x - kx*vyZ[i].x) );
+    Wy.y = (k3_inv / shearviscosityGPU) * (0.5 * (-kx) * (ky*vxZ[i].y - kx*vyZ[i].y) );*/
+
+    /*Wx.x = (k3_inv / shearviscosityGPU) * (kx*(kx*vxZ[i].x + ky*vyZ[i].x));
+    Wx.y = (k3_inv / shearviscosityGPU) * (kx*(kx*vxZ[i].y + ky*vyZ[i].y));
+    Wy.x = (k3_inv / shearviscosityGPU) * (ky*(kx*vxZ[i].x + ky*vyZ[i].x));
+    Wy.y = (k3_inv / shearviscosityGPU) * (ky*(kx*vxZ[i].y + ky*vyZ[i].y));*/
+
+    vxZ[i].x = Wx.x;
+    vxZ[i].y = Wx.y;
+    vyZ[i].x = Wy.x;
+    vyZ[i].y = Wy.y;
+  }
+
+  // printf("i = %i, vx.x = %f, vx.y = %f \n", i, vxZ[i].x, vxZ[i].y);
+  // printf("i = %i, vy.x = %f, vy.y = %f \n", i, vyZ[i].x, vyZ[i].y);
+}
+
+
+
+__global__ void updateParticlesQuasi2D(particlesincell* pc, 
+				       int* errorKernel,
+				       const double* rxcellGPU,
+				       const double* rycellGPU,
+				       double* rxboundaryGPU,  // q^{n} -> q^{n+dt}
+				       double* ryboundaryGPU, 
+				       const double* vxGPU,
+				       const double* vyGPU,
+				       double dt){
+
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=(npGPU)) return;   
   
-  vyZ[i].x = (k3_inv / shearviscosityGPU) * 0.5 * (-kx) * (ky*vxZ[i].x - kx*vyZ[i].x) + 0.25 * ky * (kx*vxZ[i].x + ky*vyZ[i].x);
-  vyZ[i].x = (k3_inv / shearviscosityGPU) * 0.5 * (-kx) * (ky*vxZ[i].y - kx*vyZ[i].y) + 0.25 * ky * (kx*vxZ[i].y + ky*vyZ[i].y);
-  
+  double rx = fetch_double(texrxboundaryGPU,nboundaryGPU+i);
+  double ry = fetch_double(texryboundaryGPU,nboundaryGPU+i);
+					 
+  double r;
+  int icel;
+
+  // Particle location in grid cells
+  {
+    r = rx;
+    r = r - (int(r*invlxGPU + 0.5*((r>0)-(r<0)))) * lxGPU;
+    int jx   = int(r * invdxGPU + 0.5*mxGPU) % mxGPU;
+
+    r = ry;
+    r = r - (int(r*invlyGPU + 0.5*((r>0)-(r<0)))) * lyGPU;
+    int jy   = int(r * invdyGPU + 0.5*mytGPU) % mytGPU;
+
+    icel  = jx + jy * mxGPU;
+  }
+
+  // Interpolate fluid velocity
+  double ux = 0.0, uy = 0.0;
+
+  // Loop over neighbor cells
+  {
+    double rx_distance, ry_distance, norm, r2;
+    int kx, ky, kx_neigh, ky_neigh, icel_neigh;
+    ky = icel / mxGPU;
+    kx = icel % mxGPU;
+    // double icel_double = double(icel);
+    for(int ix=-kernelWidthGPU; ix<=kernelWidthGPU; ix++){
+      kx_neigh = (kx + ix + mxGPU) % mxGPU;
+      rx_distance = rx - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
+      for(int iy=-kernelWidthGPU; iy<=kernelWidthGPU; iy++){
+	ky_neigh = (ky + iy + myGPU) % myGPU;
+	icel_neigh = kx_neigh + ky_neigh * mxGPU;
+
+	ry_distance = ry - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
+	r2 = rx_distance*rx_distance + ry_distance*ry_distance;
+	norm = GaussianKernel2DGPU(r2, GaussianVarianceGPU);
+
+	ux += norm * vxGPU[icel_neigh];
+	uy += norm * vyGPU[icel_neigh];
+      }
+    }
+  }
+
+  double volumeCell = dxGPU * dyGPU;
+  printf("i = %i, ux = %f, uy = %f, dt = %f \n", i, volumeCell * ux, volumeCell * uy, dt);
+  rxboundaryGPU[i] += volumeCell * ux * dt;
+  ryboundaryGPU[i] += volumeCell * uy * dt;
+
 }

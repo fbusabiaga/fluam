@@ -44,17 +44,21 @@ bool createCellsQuasi2DGPU(){
   cutilSafeCall(cudaMemcpyToSymbol(thermostatGPU,&thermostat,sizeof(bool)));
 
   cutilSafeCall(cudaMemcpyToSymbol(densfluidGPU,&densfluid,sizeof(double)));
-  int kernelWidth = 4;
-  cutilSafeCall(cudaMemcpyToSymbol(kernelWidthGPU,&kernelWidth,sizeof(int)));
-  double GaussianVariance = 1.0;
+
+  // Radius and kernel
+  double GaussianVariance = pow(hydrodynamicRadius / sqrt(3.1415926535897932385), 2);
   cutilSafeCall(cudaMemcpyToSymbol(GaussianVarianceGPU,&GaussianVariance,sizeof(double)));
+  int kernelWidth = int(3 * hydrodynamicRadius * mx / lx) + 1;
+  cout << "kernelWidth = " << kernelWidth << endl;
+  cutilSafeCall(cudaMemcpyToSymbol(kernelWidthGPU,&kernelWidth,sizeof(int)));
+
 
   cutilSafeCall(cudaMalloc((void**)&vxGPU,ncells*sizeof(double)));
   cutilSafeCall(cudaMalloc((void**)&vyGPU,ncells*sizeof(double)));
   cutilSafeCall(cudaMalloc((void**)&vzGPU,ncells*sizeof(double)));
-  cutilSafeCall(cudaMalloc((void**)&vxPredictionGPU,ncells*sizeof(double)));
-  cutilSafeCall(cudaMalloc((void**)&vyPredictionGPU,ncells*sizeof(double)));
-  cutilSafeCall(cudaMalloc((void**)&vzPredictionGPU,ncells*sizeof(double)));
+  // cutilSafeCall(cudaMalloc((void**)&vxPredictionGPU,ncells*sizeof(double)));
+  // cutilSafeCall(cudaMalloc((void**)&vyPredictionGPU,ncells*sizeof(double)));
+  // cutilSafeCall(cudaMalloc((void**)&vzPredictionGPU,ncells*sizeof(double)));
 
  
   cutilSafeCall(cudaMalloc((void**)&rxcellGPU,ncells*sizeof(double)));
@@ -150,11 +154,11 @@ bool createCellsQuasi2DGPU(){
   cutilSafeCall(cudaMalloc((void**)&vyZ,ncells*sizeof(cufftDoubleComplex)));
   cutilSafeCall(cudaMalloc((void**)&vzZ,ncells*sizeof(cufftDoubleComplex))); 
 
-  if(quasiNeutrallyBuoyant || quasiNeutrallyBuoyant2D || quasiNeutrallyBuoyant4pt2D || quasi2D){
+  /*if(quasiNeutrallyBuoyant || quasiNeutrallyBuoyant2D || quasiNeutrallyBuoyant4pt2D || quasi2D){
     cutilSafeCall(cudaMalloc((void**)&advXGPU,ncells*sizeof(double)));
     cutilSafeCall(cudaMalloc((void**)&advYGPU,ncells*sizeof(double)));
     cutilSafeCall(cudaMalloc((void**)&advZGPU,ncells*sizeof(double)));
-  }
+    }*/
 
   
   cutilSafeCall(cudaMemcpyToSymbol(pressurea0GPU,&pressurea0,sizeof(double)));

@@ -51,7 +51,7 @@ bool schemeQuasi2D(){
   if(!initializeFluidIncompressibleGPU()) return 0;
 
   //Create boundaries GPU
-  if(!createBoundariesRK2GPU()) return 0;
+  if(!createBoundariesQuasi2DGPU()) return 0;
  
   //New bonded forces
   if(bondedForces)
@@ -76,7 +76,7 @@ bool schemeQuasi2D(){
     if(!freeBondedForces()) return 0;
 
   //Free Memory GPU
-  if(!freeCellsIncompressibleGPU()) return 0;
+  if(!freeCellsQuasi2DGPU()) return 0;
 
   //Free boundaries GPU
   if(!freeBoundariesRK2GPU()) return 0;

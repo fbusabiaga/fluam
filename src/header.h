@@ -64,7 +64,7 @@ EXTERN_GLOBAL bool setboundary;
 EXTERN_GLOBAL string fileCheckVelocity;
 EXTERN_GLOBAL bool setSaveVTK;
 EXTERN_GLOBAL bool computeNonBondedForces;
-
+EXTERN_GLOBAL double hydrodynamicRadius;
 
 bool loadDataMain(int argc, char* argv[]);
 bool writeDataMain();
@@ -232,6 +232,9 @@ bool runSchemeQuasiNeutrallyBuoyant4pt2D();
 
 //SchemeQuasi2D
 bool createCellsQuasi2DGPU();
+bool freeCellsQuasi2DGPU();
+bool createBoundariesQuasi2DGPU();
+bool freeBoundariesQuasi2DGPU();
 bool schemeQuasi2D();
 bool freeMemoryQuasi2D();
 bool runSchemeQuasi2D();

@@ -279,6 +279,9 @@ __device__ double atomicAdd(double* address, double val){
 //SchemeQuasi2D
 // #include "boundaryParticlesFunctionQuasi2D.cu"
 #include "createCellsQuasi2DGPU.cu"
+#include "freeCellsQuasi2DGPU.cu"
+#include "createBoundariesQuasi2DGPU.cu"
+#include "freeBoundariesQuasi2DGPU.cu"
 #include "quasi2DFunctions.cu"
 #include "runSchemeQuasi2D.cu"
 

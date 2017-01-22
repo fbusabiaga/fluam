@@ -128,7 +128,7 @@ bool runSchemeQuasi2D(){
 
 
   while(step<numsteps){
-    if(!(step%samplefreq)&&(step>0)){
+    if(!(step%samplefreq)&&(step>=0)){
       cout << "QuasiNeutrallyBuoyant 2D " << step << endl;
       if(!gpuToHostStokesLimit()) return 0;
       if(!saveFunctionsSchemeStokesLimit(1,step)) return 0;
@@ -167,16 +167,48 @@ bool runSchemeQuasi2D(){
 										       pc,
 										       errorKernel,
 										       bFV);    
+    // cout << endl;
     // Transform force density field to Fourier space
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_FORWARD);
     cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_FORWARD);
 
     // Compute deterministic fluid velocity
-    kernelUpdateVQuasi2D<<<numBlocksParticles, threadsPerBlockParticles>>>(vxZ,vyZ);
+    kernelUpdateVQuasi2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ);
 
     // Transform velocity field to real space
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_INVERSE);
-    cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_INVERSE);
+    cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_INVERSE);  
+    doubleComplexToDoubleNormalized<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ,vzZ,vxGPU,vyGPU,vzGPU);
+
+    // Update particles half-time step
+    updateParticlesQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>
+      (pc, 
+       errorKernel,
+       rxcellGPU,
+       rycellGPU,
+       // rxboundaryPredictionGPU,  // q^{n+0.5*dt}
+       // ryboundaryPredictionGPU, 
+       rxboundaryGPU,  // q^{n+0.5*dt}
+       ryboundaryGPU, 
+       vxGPU,
+       vyGPU,
+       // 0.5 * dt);    
+       dt);
+
+    // Update particles one time step
+    /*updateParticlesMidPointQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>
+      (pc, 
+       errorKernel,
+       rxcellGPU,
+       rycellGPU,
+       rxboundaryPredictionGPU,  // q^{n+0.5*dt}
+       ryboundaryPredictionGPU, 
+       rxboundaryGPU,  // q^{n+dt}
+       ryboundaryGPU, 
+       vxGPU,
+       vyGPU,
+       dt);    */
+
 								    
     step++;
   }

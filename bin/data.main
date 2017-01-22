@@ -12,11 +12,11 @@ particles		1
 
 
 #Number of particles
-numberparticles		2
+numberparticles		1
 mass			0
 
 #Cutoff for the particle-particle interaction
-cutoff                  2.24492409662
+cutoff                  224.492409662
 #Give file with the bonded force between particles (see fluam/bin/inputfile/README)
 #bondedForces		harmonicTrap.dat
 #Maximum number of particles in the neighbor list
@@ -30,10 +30,11 @@ densfluid               1
 shearviscosity          1
 #Temperature in energy units (T -> k_B*T)
 temperature             0.01
+hydrodynamicRadius	1.0
 
 
 #Number of fluid cells in the directions x, y and z
-cells			32	32	1
+cells			128   128	1
 #Dimensions of the simulation box
 celldimension		32	32	1
 
@@ -73,7 +74,7 @@ numsteps                10
 samplefreq              1
 savefreq		0
 #Time step
-dt			0.01
+dt			1.0
 
 
 #Save data in VTK format to be visualized with the program VisIt
@@ -83,7 +84,7 @@ dt			0.01
 
 #Prefix for the output files. The directory where the data is saved
 #should exist before running fluam
-outputname		../data/quasi2D/run1
+outputname		../data/quasi2D/run2
 
 
 
