@@ -283,5 +283,6 @@ __device__ double atomicAdd(double* address, double val){
 #include "createBoundariesQuasi2DGPU.cu"
 #include "freeBoundariesQuasi2DGPU.cu"
 #include "quasi2DFunctions.cu"
+#include "texturesCellsQuasi2D.cu"
 #include "runSchemeQuasi2D.cu"
 

@@ -34,7 +34,7 @@ bool freeCellsQuasi2DGPU(){
   cutilSafeCall(cudaFree(rycellGPU));
   cutilSafeCall(cudaFree(rzcellGPU));
 
-  cutilSafeCall(cudaUnbindTexture(texvecino0GPU));
+  /*cutilSafeCall(cudaUnbindTexture(texvecino0GPU));
   cutilSafeCall(cudaUnbindTexture(texvecino1GPU));
   cutilSafeCall(cudaUnbindTexture(texvecino2GPU));
   cutilSafeCall(cudaUnbindTexture(texvecino3GPU));
@@ -59,9 +59,9 @@ bool freeCellsQuasi2DGPU(){
   cutilSafeCall(cudaUnbindTexture(texvecinomxpypzGPU));
   cutilSafeCall(cudaUnbindTexture(texvecinomxpymzGPU));
   cutilSafeCall(cudaUnbindTexture(texvecinomxmypzGPU));
-  cutilSafeCall(cudaUnbindTexture(texvecinomxmymzGPU));
+  cutilSafeCall(cudaUnbindTexture(texvecinomxmymzGPU));*/
 
-  cutilSafeCall(cudaFree(vecino0GPU));
+  /*cutilSafeCall(cudaFree(vecino0GPU));
   cutilSafeCall(cudaFree(vecino1GPU));
   cutilSafeCall(cudaFree(vecino2GPU));
   cutilSafeCall(cudaFree(vecino3GPU));
@@ -86,7 +86,7 @@ bool freeCellsQuasi2DGPU(){
   cutilSafeCall(cudaFree(vecinomxpypzGPU));
   cutilSafeCall(cudaFree(vecinomxpymzGPU));
   cutilSafeCall(cudaFree(vecinomxmypzGPU));
-  cutilSafeCall(cudaFree(vecinomxmymzGPU));
+  cutilSafeCall(cudaFree(vecinomxmymzGPU));*/
 
   cutilSafeCall(cudaFree(stepGPU));
 

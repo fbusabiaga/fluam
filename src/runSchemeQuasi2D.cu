@@ -61,9 +61,9 @@ bool runSchemeQuasi2D(){
   if(!initializeRandomNumbersGPU(numberRandom,seed)) return 0;
 
   //Initialize textures cells
-  if(!texturesCells()) return 0;  
+  if(!texturesCellsQuasi2D()) return 0;  
 
-  initializeVecinos<<<numBlocks,threadsPerBlock>>>(vecino1GPU,
+  /*initializeVecinos<<<numBlocks,threadsPerBlock>>>(vecino1GPU,
 						   vecino2GPU,
 						   vecino3GPU,
 						   vecino4GPU,
@@ -93,7 +93,7 @@ bool runSchemeQuasi2D(){
 						    vecino2GPU,
 						    vecino3GPU,
 						    vecino4GPU,
-						    vecino5GPU);
+						    vecino5GPU);*/
 
 
   //Initialize plan

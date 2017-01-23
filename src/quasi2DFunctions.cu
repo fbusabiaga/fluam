@@ -414,7 +414,7 @@ __global__ void updateParticlesQuasi2D(particlesincell* pc,
   }
 
   double volumeCell = dxGPU * dyGPU;
-  printf("i = %i, ux = %f, uy = %f, dt = %f \n", i, volumeCell * ux, volumeCell * uy, dt);
+  printf("i = %i, ux = %14.12f, uy = %14.12f, dt = %f \n", i, volumeCell * ux, volumeCell * uy, dt);
   rxboundaryGPU[i] += volumeCell * ux * dt;
   ryboundaryGPU[i] += volumeCell * uy * dt;
 

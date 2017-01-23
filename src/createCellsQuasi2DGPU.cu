@@ -46,7 +46,8 @@ bool createCellsQuasi2DGPU(){
   cutilSafeCall(cudaMemcpyToSymbol(densfluidGPU,&densfluid,sizeof(double)));
 
   // Radius and kernel
-  double GaussianVariance = pow(hydrodynamicRadius / sqrt(3.1415926535897932385), 2);
+  // double GaussianVariance = pow(hydrodynamicRadius / sqrt(3.1415926535897932385), 2);
+  double GaussianVariance = pow(hydrodynamicRadius / (1.0 * sqrt(3.1415926535897932385)), 2);
   cutilSafeCall(cudaMemcpyToSymbol(GaussianVarianceGPU,&GaussianVariance,sizeof(double)));
   int kernelWidth = int(3 * hydrodynamicRadius * mx / lx) + 1;
   cout << "kernelWidth = " << kernelWidth << endl;
@@ -109,7 +110,7 @@ bool createCellsQuasi2DGPU(){
   cutilSafeCall(cudaMemcpy(stepGPU,&auxulonglong,sizeof(long long),cudaMemcpyHostToDevice));
 
 
-  cutilSafeCall(cudaMalloc((void**)&vecino0GPU,ncells*sizeof(int)));
+  /*cutilSafeCall(cudaMalloc((void**)&vecino0GPU,ncells*sizeof(int)));
   cutilSafeCall(cudaMalloc((void**)&vecino1GPU,ncells*sizeof(int)));
   cutilSafeCall(cudaMalloc((void**)&vecino2GPU,ncells*sizeof(int)));
   cutilSafeCall(cudaMalloc((void**)&vecino3GPU,ncells*sizeof(int)));
@@ -134,7 +135,7 @@ bool createCellsQuasi2DGPU(){
   cutilSafeCall(cudaMalloc((void**)&vecinomxpypzGPU,ncells*sizeof(int))); 
   cutilSafeCall(cudaMalloc((void**)&vecinomxpymzGPU,ncells*sizeof(int)));
   cutilSafeCall(cudaMalloc((void**)&vecinomxmypzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomxmymzGPU,ncells*sizeof(int))); 
+  cutilSafeCall(cudaMalloc((void**)&vecinomxmymzGPU,ncells*sizeof(int))); */
 
 
   //Factors for the update in fourier space
