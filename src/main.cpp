@@ -27,7 +27,6 @@
 
 int main(int argc, char* argv[]){
 
-
   //Read a file with data for start the simulation
   if(!loadDataMain(argc,argv)) return 0;
   

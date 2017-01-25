@@ -14,30 +14,7 @@ __global__ void findNeighborListsQuasi2D(particlesincell* pc,
   double ry = fetch_double(texryboundaryGPU,nboundaryGPU+i);
 
   int icel, np;
-
-  // Particle location in grid cells
-  /*double r;
-  {
-    r = rx;
-    r = r - (int(r*invlxGPU + 0.5*((r>0)-(r<0)))) * lxGPU;
-    int jx   = int(r * invdxGPU + 0.5*mxGPU) % mxGPU;
-
-    r = ry;
-    r = r - (int(r*invlyGPU + 0.5*((r>0)-(r<0)))) * lyGPU;
-    int jy   = int(r * invdyGPU + 0.5*mytGPU) % mytGPU;
-
-    icel  = jx + jy * mxGPU;
-    // printf("rx = %f,  ry = %f \n", rx, ry);
-    // printf("jx = %i,  jy = %i,  icel = %i \n", jx, jy, icel);
-  }
-  np = atomicAdd(&pc->countparticlesincellX[icel],1);
-  if(np >= maxNumberPartInCellGPU){
-    errorKernel[0]=1;
-    errorKernel[1]=maxNumberPartInCellGPU;
-    return;
-  }
-  pc->partincellX[ncellstGPU*np+icel] = nboundaryGPU+i; */
-  
+ 
   // Particle location in cells for neighbor lists
   {
     double invdx = double(mxNeighborsGPU)/lxGPU;
@@ -64,14 +41,8 @@ __global__ void findNeighborListsQuasi2D(particlesincell* pc,
 
 __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU, 
 						  const double* rycellGPU, 
-						  const double* rzcellGPU,
-						  double* fxboundaryGPU, 
-						  double* fyboundaryGPU, 
-						  double* fzboundaryGPU,
 						  cufftDoubleComplex* vxZ,
 						  cufftDoubleComplex* vyZ,
-						  const particlesincell* pc, 
-						  int* errorKernel,
 						  const bondedForcesVariables* bFV){
   
   int i = blockDim.x * blockIdx.x + threadIdx.x;
@@ -80,7 +51,6 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
   double fx = 1.0;
   double fy = 1.0;
   double f;
- 
 
   double rx = fetch_double(texrxboundaryGPU,nboundaryGPU+i);
   double ry = fetch_double(texryboundaryGPU,nboundaryGPU+i);
@@ -270,13 +240,15 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
     icel  = jx + jy * mxGPU;
   }
 
+  // printf("rx = %f, ry = %f, icel = %i \n", rx, ry, icel);
+
   // Loop over neighbor cells
   {
     double rx_distance, ry_distance, norm;
     int kx, ky, kx_neigh, ky_neigh, icel_neigh;
     ky = icel / mxGPU;
     kx = icel % mxGPU;
-    // double icel_double = double(icel);
+    // printf("kx = %i,  ky = %i \n", kx, ky);
     for(int ix=-kernelWidthGPU; ix<=kernelWidthGPU; ix++){
       kx_neigh = (kx + ix + mxGPU) % mxGPU;
       rx_distance = rx - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
@@ -295,12 +267,87 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
 	atomicAdd(&vyZ[icel_neigh].x, norm * fy);
 	// printf("kx = %i,  ky = %i \n", kx_neigh, ky_neigh);
 	// printf("rx = %f,  ry = %f,  r2 = %f \n", rx_distance, ry_distance, r2);
-	// printf("norm = %f, old = %f \n", norm, old);
+	// if(icel_neigh == 524800)
+	// printf("icel_neigh = %i, norm = %f, old = %f \n", icel_neigh, norm, old);
       }
     }
   } 
   // printf("fx = %f,  fy = %f \n", fx, fy);
 }
+
+
+
+__global__ void kernelSpreadThermalDriftQuasi2D(const double* rxcellGPU, 
+						const double* rycellGPU, 
+						cufftDoubleComplex* vxZ,
+						cufftDoubleComplex* vyZ,
+						double *dRand){
+  
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=(npGPU)) return;   
+  
+  double rx = fetch_double(texrxboundaryGPU,nboundaryGPU+i);
+  double ry = fetch_double(texryboundaryGPU,nboundaryGPU+i);
+    
+  double r2;
+  int icel;
+  double r;
+
+  {
+    r = rx;
+    r = r - (int(r*invlxGPU + 0.5*((r>0)-(r<0)))) * lxGPU;
+    int jx   = int(r * invdxGPU + 0.5*mxGPU) % mxGPU;
+
+    r = ry;
+    r = r - (int(r*invlyGPU + 0.5*((r>0)-(r<0)))) * lyGPU;
+    int jy   = int(r * invdyGPU + 0.5*mytGPU) % mytGPU;
+
+    icel   = jx  + jy  * mxGPU;
+  }
+
+
+  // Loop over neighbor cells
+  {
+    double rx_distance_p, ry_distance_p, rx_distance_m, ry_distance_m;
+    double norm;
+    int kx, ky, kx_neigh, ky_neigh, icel_neigh;
+    ky = icel / mxGPU;
+    kx = icel % mxGPU;
+    for(int ix=-kernelWidthGPU; ix<=kernelWidthGPU; ix++){
+      kx_neigh = (kx + ix + mxGPU) % mxGPU;
+
+      rx_distance_p = (rx + 0.5*deltaRFDGPU*dRand[3*ncellsGPU+i]) - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
+      rx_distance_p = rx_distance_p - int(rx_distance_p*invlxGPU + 0.5*((rx_distance_p>0)-(rx_distance_p<0)))*lxGPU;
+      rx_distance_m = (rx - 0.5*deltaRFDGPU*dRand[3*ncellsGPU+i]) - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
+      rx_distance_m = rx_distance_m - int(rx_distance_m*invlxGPU + 0.5*((rx_distance_m>0)-(rx_distance_m<0)))*lxGPU;
+
+      for(int iy=-kernelWidthGPU; iy<=kernelWidthGPU; iy++){
+	ky_neigh = (ky + iy + myGPU) % myGPU;
+	icel_neigh = kx_neigh + ky_neigh * mxGPU;
+
+	ry_distance_p = (ry + 0.5*deltaRFDGPU*dRand[3*ncellsGPU+npGPU+i]) - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
+	ry_distance_p = ry_distance_p - int(ry_distance_p*invlyGPU + 0.5*((ry_distance_p>0)-(ry_distance_p<0)))*lyGPU;
+	ry_distance_m = (ry - 0.5*deltaRFDGPU*dRand[3*ncellsGPU+npGPU+i]) - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
+	ry_distance_m = ry_distance_m - int(ry_distance_m*invlyGPU + 0.5*((ry_distance_m>0)-(ry_distance_m<0)))*lyGPU;
+
+	// Spread drift kT*S(q+0.5*delta*W)*W
+	r2 = rx_distance_p*rx_distance_p + ry_distance_p*ry_distance_p;
+	norm = GaussianKernel2DGPU(r2, GaussianVarianceGPU) * temperatureGPU / deltaRFDGPU;
+
+	atomicAdd(&vxZ[icel_neigh].x, norm * dRand[3*ncellsGPU + i]);
+	atomicAdd(&vyZ[icel_neigh].x, norm * dRand[3*ncellsGPU + npGPU + i]);
+
+	// Spread drift -kT*S(q-0.5*delta*W)*W
+	r2 = rx_distance_m*rx_distance_m + ry_distance_m*ry_distance_m;
+	norm = GaussianKernel2DGPU(r2, GaussianVarianceGPU) * temperatureGPU / deltaRFDGPU;
+
+	atomicAdd(&vxZ[icel_neigh].x, -norm * dRand[3*ncellsGPU + i]);
+	atomicAdd(&vyZ[icel_neigh].x, -norm * dRand[3*ncellsGPU + npGPU + i]);
+      }
+    }
+  } 
+}
+
 
 
 __global__ void kernelUpdateVQuasi2D(cufftDoubleComplex *vxZ, 
@@ -314,12 +361,13 @@ __global__ void kernelUpdateVQuasi2D(cufftDoubleComplex *vxZ,
   wy = i / mxGPU;
   wx = i % mxGPU;
   
-  if(wx > mxGPU / 2){
-    wx = wx - mxGPU;
+  if(wx >= (1+mxGPU) / 2){
+    wx -= mxGPU;
   }
-  if(wy > myGPU / 2){
-    wy = wy - myGPU;
+  if(wy >= (1+myGPU) / 2){
+    wy -= myGPU;
   }
+
   double pi = 3.1415926535897932385;
   double kx = wx * 2 * pi / lxGPU;
   double ky = wy * 2 * pi / lyGPU;
@@ -327,11 +375,11 @@ __global__ void kernelUpdateVQuasi2D(cufftDoubleComplex *vxZ,
   double k3_inv = k_inv * k_inv * k_inv;
   cufftDoubleComplex Wx, Wy;
 
-  if(i == 0){
-    // vxZ[i].x = 0;
-    // vxZ[i].y = 0;
-    // vyZ[i].x = 0;
-    // vyZ[i].y = 0;
+  if(((mxGPU % 2) == 0 && (wx == -mxGPU / 2)) || ((myGPU % 2) == 0 && (wy == -myGPU / 2)) || (i == 0)){
+    vxZ[i].x = 0;
+    vxZ[i].y = 0;
+    vyZ[i].x = 0;
+    vyZ[i].y = 0;
   }
   else{
     Wx.x = (k3_inv / shearviscosityGPU) * (0.5 * ky * (ky*vxZ[i].x - kx*vyZ[i].x) + 0.25 * kx * (kx*vxZ[i].x + ky*vyZ[i].x));
@@ -350,13 +398,64 @@ __global__ void kernelUpdateVQuasi2D(cufftDoubleComplex *vxZ,
 }
 
 
+__global__ void addStochasticVelocityQuasi2D(cufftDoubleComplex *vxZ, cufftDoubleComplex *vyZ, const double *dRand){
+
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=ncellsGPU) return;   
+
+  //Find mode
+  int wx, wy;
+  wy = i / mxGPU;
+  wx = i % mxGPU;
+  
+  if(wx > mxGPU / 2){
+    // wx = wx - mxGPU;
+    wx = mxGPU - wx;
+  }
+  if(wy > myGPU / 2){
+    // wy = wy - myGPU;
+    wy = myGPU - wy;
+  }
+  int index = wy * mxGPU + wx;
+  double pi = 3.1415926535897932385;
+  double kx = wx * 2 * pi / lxGPU;
+  double ky = wy * 2 * pi / lyGPU;
+  double k = sqrt(kx*kx + ky*ky);
+  double k3half_inv = rsqrt(k * k * k);
+  double sqrtTwo_inv = rsqrt(2.0);
+  cufftDoubleComplex Wx, Wy;
+
+  double prefactor = sqrt(2.0 * temperatureGPU / shearviscosityGPU);
+
+  // Wx.x = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[i] + 0.5 * kx * dRand[ncellsGPU + i]);
+  // Wy.x = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[i] + 0.5 * ky * dRand[ncellsGPU + i]);
+  
+  int nModes = (npGPU + mxGPU) / 2;
+
+  // Wx.x = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[index]            + 0.5 * kx * dRand[nModes + index]);
+  // Wy.x = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[nModes*2 + index] + 0.5 * ky * dRand[nModes*3 + index]);
+
+  Wx.x = 0;
+  Wx.y = 0;
+  Wy.x = 0;
+  Wy.y = 0;
+
+  if(i != 0){
+    vxZ[i].x += Wx.x;
+    vxZ[i].y += Wx.y;
+    vyZ[i].x += Wy.x;
+    vyZ[i].y += Wy.y;
+  }
+}
 
 __global__ void updateParticlesQuasi2D(particlesincell* pc, 
 				       int* errorKernel,
 				       const double* rxcellGPU,
 				       const double* rycellGPU,
-				       double* rxboundaryGPU,  // q^{n} -> q^{n+dt}
+				       double* rxboundaryGPU,  // q^{} to interpolate
 				       double* ryboundaryGPU, 
+				       double* rxboundaryPredictionGPU,  // q^{udpdated}
+				       double* ryboundaryPredictionGPU, 
 				       const double* vxGPU,
 				       const double* vyGPU,
 				       double dt){
@@ -364,8 +463,12 @@ __global__ void updateParticlesQuasi2D(particlesincell* pc,
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if(i>=(npGPU)) return;   
   
-  double rx = fetch_double(texrxboundaryGPU,nboundaryGPU+i);
-  double ry = fetch_double(texryboundaryGPU,nboundaryGPU+i);
+  // double rx = fetch_double(texrxboundaryGPU,nboundaryGPU+i);
+  // double ry = fetch_double(texryboundaryGPU,nboundaryGPU+i);
+  double rx = rxboundaryGPU[i];
+  double ry = ryboundaryGPU[i];
+
+  // printf("rx = %f, ry = %f \n", rx, ry);
 					 
   double r;
   int icel;
@@ -415,8 +518,11 @@ __global__ void updateParticlesQuasi2D(particlesincell* pc,
 
   double volumeCell = dxGPU * dyGPU;
   printf("i = %i, ux = %14.12f, uy = %14.12f, dt = %f \n", i, volumeCell * ux, volumeCell * uy, dt);
-  rxboundaryGPU[i] += volumeCell * ux * dt;
-  ryboundaryGPU[i] += volumeCell * uy * dt;
+
+  // rxboundaryGPU[i] += volumeCell * ux * dt;
+  // ryboundaryGPU[i] += volumeCell * uy * dt;
+  rxboundaryPredictionGPU[i] = fetch_double(texrxboundaryGPU,nboundaryGPU+i) + volumeCell * ux * dt;
+  ryboundaryPredictionGPU[i] = fetch_double(texryboundaryGPU,nboundaryGPU+i) + volumeCell * uy * dt;
 
 }
 
@@ -433,51 +539,44 @@ __global__ void kernelUpdateVIncompressibleSpectral2D(cufftDoubleComplex *vxZ,
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if(i>=ncellsGPU) return;   
 
-  //Find mode
+  // Find mode
   int wx, wy;
   wy = i / mxGPU;
   wx = i % mxGPU;
 
-  if(wx > mxGPU / 2){
-    wx = wx - mxGPU;
-    // wx = mxGPU - wx;
-    // wx = mxGPU / 2 - wx;
+  if(wx >= (mxGPU+1)/2){
+    wx -= mxGPU;
   }
-  if(wy > myGPU / 2){
-    wy = wy - myGPU;
-    // wy = myGPU - wy;
-    // wy = myGPU / 2 - wy;
+  if(wy >= (myGPU+1)/2){
+    wy -= myGPU;
   }
+
   double pi = 3.1415926535897932385;
-  double kx = wx * 2 * pi / lxGPU;
-  double ky = wy * 2 * pi / lyGPU;
+  double kx = wx * 2.0 * pi / lxGPU;
+  double ky = wy * 2.0 * pi / lyGPU;
   
-  //Construct L
+  // Construct L
   double L;
-  L = -(kx * kx) - (ky * ky)  ;
+  L = -(kx * kx) - (ky * ky);
   
-  //Construct GG
-  double GG;
-  GG = L;
-  
-  //Construct denominator
+  // Construct denominator
   double denominator = -shearviscosityGPU * L;
   
-  //Construct GW
+  // Construct GW
   cufftDoubleComplex GW;
   GW.x = kx * WxZ[i].x + ky * WyZ[i].x ;
   GW.y = kx * WxZ[i].y + ky * WyZ[i].y ;
-  
-  if(i==0){
-    vxZ[i].x = WxZ[i].x;
-    vxZ[i].y = WxZ[i].y;
-    vyZ[i].x = WyZ[i].x;
-    vyZ[i].y = WyZ[i].y;
+
+  if(((mxGPU % 2) == 0 && (wx == -mxGPU / 2)) || ((myGPU % 2) == 0 && (wy == -myGPU / 2)) || (i == 0)){
+    vxZ[i].x = 0; // WxZ[i].x;
+    vxZ[i].y = 0; // WxZ[i].y;
+    vyZ[i].x = 0; // WyZ[i].x;
+    vyZ[i].y = 0; // WyZ[i].y;
   }
   else{
-    vxZ[i].x = (WxZ[i].x + kx * GW.x / GG) / denominator;
-    vxZ[i].y = (WxZ[i].y + kx * GW.y / GG) / denominator;
-    vyZ[i].x = (WyZ[i].x + ky * GW.x / GG) / denominator;
-    vyZ[i].y = (WyZ[i].y + ky * GW.y / GG) / denominator;
+    vxZ[i].x = (WxZ[i].x + kx * GW.x / L) / denominator;
+    vxZ[i].y = (WxZ[i].y + kx * GW.y / L) / denominator;
+    vyZ[i].x = (WyZ[i].x + ky * GW.x / L) / denominator;
+    vyZ[i].y = (WyZ[i].y + ky * GW.y / L) / denominator;
   }
 }

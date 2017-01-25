@@ -32,10 +32,10 @@ bool texturesCellsQuasi2D(){
   texVyGPU.filterMode = cudaFilterModePoint;//cudaFilterModeLinear and cudaFilterModePoint
   cutilSafeCall( cudaBindTexture(0,texVyGPU,vyGPU,ncellst*sizeof(double)));
   //texVzGPU;
-  texVzGPU.normalized = false;
+  /*texVzGPU.normalized = false;
   texVzGPU.addressMode[0] = cudaAddressModeClamp;//Wrap and Clamp
   texVzGPU.filterMode = cudaFilterModePoint;//cudaFilterModeLinear and cudaFilterModePoint
-  cutilSafeCall( cudaBindTexture(0,texVzGPU,vzGPU,ncellst*sizeof(double)));
+  cutilSafeCall( cudaBindTexture(0,texVzGPU,vzGPU,ncellst*sizeof(double)));*/
 
 
 

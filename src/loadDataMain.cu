@@ -298,7 +298,6 @@ bool loadDataMain(int argc, char* argv[]){
 
   fileinput >> word;
   while(!fileinput.eof()){
-    
     if(word==wsetparticles){
       fileinput >> setparticles;
     }

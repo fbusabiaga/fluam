@@ -63,39 +63,6 @@ bool runSchemeQuasi2D(){
   //Initialize textures cells
   if(!texturesCellsQuasi2D()) return 0;  
 
-  /*initializeVecinos<<<numBlocks,threadsPerBlock>>>(vecino1GPU,
-						   vecino2GPU,
-						   vecino3GPU,
-						   vecino4GPU,
-						   vecinopxpyGPU,
-						   vecinopxmyGPU,
-						   vecinopxpzGPU,
-						   vecinopxmzGPU,
-						   vecinomxpyGPU,
-						   vecinomxmyGPU,
-						   vecinomxpzGPU,
-						   vecinomxmzGPU,
-						   vecinopypzGPU,
-						   vecinopymzGPU,
-						   vecinomypzGPU,
-						   vecinomymzGPU,
-						   vecinopxpypzGPU,
-						   vecinopxpymzGPU,
-						   vecinopxmypzGPU,
-						   vecinopxmymzGPU,
-						   vecinomxpypzGPU,
-						   vecinomxpymzGPU,
-						   vecinomxmypzGPU,
-						   vecinomxmymzGPU);
-  
-  initializeVecinos2<<<numBlocks,threadsPerBlock>>>(vecino0GPU,
-						    vecino1GPU,
-						    vecino2GPU,
-						    vecino3GPU,
-						    vecino4GPU,
-						    vecino5GPU);*/
-
-
   //Initialize plan
   cufftHandle FFT;
   cufftPlan2d(&FFT,my,mx,CUFFT_Z2Z);
@@ -158,15 +125,17 @@ bool runSchemeQuasi2D(){
     // f = S*F
     kernelSpreadParticlesForceQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
 										       rycellGPU,
-										       rzcellGPU,
-										       fxboundaryGPU,
-										       fyboundaryGPU,
-										       fzboundaryGPU,
 										       vxZ,
 										       vyZ,
-										       pc,
-										       errorKernel,
 										       bFV);    
+
+    // Spread thermal drift
+    kernelSpreadThermalDriftQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
+										     rycellGPU,
+										     vxZ,
+										     vyZ,
+										     dRand);
+
     // cout << endl;
     // Transform force density field to Fourier space
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_FORWARD);
@@ -176,6 +145,9 @@ bool runSchemeQuasi2D(){
     kernelUpdateVQuasi2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ);
     // kernelUpdateVIncompressible2D<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxZ,vyZ,vzZ,pF); //W
     // kernelUpdateVIncompressibleSpectral2D<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxZ,vyZ,vzZ,pF); //W
+
+    // Add stochastic velocity
+    addStochasticVelocityQuasi2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ,dRand);
 
     // Transform velocity field to real space
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_INVERSE);
@@ -188,29 +160,27 @@ bool runSchemeQuasi2D(){
        errorKernel,
        rxcellGPU,
        rycellGPU,
-       // rxboundaryPredictionGPU,  // q^{n+0.5*dt}
-       // ryboundaryPredictionGPU, 
-       rxboundaryGPU,  // q^{n+0.5*dt}
+       rxboundaryGPU,  // q^{} to interpolate
        ryboundaryGPU, 
+       rxboundaryPredictionGPU,  // q^{updated}
+       ryboundaryPredictionGPU, 
        vxGPU,
        vyGPU,
-       // 0.5 * dt);    
-       dt);
-
+       0.5 * dt);    
+    
     // Update particles one time step
-    /*updateParticlesMidPointQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>
+    updateParticlesQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>
       (pc, 
        errorKernel,
        rxcellGPU,
        rycellGPU,
-       rxboundaryPredictionGPU,  // q^{n+0.5*dt}
+       rxboundaryPredictionGPU,  // q^{} to interpolate
        ryboundaryPredictionGPU, 
-       rxboundaryGPU,  // q^{n+dt}
+       rxboundaryGPU,  // q^{updated}
        ryboundaryGPU, 
        vxGPU,
        vyGPU,
-       dt);    */
-
+       dt);    
 								    
     step++;
   }

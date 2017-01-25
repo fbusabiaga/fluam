@@ -1,93 +1,89 @@
-#Select the GPU to run fluam
-#In general it's better not to use this option
-#setDevice 0
+# Select the GPU to run fluam
+# In general it's better not to use this option
+# setDevice 0
 
 
-#Chose scheme
-#thermostat
-#quasiNeutrallyBuoyant2D
-#freeEnergyCompressibleParticles
+# Chose scheme
+# thermostat
+# quasiNeutrallyBuoyant2D
+# freeEnergyCompressibleParticles
 quasi2D
 particles		1
 
 
-#Number of particles
+# Number of particles
 numberparticles		1
 mass			0
 
-#Cutoff for the particle-particle interaction
+# Cutoff for the particle-particle interaction
 cutoff                  224.492409662
-#Give file with the bonded force between particles (see fluam/bin/inputfile/README)
-#bondedForces		harmonicTrap.dat
-#Maximum number of particles in the neighbor list
+# Give file with the bonded force between particles (see fluam/bin/inputfile/README)
+# bondedForces		harmonicTrap.dat
+# Maximum number of particles in the neighbor list
 maxNumberPartInCellNonBonded    20
 maxNumberPartInCell     	20
 
 
-#Fluid density
+# Fluid density
 densfluid               1
-#Shear viscosity
+# Shear viscosity
 shearviscosity          1
-#Temperature in energy units (T -> k_B*T)
-temperature             0.01
-hydrodynamicRadius	0.000530516476973
+# Temperature in energy units (T -> k_B*T)
+temperature             0.0
+hydrodynamicRadius	0.0530516476973
 
 
-#Number of fluid cells in the directions x, y and z
-cells			8192 8192	 1
-#Dimensions of the simulation box
-celldimension		1 1	1
+# Number of fluid cells in the directions x, y and z
+cells		1024 1024  1
+# Dimensions of the simulation box
+celldimension		10     10	  1
 
 
-#Fluid initial conditions
-#initfluid=0, initial velocity=backgroundvelocity and density=density_0
-#initfluid=1, initial velocity=backgroundvelocity+randomFluctuations and density=density_0
-#See file fluam/src/initializeFluid.cpp
+# Fluid initial conditions
+# initfluid=0, initial velocity=backgroundvelocity and density=density_0
+# initfluid=1, initial velocity=backgroundvelocity+randomFluctuations and density=density_0
+# See file fluam/src/initializeFluid.cpp
 initfluid 1
-#Give background velocity components vx, vy, vz. If not one is given
-#the background velocity is set to zero
+# Give background velocity components vx, vy, vz. If not one is given
+# the background velocity is set to zero
 backgroundvelocity 	 0  	0	    0
 
 
-#To give an initial configuration for the particles
-#set loadparticles to 1 and provide the file for initial configuration
-#and optionally a file for the initial velocities.
-#If no file is given the particles start in simple cubic lattice.
-#loadparticles		0
-#coordinates		/home/floren/gpuFH/bin/kk.coor
+# To give an initial configuration for the particles
+# set loadparticles to 1 and provide the file for initial configuration
+# and optionally a file for the initial velocities.
+# If no file is given the particles start in simple cubic lattice.
+loadparticles		1
+coordinates		/sibm/fbalboa/fluam/bin/blob.dat
 #velocities		/home/floren/gpuFH/bin/reynolds.vel
 
-#Give initial fluid configuration. If not one is given fluam uses the option given in initfluid
-#fluid			/home/floren/gblob/data/gVsReynolds/quasiNeutrallyBuoyant/run57.fluidFinalConfiguration
+# Give initial fluid configuration. If not one is given fluam uses the option given in initfluid
+# fluid			/home/floren/gblob/data/gVsReynolds/quasiNeutrallyBuoyant/run57.fluidFinalConfiguration
 
 
-#Seed to feed the random number generator. If no one is given
-#fluam takes one from the computer clock.
-#seed			1
+# Seed to feed the random number generator. If no one is given
+# fluam takes one from the computer clock.
+# seed			1
 
 
-#Number of relaxation steps during which fluam save no data
+# Number of relaxation steps during which fluam save no data
 numstepsRelaxation	0
-#Number of steps (no counting numstepsRelaxation)
-numsteps                10
-#Save data every samplefreq steps
+# Number of steps (no counting numstepsRelaxation)
+numsteps                1
+# Save data every samplefreq steps
 samplefreq              1
 savefreq		0
-#Time step
-dt			1.0
+# Time step
+dt			0.001
 
 
-#Save data in VTK format to be visualized with the program VisIt
-#See file saveFluidVTK.cu and the web https://wci.llnl.gov/simulation/computer-codes/visit/
-#saveVTK		0
+# Save data in VTK format to be visualized with the program VisIt
+# See file saveFluidVTK.cu and the web https://wci.llnl.gov/simulation/computer-codes/visit/
+# saveVTK		0
 
 
-#Prefix for the output files. The directory where the data is saved
-#should exist before running fluam
-outputname		../data/quasi2D/run2
-
-
-
-
+# Prefix for the output files. The directory where the data is saved
+# should exist before running fluam
+outputname		../data/quasi2D/run1
 
 

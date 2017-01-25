@@ -30,8 +30,6 @@ bool createCellsQuasi2DGPU(){
   cutilSafeCall(cudaMemcpyToSymbol(mytGPU,&myt,sizeof(int)));
   cutilSafeCall(cudaMemcpyToSymbol(mztGPU,&mzt,sizeof(int)));
 
-
-
   cutilSafeCall(cudaMemcpyToSymbol(ncellsGPU,&ncells,sizeof(int)));
   cutilSafeCall(cudaMemcpyToSymbol(ncellstGPU,&ncellst,sizeof(int)));
   cutilSafeCall(cudaMemcpyToSymbol(lxGPU,&lx,sizeof(double)));
@@ -46,21 +44,18 @@ bool createCellsQuasi2DGPU(){
   cutilSafeCall(cudaMemcpyToSymbol(densfluidGPU,&densfluid,sizeof(double)));
 
   // Radius and kernel
-  // double GaussianVariance = pow(hydrodynamicRadius / sqrt(3.1415926535897932385), 2);
   double GaussianVariance = pow(hydrodynamicRadius / (1.0 * sqrt(3.1415926535897932385)), 2);
+  // double GaussianVariance = pow(hydrodynamicRadius / (0.567033369718 * sqrt(3.1415926535897932385)), 2);
   cutilSafeCall(cudaMemcpyToSymbol(GaussianVarianceGPU,&GaussianVariance,sizeof(double)));
   int kernelWidth = int(3 * hydrodynamicRadius * mx / lx) + 1;
   cout << "kernelWidth = " << kernelWidth << endl;
   cutilSafeCall(cudaMemcpyToSymbol(kernelWidthGPU,&kernelWidth,sizeof(int)));
-
+  double deltaRFD = 1e-05 * hydrodynamicRadius;
+  cutilSafeCall(cudaMemcpyToSymbol(deltaRFDGPU,&deltaRFD,sizeof(double)));
 
   cutilSafeCall(cudaMalloc((void**)&vxGPU,ncells*sizeof(double)));
   cutilSafeCall(cudaMalloc((void**)&vyGPU,ncells*sizeof(double)));
   cutilSafeCall(cudaMalloc((void**)&vzGPU,ncells*sizeof(double)));
-  // cutilSafeCall(cudaMalloc((void**)&vxPredictionGPU,ncells*sizeof(double)));
-  // cutilSafeCall(cudaMalloc((void**)&vyPredictionGPU,ncells*sizeof(double)));
-  // cutilSafeCall(cudaMalloc((void**)&vzPredictionGPU,ncells*sizeof(double)));
-
  
   cutilSafeCall(cudaMalloc((void**)&rxcellGPU,ncells*sizeof(double)));
   cutilSafeCall(cudaMalloc((void**)&rycellGPU,ncells*sizeof(double)));
@@ -104,39 +99,9 @@ bool createCellsQuasi2DGPU(){
   cutilSafeCall(cudaMemcpyToSymbol(setparticlesGPU,&auxbool,sizeof(bool)));
   cutilSafeCall(cudaMemcpyToSymbol(setboundaryGPU,&auxbool,sizeof(bool)));
 
-
   long long auxulonglong = 0;
   cutilSafeCall(cudaMalloc((void**)&stepGPU,sizeof(long long)));
   cutilSafeCall(cudaMemcpy(stepGPU,&auxulonglong,sizeof(long long),cudaMemcpyHostToDevice));
-
-
-  /*cutilSafeCall(cudaMalloc((void**)&vecino0GPU,ncells*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&vecino1GPU,ncells*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&vecino2GPU,ncells*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&vecino3GPU,ncells*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&vecino4GPU,ncells*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&vecino5GPU,ncells*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&vecinopxpyGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopxmyGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopxpzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopxmzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomxpyGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomxmyGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomxpzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomxmzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopypzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopymzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomypzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomymzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopxpypzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopxpymzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopxmypzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopxmymzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomxpypzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomxpymzGPU,ncells*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&vecinomxmypzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomxmymzGPU,ncells*sizeof(int))); */
-
 
   //Factors for the update in fourier space
   cutilSafeCall(cudaMalloc((void**)&gradKx,     mx*sizeof(cufftDoubleComplex)));
@@ -148,24 +113,9 @@ bool createCellsQuasi2DGPU(){
 
   cutilSafeCall(cudaMalloc((void**)&pF,sizeof(prefactorsFourier)));
 
-  //cutilSafeCall(cudaMalloc((void**)&WxZ,ncells*sizeof(cufftDoubleComplex)));
-  //cutilSafeCall(cudaMalloc((void**)&WyZ,ncells*sizeof(cufftDoubleComplex)));
-  //cutilSafeCall(cudaMalloc((void**)&WzZ,ncells*sizeof(cufftDoubleComplex)));
   cutilSafeCall(cudaMalloc((void**)&vxZ,ncells*sizeof(cufftDoubleComplex)));
   cutilSafeCall(cudaMalloc((void**)&vyZ,ncells*sizeof(cufftDoubleComplex)));
   cutilSafeCall(cudaMalloc((void**)&vzZ,ncells*sizeof(cufftDoubleComplex))); 
-
-  /*if(quasiNeutrallyBuoyant || quasiNeutrallyBuoyant2D || quasiNeutrallyBuoyant4pt2D || quasi2D){
-    cutilSafeCall(cudaMalloc((void**)&advXGPU,ncells*sizeof(double)));
-    cutilSafeCall(cudaMalloc((void**)&advYGPU,ncells*sizeof(double)));
-    cutilSafeCall(cudaMalloc((void**)&advZGPU,ncells*sizeof(double)));
-    }*/
-
-  
-  cutilSafeCall(cudaMemcpyToSymbol(pressurea0GPU,&pressurea0,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(pressurea1GPU,&pressurea1,sizeof(double)));
-  //cutilSafeCall(cudaMemcpyToSymbol(pressurea2GPU,&pressurea2,sizeof(double)));
-
 
   cout << "CREATE CELLS GPU :              DONE" << endl;
 
