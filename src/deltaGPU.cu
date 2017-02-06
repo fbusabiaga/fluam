@@ -113,8 +113,5 @@ bool freeDelta(){
 
 __device__ double GaussianKernel2DGPU(double r2, double GaussianVariance){
   double pi = 3.1415926535897932385;
-  return exp(-r2 / (2.0 * GaussianVariance)) / (2 * pi * GaussianVariance);
-  
+  return exp(-r2 / (2.0 * GaussianVariance)) / (2 * pi * GaussianVariance);  
 }
-
-

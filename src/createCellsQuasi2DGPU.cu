@@ -44,8 +44,8 @@ bool createCellsQuasi2DGPU(){
   cutilSafeCall(cudaMemcpyToSymbol(densfluidGPU,&densfluid,sizeof(double)));
 
   // Radius and kernel
-  double GaussianVariance = pow(hydrodynamicRadius / (1.0 * sqrt(3.1415926535897932385)), 2);
-  // double GaussianVariance = pow(hydrodynamicRadius / (0.567033369718 * sqrt(3.1415926535897932385)), 2);
+  // double GaussianVariance = pow(hydrodynamicRadius / (1.0 * sqrt(3.1415926535897932385)), 2);
+  double GaussianVariance = pow(hydrodynamicRadius, 2);
   cutilSafeCall(cudaMemcpyToSymbol(GaussianVarianceGPU,&GaussianVariance,sizeof(double)));
   int kernelWidth = int(3 * hydrodynamicRadius * mx / lx) + 1;
   cout << "kernelWidth = " << kernelWidth << endl;

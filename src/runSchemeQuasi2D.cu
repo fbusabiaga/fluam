@@ -53,21 +53,21 @@ bool runSchemeQuasi2D(){
 
   step = -numstepsRelaxation;
 
-  //initialize random numbers
-  size_t numberRandom = 3 * ncells + 2 * np;
+  // Initialize random numbers
+  size_t numberRandom = 5 * (ncells+mx) + 2 * np;
   if (numberRandom % 2){
     numberRandom += 1;
   }
   if(!initializeRandomNumbersGPU(numberRandom,seed)) return 0;
 
-  //Initialize textures cells
+  // Initialize textures cells
   if(!texturesCellsQuasi2D()) return 0;  
 
-  //Initialize plan
+  // Initialize plan
   cufftHandle FFT;
   cufftPlan2d(&FFT,my,mx,CUFFT_Z2Z);
 
-  //Initialize factors for fourier space update
+  // Initialize factors for fourier space update
   int threadsPerBlockdim, numBlocksdim;
   if((mx>=my)&&(mx>=mz)){
     threadsPerBlockdim = 128;
@@ -191,7 +191,7 @@ bool runSchemeQuasi2D(){
     if(!saveFunctionsSchemeStokesLimit(1,step)) return 0;
   }
 
-  //Free FFT
+  // Free FFT
   cufftDestroy(FFT);
   freeRandomNumbersGPU();
 

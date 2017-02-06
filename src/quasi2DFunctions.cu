@@ -48,8 +48,8 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if(i>=(npGPU)) return;   
   
-  double fx = 1.0;
-  double fy = 1.0;
+  double fx = 0.0;
+  double fy = 0.0;
   double f;
 
   double rx = fetch_double(texrxboundaryGPU,nboundaryGPU+i);
@@ -359,12 +359,12 @@ __global__ void kernelUpdateVQuasi2D(cufftDoubleComplex *vxZ,
   //Find mode
   int wx, wy;
   wy = i / mxGPU;
-  wx = i % mxGPU;
-  
-  if(wx >= (1+mxGPU) / 2){
+  wx = i % mxGPU; 
+
+  if(wx > mxGPU / 2){
     wx -= mxGPU;
   }
-  if(wy >= (1+myGPU) / 2){
+  if(wy > myGPU / 2){
     wy -= myGPU;
   }
 
@@ -375,7 +375,7 @@ __global__ void kernelUpdateVQuasi2D(cufftDoubleComplex *vxZ,
   double k3_inv = k_inv * k_inv * k_inv;
   cufftDoubleComplex Wx, Wy;
 
-  if(((mxGPU % 2) == 0 && (wx == -mxGPU / 2)) || ((myGPU % 2) == 0 && (wy == -myGPU / 2)) || (i == 0)){
+  if(i == 0 || ((mxGPU % 2) == 0 && (wx == mxGPU / 2)) || ((myGPU % 2) == 0 && (wy == myGPU / 2))){
     vxZ[i].x = 0;
     vxZ[i].y = 0;
     vyZ[i].x = 0;
@@ -392,9 +392,6 @@ __global__ void kernelUpdateVQuasi2D(cufftDoubleComplex *vxZ,
     vyZ[i].x = Wy.x;
     vyZ[i].y = Wy.y;
   }
-
-  // printf("i = %i, vx.x = %f, vx.y = %f \n", i, vxZ[i].x, vxZ[i].y);
-  // printf("i = %i, vy.x = %f, vy.y = %f \n", i, vyZ[i].x, vyZ[i].y);
 }
 
 
@@ -404,19 +401,27 @@ __global__ void addStochasticVelocityQuasi2D(cufftDoubleComplex *vxZ, cufftDoubl
   if(i>=ncellsGPU) return;   
 
   //Find mode
-  int wx, wy;
+  int wx, wy, fx, fy, shift;
+  int nModes = (ncellsGPU + mxGPU) / 2;
   wy = i / mxGPU;
   wx = i % mxGPU;
-  
+  fx = wx;
+  fy = wy;
+  shift = 0;
+
   if(wx > mxGPU / 2){
-    // wx = wx - mxGPU;
+    fx = wx - mxGPU;
     wx = mxGPU - wx;
   }
   if(wy > myGPU / 2){
-    // wy = wy - myGPU;
+    fy = wy - myGPU;
     wy = myGPU - wy;
   }
-  int index = wy * mxGPU + wx;
+  if(fx * fy < 0){
+    shift += nModes / 2;
+  }
+
+  int index = wy * mxGPU + wx + shift;
   double pi = 3.1415926535897932385;
   double kx = wx * 2 * pi / lxGPU;
   double ky = wy * 2 * pi / lyGPU;
@@ -427,20 +432,37 @@ __global__ void addStochasticVelocityQuasi2D(cufftDoubleComplex *vxZ, cufftDoubl
 
   double prefactor = sqrt(2.0 * temperatureGPU / shearviscosityGPU);
 
-  // Wx.x = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[i] + 0.5 * kx * dRand[ncellsGPU + i]);
-  // Wy.x = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[i] + 0.5 * ky * dRand[ncellsGPU + i]);
-  
-  int nModes = (npGPU + mxGPU) / 2;
 
-  // Wx.x = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[index]            + 0.5 * kx * dRand[nModes + index]);
-  // Wy.x = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[nModes*2 + index] + 0.5 * ky * dRand[nModes*3 + index]);
+  Wx.x = 0.0;
+  Wx.y = 0.0;
+  Wy.x = 0.0;
+  Wy.y = 0.0;
 
-  Wx.x = 0;
-  Wx.y = 0;
-  Wy.x = 0;
-  Wy.y = 0;
+  Wx.x = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[index]            + 0.5 * kx * dRand[nModes   + index]);
+  Wy.x = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[nModes*2 + index] + 0.5 * ky * dRand[nModes*3 + index]);
+  Wx.y = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[nModes*4 + index] + 0.5 * kx * dRand[nModes*5 + index]);
+  Wy.y = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[nModes*6 + index] + 0.5 * ky * dRand[nModes*7 + index]); 
 
-  if(i != 0){
+  if(fx < 0){
+    Wx.y *= -1.0;
+    Wy.y *= -1.0;
+  }
+
+  /*if(wx == 0 and wy == 2){
+    printf("Initial values wx = %i, wy = %i, Used values wx = %i, wy = %i, shift = %i, index = %i, fx = %i, Wx.y = %f \n", i % mxGPU, i / mxGPU, wx, wy, shift, index, fx, Wx.y);
+    }*/
+ 
+  if(((mxGPU % 2) == 0 && (wx == mxGPU / 2)) || ((myGPU % 2) == 0 && (wy == myGPU / 2)) || (i == 0)){
+    Wx.x = 0;
+    Wx.y = 0;
+    Wy.x = 0;
+    Wy.y = 0;
+  }
+  else if(wx == 0 or wy == 0){
+    Wx.y = 0;
+    Wy.y = 0;
+  }
+  else{
     vxZ[i].x += Wx.x;
     vxZ[i].y += Wx.y;
     vyZ[i].x += Wy.x;
@@ -517,7 +539,7 @@ __global__ void updateParticlesQuasi2D(particlesincell* pc,
   }
 
   double volumeCell = dxGPU * dyGPU;
-  printf("i = %i, ux = %14.12f, uy = %14.12f, dt = %f \n", i, volumeCell * ux, volumeCell * uy, dt);
+  printf("i = %i, ux = %e, uy = %e, dt = %e \n", i, volumeCell * ux, volumeCell * uy, dt);
 
   // rxboundaryGPU[i] += volumeCell * ux * dt;
   // ryboundaryGPU[i] += volumeCell * uy * dt;
@@ -544,10 +566,10 @@ __global__ void kernelUpdateVIncompressibleSpectral2D(cufftDoubleComplex *vxZ,
   wy = i / mxGPU;
   wx = i % mxGPU;
 
-  if(wx >= (mxGPU+1)/2){
+  if(wx > mxGPU / 2){
     wx -= mxGPU;
   }
-  if(wy >= (myGPU+1)/2){
+  if(wy > myGPU / 2){
     wy -= myGPU;
   }
 
@@ -566,12 +588,12 @@ __global__ void kernelUpdateVIncompressibleSpectral2D(cufftDoubleComplex *vxZ,
   cufftDoubleComplex GW;
   GW.x = kx * WxZ[i].x + ky * WyZ[i].x ;
   GW.y = kx * WxZ[i].y + ky * WyZ[i].y ;
-
-  if(((mxGPU % 2) == 0 && (wx == -mxGPU / 2)) || ((myGPU % 2) == 0 && (wy == -myGPU / 2)) || (i == 0)){
-    vxZ[i].x = 0; // WxZ[i].x;
-    vxZ[i].y = 0; // WxZ[i].y;
-    vyZ[i].x = 0; // WyZ[i].x;
-    vyZ[i].y = 0; // WyZ[i].y;
+  
+  if((i == 0) || ((mxGPU % 2) == 0 && (wx == mxGPU / 2)) || ((myGPU % 2) == 0 && (wy == myGPU / 2))){
+    vxZ[i].x = 0; 
+    vxZ[i].y = 0; 
+    vyZ[i].x = 0; 
+    vyZ[i].y = 0; 
   }
   else{
     vxZ[i].x = (WxZ[i].x + kx * GW.x / L) / denominator;
