@@ -4,8 +4,8 @@
 
 # Chose scheme
 # thermostat
-# quasiNeutrallyBuoyant2D
 # freeEnergyCompressibleParticles
+# quasiNeutrallyBuoyant2D
 quasi2D
 particles		1
 
@@ -24,15 +24,15 @@ maxNumberPartInCell     	20
 # Fluid density
 densfluid               1
 # Shear viscosity
-shearviscosity          1
+shearviscosity          1.0
 # Temperature in energy units (T -> k_B*T)
-temperature             1.0
+temperature             0.0
 hydrodynamicRadius	1.0
 
 # Number of fluid cells in the directions x, y and z
-cells		512 512       1
+cells		64 64       1
 # Dimensions of the simulation box
-celldimension	100 100 	  1
+celldimension	20 20     1
 
 # Fluid initial conditions
 # initfluid=0, initial velocity=backgroundvelocity and density=density_0
@@ -74,4 +74,4 @@ dt			0.01
 
 # Prefix for the output files. The directory where the data is saved
 # should exist before running fluam
-outputname		../data/quasi2D/run1
+outputname		../data/quasi2D/run
