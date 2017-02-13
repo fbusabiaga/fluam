@@ -70,16 +70,9 @@ bool createCellsQuasi2DGPU(){
   cutilSafeCall(cudaMalloc((void**)&rycellGPU,ncells*sizeof(double)));
   cutilSafeCall(cudaMalloc((void**)&rzcellGPU,ncells*sizeof(double)));
 
-  //FACT1 DIFFERENT FOR INCOMPRESSIBLE
-  double fact1 = sqrt((4.*temperature*shearviscosity*dt)/(cVolume*densfluid*densfluid));
-  //FACT4 DIFFERENT FOR INCOMPRESSIBLE
-  double fact4 = sqrt((2.*temperature*shearviscosity*dt)/(cVolume*densfluid*densfluid));
-  double fact5 = sqrt(1./(dt*cVolume));
-
+  // FACT1 for quasi-2D
+  double fact1 = sqrt(1.0 * temperature  / (shearviscosity * dt * lx * ly)) * ncells;
   cutilSafeCall(cudaMemcpyToSymbol(fact1GPU,&fact1,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(fact4GPU,&fact4,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(fact5GPU,&fact5,sizeof(double)));
-
 
   fact1 = lx/double(mx);
   double fact2 = ly/double(my);

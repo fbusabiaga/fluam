@@ -50,12 +50,12 @@ __global__ void doubleComplexToDoubleNormalized(cufftDoubleComplex* vxUpI,
   vyGPU[j] = vyUpI[j].x / double(ncellsGPU);
   vzGPU[j] = vzUpI[j].x / double(ncellsGPU);
 
-  /*if(fabs(vxUpI[j].y / (fabs(vxUpI[j].x) + 1e-12)) > 1e-9){
+  /*if(fabs(vxUpI[j].y / (fabs(vxUpI[j].x) + 1e-12)) > 1e-8){
     printf("i = %i, vx.x = %e, vx.y = %e, r = %e \n", j, vxUpI[j].x, vxUpI[j].y, fabs(vxUpI[j].y / (fabs(vxUpI[j].x) + 1e-12)));
   }
-  if(fabs(vyUpI[j].y / (fabs(vyUpI[j].x) + 1e-12)) > 1e-9){
+  if(fabs(vyUpI[j].y / (fabs(vyUpI[j].x) + 1e-12)) > 1e-8){
     printf("i = %i, vy.x = %e, vy.y = %e, r = %e \n", j, vyUpI[j].x, vyUpI[j].y, fabs(vyUpI[j].y / (fabs(vyUpI[j].x) + 1e-12)));
-  }*/
+    }*/
 }
 
 

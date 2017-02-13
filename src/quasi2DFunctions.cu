@@ -48,8 +48,8 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if(i>=(npGPU)) return;   
   
-  double fx = 1.0;
-  double fy = 1.0;
+  double fx = 0.0;
+  double fy = 0.0;
   double f;
 
   double rx = fetch_double(texrxboundaryGPU,nboundaryGPU+i);
@@ -433,19 +433,23 @@ __global__ void addStochasticVelocityQuasi2D(cufftDoubleComplex *vxZ, cufftDoubl
   double k3half_inv = rsqrt(k * k * k);
   double sqrtTwo_inv = rsqrt(2.0);
   cufftDoubleComplex Wx, Wy;
+  // double prefactor = sqrt(2.0 * temperatureGPU  / (shearviscosityGPU * dtGPU * lxGPU * lyGPU)) * ncellsGPU;
+  double prefactor = fact1GPU;
 
-  double prefactor = sqrt(2.0 * temperatureGPU / shearviscosityGPU);
+  // Wx.x = 0.0;
+  // Wx.y = 0.0;
+  // Wy.x = 0.0;
+  // Wy.y = 0.0;
 
+  // Wx.x = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[index]            + 0.5 * kx * dRand[nModes   + index]);
+  // Wy.x = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[nModes*2 + index] + 0.5 * ky * dRand[nModes*3 + index]);
+  // Wx.y = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[nModes*4 + index] + 0.5 * kx * dRand[nModes*5 + index]);
+  // Wy.y = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[nModes*6 + index] + 0.5 * ky * dRand[nModes*7 + index]); 
 
-  Wx.x = 0.0;
-  Wx.y = 0.0;
-  Wy.x = 0.0;
-  Wy.y = 0.0;
-
-  Wx.x = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[index]            + 0.5 * kx * dRand[nModes   + index]);
-  Wy.x = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[nModes*2 + index] + 0.5 * ky * dRand[nModes*3 + index]);
-  Wx.y = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[nModes*4 + index] + 0.5 * kx * dRand[nModes*5 + index]);
-  Wy.y = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[nModes*6 + index] + 0.5 * ky * dRand[nModes*7 + index]); 
+  Wx.x = prefactor * k3half_inv * (1.0 * sqrtTwo_inv *   ky  * dRand[           index] + 0.5 * kx * dRand[nModes   + index]);
+  Wy.x = prefactor * k3half_inv * (1.0 * sqrtTwo_inv * (-kx) * dRand[nModes*2 + index] + 0.5 * ky * dRand[nModes*3 + index]);
+  Wx.y = prefactor * k3half_inv * (1.0 * sqrtTwo_inv *   ky  * dRand[nModes*4 + index] + 0.5 * kx * dRand[nModes*5 + index]);
+  Wy.y = prefactor * k3half_inv * (1.0 * sqrtTwo_inv * (-kx) * dRand[nModes*6 + index] + 0.5 * ky * dRand[nModes*7 + index]); 
 
   if(fx < 0){
     Wx.y *= -1.0;
@@ -552,7 +556,7 @@ __global__ void updateParticlesQuasi2D(particlesincell* pc,
   }
 
   double volumeCell = dxGPU * dyGPU;
-  printf("i = %i, ux = %e, uy = %e, dt = %e \n", i, volumeCell * ux, volumeCell * uy, dt);
+  // printf("i = %i, ux = %e, uy = %e, dt = %e \n", i, volumeCell * ux, volumeCell * uy, dt);
 
   // rxboundaryGPU[i] += volumeCell * ux * dt;
   // ryboundaryGPU[i] += volumeCell * uy * dt;
