@@ -6,7 +6,7 @@
 2. Use
 3. Contact
 4. License and Copyright
-
+5. Acknowledgments
 
 ##0. Introduction
 **fluam** is a code for fluctuating hydrodynamics with immersed structures based
@@ -65,4 +65,9 @@ Source code is available at: https://github.com/fbusabiaga/fluam
 
 The source files included with this release are copyrighted by their
 authors. See each file for more information.
+
+##5. Acknowledgments 
+FLUAM has been developed at the Departmento de Física Teorica de la Materia
+Condensada of Universidad Autónoma de Madrid (UAM), partially funded by Spanish
+MINECO projects **FIS2010-22047-C05-01** and **FIS2013- 47350-C05-1-R**.
 
