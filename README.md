@@ -67,7 +67,7 @@ The source files included with this release are copyrighted by their
 authors. See each file for more information.
 
 ##5. Acknowledgments 
-FLUAM has been developed at the Departmento de Física Teorica de la Materia
+**fluam** has been developed at the Departmento de Física Teorica de la Materia
 Condensada of Universidad Autónoma de Madrid (UAM), partially funded by Spanish
 MINECO projects **FIS2010-22047-C05-01** and **FIS2013- 47350-C05-1-R**.
 
