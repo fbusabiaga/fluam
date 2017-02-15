@@ -315,38 +315,39 @@ __global__ void kernelSpreadThermalDriftQuasi2D(const double* rxcellGPU,
     double rx_distance_p, ry_distance_p, rx_distance_m, ry_distance_m;
     double norm;
     int kx, ky, kx_neigh, ky_neigh, icel_neigh;
+    int nModes = ncellsGPU + mxGPU + myGPU;
     ky = icel / mxGPU;
     kx = icel % mxGPU;
     for(int ix=-kernelWidthGPU; ix<=kernelWidthGPU; ix++){
       kx_neigh = (kx + ix + mxGPU) % mxGPU;
 
-      rx_distance_p = (rx + 0.5*deltaRFDGPU*dRand[3*ncellsGPU+i]) - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
+      rx_distance_p = (rx + 0.5*deltaRFDGPU*dRand[4*nModes+i]) - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
       rx_distance_p = rx_distance_p - int(rx_distance_p*invlxGPU + 0.5*((rx_distance_p>0)-(rx_distance_p<0)))*lxGPU;
-      rx_distance_m = (rx - 0.5*deltaRFDGPU*dRand[3*ncellsGPU+i]) - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
+      rx_distance_m = (rx - 0.5*deltaRFDGPU*dRand[4*nModes+i]) - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
       rx_distance_m = rx_distance_m - int(rx_distance_m*invlxGPU + 0.5*((rx_distance_m>0)-(rx_distance_m<0)))*lxGPU;
 
       for(int iy=-kernelWidthGPU; iy<=kernelWidthGPU; iy++){
 	ky_neigh = (ky + iy + myGPU) % myGPU;
 	icel_neigh = kx_neigh + ky_neigh * mxGPU;
 
-	ry_distance_p = (ry + 0.5*deltaRFDGPU*dRand[3*ncellsGPU+npGPU+i]) - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
+	ry_distance_p = (ry + 0.5*deltaRFDGPU*dRand[4*nModes+npGPU+i]) - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
 	ry_distance_p = ry_distance_p - int(ry_distance_p*invlyGPU + 0.5*((ry_distance_p>0)-(ry_distance_p<0)))*lyGPU;
-	ry_distance_m = (ry - 0.5*deltaRFDGPU*dRand[3*ncellsGPU+npGPU+i]) - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
+	ry_distance_m = (ry - 0.5*deltaRFDGPU*dRand[4*nModes+npGPU+i]) - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
 	ry_distance_m = ry_distance_m - int(ry_distance_m*invlyGPU + 0.5*((ry_distance_m>0)-(ry_distance_m<0)))*lyGPU;
 
 	// Spread drift kT*S(q+0.5*delta*W)*W
 	r2 = rx_distance_p*rx_distance_p + ry_distance_p*ry_distance_p;
 	norm = GaussianKernel2DGPU(r2, GaussianVarianceGPU) * temperatureGPU / deltaRFDGPU;
 
-	atomicAdd(&vxZ[icel_neigh].x, norm * dRand[3*ncellsGPU + i]);
-	atomicAdd(&vyZ[icel_neigh].x, norm * dRand[3*ncellsGPU + npGPU + i]);
+	atomicAdd(&vxZ[icel_neigh].x, norm * dRand[4*nModes + i]);
+	atomicAdd(&vyZ[icel_neigh].x, norm * dRand[4*nModes + npGPU + i]);
 
 	// Spread drift -kT*S(q-0.5*delta*W)*W
 	r2 = rx_distance_m*rx_distance_m + ry_distance_m*ry_distance_m;
 	norm = GaussianKernel2DGPU(r2, GaussianVarianceGPU) * temperatureGPU / deltaRFDGPU;
 
-	atomicAdd(&vxZ[icel_neigh].x, -norm * dRand[3*ncellsGPU + i]);
-	atomicAdd(&vyZ[icel_neigh].x, -norm * dRand[3*ncellsGPU + npGPU + i]);
+	atomicAdd(&vxZ[icel_neigh].x, -norm * dRand[4*nModes + i]);
+	atomicAdd(&vyZ[icel_neigh].x, -norm * dRand[4*nModes + npGPU + i]);
       }
     }
   } 
@@ -406,7 +407,7 @@ __global__ void addStochasticVelocityQuasi2D(cufftDoubleComplex *vxZ, cufftDoubl
 
   //Find mode
   int wx, wy, fx, fy, shift;
-  int nModes = (ncellsGPU + mxGPU) / 2;
+  int nModes = (ncellsGPU + mxGPU + myGPU);
   wy = i / mxGPU;
   wx = i % mxGPU;
   fx = wx;
@@ -421,57 +422,41 @@ __global__ void addStochasticVelocityQuasi2D(cufftDoubleComplex *vxZ, cufftDoubl
     fy = wy - myGPU;
     wy = myGPU - wy;
   }
-  if(fx * fy < 0){
-    shift += nModes / 2;
-  }
 
-  int index = wy * mxGPU + wx + shift;
   double pi = 3.1415926535897932385;
   double kx = wx * 2 * pi / lxGPU;
   double ky = wy * 2 * pi / lyGPU;
+  if(fx * fy < 0){
+    shift = nModes / 2;
+    kx *= -1.0;
+  }
+
+  int index = wy * mxGPU + wx + shift;
   double k = sqrt(kx*kx + ky*ky);
   double k3half_inv = rsqrt(k * k * k);
   double sqrtTwo_inv = rsqrt(2.0);
   cufftDoubleComplex Wx, Wy;
-  // double prefactor = sqrt(2.0 * temperatureGPU  / (shearviscosityGPU * dtGPU * lxGPU * lyGPU)) * ncellsGPU;
   double prefactor = fact1GPU;
 
-  // Wx.x = 0.0;
-  // Wx.y = 0.0;
-  // Wy.x = 0.0;
-  // Wy.y = 0.0;
-
-  // Wx.x = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[index]            + 0.5 * kx * dRand[nModes   + index]);
-  // Wy.x = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[nModes*2 + index] + 0.5 * ky * dRand[nModes*3 + index]);
-  // Wx.y = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[nModes*4 + index] + 0.5 * kx * dRand[nModes*5 + index]);
-  // Wy.y = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[nModes*6 + index] + 0.5 * ky * dRand[nModes*7 + index]); 
-
-  Wx.x = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[           index] + 0.5 * kx * dRand[nModes   + index]);
-  Wy.x = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[           index] + 0.5 * ky * dRand[nModes   + index]);
-  Wx.y = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[nModes*2 + index] + 0.5 * kx * dRand[nModes*3 + index]);
-  Wy.y = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[nModes*2 + index] + 0.5 * ky * dRand[nModes*3 + index]); 
-
-  if(fx < 0){
-    Wx.y *= -1.0;
-    Wy.y *= -1.0;
-  }
-
-  /*if(wx == 0 and wy == 2){
-    printf("Initial values wx = %i, wy = %i, Used values wx = %i, wy = %i, shift = %i, index = %i, fx = %i, Wx.y = %f \n", i % mxGPU, i / mxGPU, wx, wy, shift, index, fx, Wx.y);
-    }*/
- 
   if(((mxGPU % 2) == 0 && (wx == mxGPU / 2)) || ((myGPU % 2) == 0 && (wy == myGPU / 2)) || (i == 0)){
     Wx.x = 0;
     Wx.y = 0;
     Wy.x = 0;
     Wy.y = 0;
   }
-  else if(wx == 0 or wy == 0){
-    Wx.x /= sqrtTwo_inv;
-    Wy.x /= sqrtTwo_inv;
-    Wx.y = 0;
-    Wy.y = 0;
+  else{
+    Wx.x = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[           index] + 0.5 * kx * dRand[nModes   + index]);
+    Wy.x = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[           index] + 0.5 * ky * dRand[nModes   + index]);
+  
+    Wx.y = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[nModes*2 + index] + 0.5 * kx * dRand[nModes*3 + index]);
+    Wy.y = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[nModes*2 + index] + 0.5 * ky * dRand[nModes*3 + index]); 
   }
+
+  if((fx < 0) or (fx == 0 and fy < 0)){
+    Wx.y *= -1.0;
+    Wy.y *= -1.0;
+  }
+
   vxZ[i].x += Wx.x;
   vxZ[i].y += Wx.y;
   vyZ[i].x += Wy.x;
