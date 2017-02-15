@@ -54,7 +54,7 @@ bool runSchemeQuasi2D(){
   step = -numstepsRelaxation;
 
   // Initialize random numbers
-  size_t numberRandom = 5 * (ncells+mx) + 2 * np;
+  size_t numberRandom = 3 * ncells + 2 * np;
   if (numberRandom % 2){
     numberRandom += 1;
   }

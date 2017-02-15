@@ -446,10 +446,10 @@ __global__ void addStochasticVelocityQuasi2D(cufftDoubleComplex *vxZ, cufftDoubl
   // Wx.y = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[nModes*4 + index] + 0.5 * kx * dRand[nModes*5 + index]);
   // Wy.y = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[nModes*6 + index] + 0.5 * ky * dRand[nModes*7 + index]); 
 
-  Wx.x = prefactor * k3half_inv * (1.0 * sqrtTwo_inv *   ky  * dRand[           index] + 0.5 * kx * dRand[nModes   + index]);
-  Wy.x = prefactor * k3half_inv * (1.0 * sqrtTwo_inv * (-kx) * dRand[nModes*2 + index] + 0.5 * ky * dRand[nModes*3 + index]);
-  Wx.y = prefactor * k3half_inv * (1.0 * sqrtTwo_inv *   ky  * dRand[nModes*4 + index] + 0.5 * kx * dRand[nModes*5 + index]);
-  Wy.y = prefactor * k3half_inv * (1.0 * sqrtTwo_inv * (-kx) * dRand[nModes*6 + index] + 0.5 * ky * dRand[nModes*7 + index]); 
+  Wx.x = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[           index] + 0.5 * kx * dRand[nModes   + index]);
+  Wy.x = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[           index] + 0.5 * ky * dRand[nModes   + index]);
+  Wx.y = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[nModes*2 + index] + 0.5 * kx * dRand[nModes*3 + index]);
+  Wy.y = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[nModes*2 + index] + 0.5 * ky * dRand[nModes*3 + index]); 
 
   if(fx < 0){
     Wx.y *= -1.0;
@@ -467,15 +467,15 @@ __global__ void addStochasticVelocityQuasi2D(cufftDoubleComplex *vxZ, cufftDoubl
     Wy.y = 0;
   }
   else if(wx == 0 or wy == 0){
+    Wx.x /= sqrtTwo_inv;
+    Wy.x /= sqrtTwo_inv;
     Wx.y = 0;
     Wy.y = 0;
   }
-  else{
-    vxZ[i].x += Wx.x;
-    vxZ[i].y += Wx.y;
-    vyZ[i].x += Wy.x;
-    vyZ[i].y += Wy.y;
-  }
+  vxZ[i].x += Wx.x;
+  vxZ[i].y += Wx.y;
+  vyZ[i].x += Wy.x;
+  vyZ[i].y += Wy.y;
 }
 
 __global__ void updateParticlesQuasi2D(particlesincell* pc, 
