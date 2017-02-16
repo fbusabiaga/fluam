@@ -50,7 +50,12 @@ bool createParticles(){
     vxParticleI = new double [np];
     vyParticleI = new double [np];
     vzParticleI = new double [np];
-    simpleCubic();
+    if(quasiNeutrallyBuoyant2D or quasiNeutrallyBuoyant4pt2D or quasi2D){
+      simpleCubic(2);
+    }
+    else{
+      simpleCubic(3);
+    }
     double vx, vy, vz;
     vx = 0;
     vy = 0;

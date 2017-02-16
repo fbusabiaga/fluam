@@ -117,7 +117,7 @@ bool init_random_gpu(int SEED);
 bool free_random_gpu();
 
 int modu(int x, int y);
-void simpleCubic();
+void simpleCubic(const int dimension);
 
 
 //schemeRK3Ghost

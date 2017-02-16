@@ -23,8 +23,7 @@ __global__ void findNeighborListsQuasi2D(particlesincell* pc,
     int jx   = int(rx * invdx + 0.5*mxNeighborsGPU) % mxNeighborsGPU;
     ry = ry - (int(ry*invlyGPU + 0.5*((ry>0)-(ry<0)))) * lyGPU;
     int jy   = int(ry * invdy + 0.5*myNeighborsGPU) % myNeighborsGPU;
-    icel  = jx;
-    icel += jy * mxNeighborsGPU;
+    icel = jx + jy * mxNeighborsGPU;
   }
   np = atomicAdd(&pc->countPartInCellNonBonded[icel],1);
   if(np >= maxNumberPartInCellNonBondedGPU){
@@ -94,8 +93,7 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
     r = ry;
     r = r - (int(r*invlyGPU + 0.5*((r>0)-(r<0)))) * lyGPU;
     int jy   = int(r * invdy + 0.5*myNeighborsGPU) % myNeighborsGPU;
-    icel  = jx;
-    icel += jy * mxNeighborsGPU;
+    icel = jx + jy * mxNeighborsGPU;
   }
   
   int np;
@@ -228,6 +226,7 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
     }
   }
 
+
   {
     r = rx;
     r = r - (int(r*invlxGPU + 0.5*((r>0)-(r<0)))) * lxGPU;
@@ -252,7 +251,6 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
     for(int ix=-kernelWidthGPU; ix<=kernelWidthGPU; ix++){
       kx_neigh = (kx + ix + mxGPU) % mxGPU;
       rx_distance = rx - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
-      // rx_distance = rx - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5 + 0.5 * dxGPU;
       rx_distance = rx_distance - int(rx_distance*invlxGPU + 0.5*((rx_distance>0)-(rx_distance<0)))*lxGPU;
 
       for(int iy=-kernelWidthGPU; iy<=kernelWidthGPU; iy++){
@@ -260,17 +258,10 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
 	icel_neigh = kx_neigh + ky_neigh * mxGPU;
 
 	ry_distance = ry - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
-	// ry_distance = ry - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5 + 0.5 * dyGPU; 
 	ry_distance = ry_distance - int(ry_distance*invlyGPU + 0.5*((ry_distance>0)-(ry_distance<0)))*lyGPU;
+
 	r2 = rx_distance*rx_distance + ry_distance*ry_distance;
 	norm = GaussianKernel2DGPU(r2, GaussianVarianceGPU);
-
-	/*double dlx, dly;
-	{ // For the 3-point kernel
-	  dlx = delta(rx_distance);
-	  dly = delta(ry_distance);
-	  norm = dlx * dly / (volumeGPU);
-	  }*/
 
 	atomicAdd(&vxZ[icel_neigh].x, norm * fx);
 	atomicAdd(&vyZ[icel_neigh].x, norm * fy);
