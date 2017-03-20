@@ -49,10 +49,14 @@ bool createCellsQuasi2DGPU(){
   // int kernelWidth = int(3.0 * hydrodynamicRadius * mx / lx) + 1;
   // For 2D
   // double GaussianVariance = pow(hydrodynamicRadius * 0.6523, 2);
-  // For quasi-2D
-  double GaussianVariance = pow(hydrodynamicRadius * 9.0*sqrt(3.1415926535897932385)/16.0, 2);
+  // For quasi-2D disks
+  // double GaussianVariance = pow(hydrodynamicRadius * 9.0*sqrt(3.1415926535897932385)/16.0, 2);
+  // int kernelWidth = int(5.0 * hydrodynamicRadius * mx / lx) + 1;
+  // For quasi-2D spheres
+  double GaussianVariance = pow(hydrodynamicRadius / sqrt(3.1415926535897932385), 2);
+  int kernelWidth = int(3.0 * hydrodynamicRadius * mx / lx) + 1;
+
   cutilSafeCall(cudaMemcpyToSymbol(GaussianVarianceGPU,&GaussianVariance,sizeof(double)));
-  int kernelWidth = int(5.0 * hydrodynamicRadius * mx / lx) + 1;
   if (kernelWidth > mx/2){
     kernelWidth = mx/2;
   }

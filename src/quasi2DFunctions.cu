@@ -53,11 +53,7 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
 
   double rx = fetch_double(texrxboundaryGPU,nboundaryGPU+i);
   double ry = fetch_double(texryboundaryGPU,nboundaryGPU+i);
-
-  if(i==1){
-    fx = 1.0;
-  }
-  
+ 
   // INCLUDE EXTERNAL FORCES HERE
   // Example: harmonic potential 
   //  V(r) = (1/2) * k * ((x-x0)**2 + (y-y0)**2 + (z-z0)**2)
@@ -590,18 +586,10 @@ __global__ void updateParticlesQuasi2D(particlesincell* pc,
   }
 
   double volumeCell = dxGPU * dyGPU;
-  // printf("i = %i, ux = %e, uy = %e, dt = %e \n", i, volumeCell * ux, volumeCell * uy, dt);
+  // printf("i = %i, ux = %15.12e, uy = %15.12e, dt = %e \n", i, volumeCell * ux, volumeCell * uy, dt);
 
-  // rxboundaryGPU[i] += volumeCell * ux * dt;
-  // ryboundaryGPU[i] += volumeCell * uy * dt;
-  // rxboundaryPredictionGPU[i] = fetch_double(texrxboundaryGPU,nboundaryGPU+i) + volumeCell * ux * dt;
-  // ryboundaryPredictionGPU[i] = fetch_double(texryboundaryGPU,nboundaryGPU+i) + volumeCell * uy * dt;
-  if(i == 1){
-    rxboundaryPredictionGPU[i] += 0.1;
-  }
-  if(i == 0){
-    printf("%15.12e  %15.12e \n", volumeCell * ux, volumeCell * uy);
-  }
+  rxboundaryPredictionGPU[i] = fetch_double(texrxboundaryGPU,nboundaryGPU+i) + volumeCell * ux * dt;
+  ryboundaryPredictionGPU[i] = fetch_double(texryboundaryGPU,nboundaryGPU+i) + volumeCell * uy * dt;
 }
 
 
