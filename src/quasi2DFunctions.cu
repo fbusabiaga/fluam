@@ -53,6 +53,10 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
 
   double rx = fetch_double(texrxboundaryGPU,nboundaryGPU+i);
   double ry = fetch_double(texryboundaryGPU,nboundaryGPU+i);
+
+  if(i==1){
+    fx = 1.0;
+  }
   
   // INCLUDE EXTERNAL FORCES HERE
   // Example: harmonic potential 
@@ -391,6 +395,60 @@ __global__ void kernelUpdateVQuasi2D(cufftDoubleComplex *vxZ,
 }
 
 
+__global__ void kernelUpdateVQuasi2DRPY(cufftDoubleComplex *vxZ, 
+					cufftDoubleComplex *vyZ){
+				     
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=ncellsGPU) return;   
+
+  //Find mode
+  int wx, wy;
+  wy = i / mxGPU;
+  wx = i % mxGPU; 
+
+  if(wx > mxGPU / 2){
+    wx -= mxGPU;
+  }
+  if(wy > myGPU / 2){
+    wy -= myGPU;
+  }
+
+  double pi = 3.1415926535897932385;
+  double pi_half_inv = 0.56418958354775628695;
+  double kx = wx * 2 * pi / lxGPU;
+  double ky = wy * 2 * pi / lyGPU;
+  double k_inv = rsqrt(kx*kx + ky*ky);
+  double k3_inv = k_inv * k_inv * k_inv;
+  cufftDoubleComplex Wx, Wy;
+  double f, g;
+  double k = 1.0 / k_inv;
+  double sigma = sqrt(GaussianVarianceGPU);
+  double k_norm = sigma * k;
+
+  if(i == 0 || ((mxGPU % 2) == 0 && (wx == mxGPU / 2)) || ((myGPU % 2) == 0 && (wy == myGPU / 2))){
+    vxZ[i].x = 0;
+    vxZ[i].y = 0;
+    vyZ[i].x = 0;
+    vyZ[i].y = 0;
+  }
+  else{
+    f = 0.5 * (erfc(k_norm) * (0.5 + k_norm*k_norm)*exp(k_norm*k_norm) - pi_half_inv * k_norm);
+    g = 0.5 * erfc(k_norm) * exp(k_norm * k_norm) ;
+
+    Wx.x = (k3_inv / shearviscosityGPU) * (g *   ky  * (ky*vxZ[i].x - kx*vyZ[i].x) + f * kx * (kx*vxZ[i].x + ky*vyZ[i].x));
+    Wx.y = (k3_inv / shearviscosityGPU) * (g *   ky  * (ky*vxZ[i].y - kx*vyZ[i].y) + f * kx * (kx*vxZ[i].y + ky*vyZ[i].y));   
+    Wy.x = (k3_inv / shearviscosityGPU) * (g * (-kx) * (ky*vxZ[i].x - kx*vyZ[i].x) + f * ky * (kx*vxZ[i].x + ky*vyZ[i].x));
+    Wy.y = (k3_inv / shearviscosityGPU) * (g * (-kx) * (ky*vxZ[i].y - kx*vyZ[i].y) + f * ky * (kx*vxZ[i].y + ky*vyZ[i].y));
+
+    vxZ[i].x = Wx.x;
+    vxZ[i].y = Wx.y;
+    vyZ[i].x = Wy.x;
+    vyZ[i].y = Wy.y;
+  }
+}
+
+
+
 __global__ void addStochasticVelocityQuasi2D(cufftDoubleComplex *vxZ, cufftDoubleComplex *vyZ, const double *dRand){
 
   int i = blockDim.x * blockIdx.x + threadIdx.x;
@@ -536,9 +594,14 @@ __global__ void updateParticlesQuasi2D(particlesincell* pc,
 
   // rxboundaryGPU[i] += volumeCell * ux * dt;
   // ryboundaryGPU[i] += volumeCell * uy * dt;
-  rxboundaryPredictionGPU[i] = fetch_double(texrxboundaryGPU,nboundaryGPU+i) + volumeCell * ux * dt;
-  ryboundaryPredictionGPU[i] = fetch_double(texryboundaryGPU,nboundaryGPU+i) + volumeCell * uy * dt;
-
+  // rxboundaryPredictionGPU[i] = fetch_double(texrxboundaryGPU,nboundaryGPU+i) + volumeCell * ux * dt;
+  // ryboundaryPredictionGPU[i] = fetch_double(texryboundaryGPU,nboundaryGPU+i) + volumeCell * uy * dt;
+  if(i == 1){
+    rxboundaryPredictionGPU[i] += 0.1;
+  }
+  if(i == 0){
+    printf("%15.12e  %15.12e \n", volumeCell * ux, volumeCell * uy);
+  }
 }
 
 
