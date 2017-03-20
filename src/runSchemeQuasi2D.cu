@@ -142,7 +142,7 @@ bool runSchemeQuasi2D(){
     cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_FORWARD);
 
     // Compute deterministic fluid velocity
-    kernelUpdateVQuasi2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ);
+    kernelUpdateVRPYQuasi2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ);
     /*{
       kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,-1);
       kernelUpdateVIncompressibleStokes2D<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxZ,vyZ,vzZ,pF); 
@@ -151,7 +151,7 @@ bool runSchemeQuasi2D(){
     // kernelUpdateVIncompressibleSpectral2D<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxZ,vyZ,vzZ,pF); 
 
     // Add stochastic velocity
-    addStochasticVelocityQuasi2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ,dRand);
+    addStochasticVelocityRPYQuasi2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ,dRand);
 
     // Transform velocity field to real space
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_INVERSE);

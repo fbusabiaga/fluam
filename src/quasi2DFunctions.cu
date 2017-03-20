@@ -391,7 +391,7 @@ __global__ void kernelUpdateVQuasi2D(cufftDoubleComplex *vxZ,
 }
 
 
-__global__ void kernelUpdateVQuasi2DRPY(cufftDoubleComplex *vxZ, 
+__global__ void kernelUpdateVRPYQuasi2D(cufftDoubleComplex *vxZ, 
 					cufftDoubleComplex *vyZ){
 				     
   int i = blockDim.x * blockIdx.x + threadIdx.x;
@@ -507,6 +507,79 @@ __global__ void addStochasticVelocityQuasi2D(cufftDoubleComplex *vxZ, cufftDoubl
   vyZ[i].x += Wy.x;
   vyZ[i].y += Wy.y;
 }
+
+
+__global__ void addStochasticVelocityRPYQuasi2D(cufftDoubleComplex *vxZ, cufftDoubleComplex *vyZ, const double *dRand){
+
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=ncellsGPU) return;   
+
+  //Find mode
+  int wx, wy, fx, fy, shift;
+  int nModes = (ncellsGPU + mxGPU + myGPU);
+  wy = i / mxGPU;
+  wx = i % mxGPU;
+  fx = wx;
+  fy = wy;
+  shift = 0;
+
+  if(wx > mxGPU / 2){
+    fx = wx - mxGPU;
+    wx = mxGPU - wx;
+  }
+  if(wy > myGPU / 2){
+    fy = wy - myGPU;
+    wy = myGPU - wy;
+  }
+
+  double pi = 3.1415926535897932385;
+  double pi_half_inv = 0.56418958354775628695;
+  double kx = wx * 2 * pi / lxGPU;
+  double ky = wy * 2 * pi / lyGPU;
+  if(fx * fy < 0){
+    shift = nModes / 2;
+    kx *= -1.0;
+  }
+
+  int index = wy * mxGPU + wx + shift;
+  double k = sqrt(kx*kx + ky*ky);
+  double k3half_inv = rsqrt(k * k * k);
+  cufftDoubleComplex Wx, Wy;
+  double prefactor = fact1GPU;
+
+  double f_half, g_half;
+  double sigma = sqrt(GaussianVarianceGPU);
+  double k_norm = sigma * k;
+
+
+  if(((mxGPU % 2) == 0 && (wx == mxGPU / 2)) || ((myGPU % 2) == 0 && (wy == myGPU / 2)) || (i == 0)){
+    Wx.x = 0;
+    Wx.y = 0;
+    Wy.x = 0;
+    Wy.y = 0;
+  }
+  else{
+    f_half = sqrt( 0.5 * (erfc(k_norm) * (0.5 + k_norm*k_norm)*exp(k_norm*k_norm) - pi_half_inv * k_norm) );
+    g_half = sqrt( 0.5 * erfc(k_norm) * exp(k_norm * k_norm) );
+
+    Wx.x = prefactor * k3half_inv * (g_half *   ky  * dRand[           index] + f_half * kx * dRand[nModes   + index]);
+    Wy.x = prefactor * k3half_inv * (g_half * (-kx) * dRand[           index] + f_half * ky * dRand[nModes   + index]);
+  
+    Wx.y = prefactor * k3half_inv * (g_half *   ky  * dRand[nModes*2 + index] + f_half * kx * dRand[nModes*3 + index]);
+    Wy.y = prefactor * k3half_inv * (g_half * (-kx) * dRand[nModes*2 + index] + f_half * ky * dRand[nModes*3 + index]); 
+  }
+
+  if((fx < 0) or (fx == 0 and fy < 0)){
+    Wx.y *= -1.0;
+    Wy.y *= -1.0;
+  }
+
+  vxZ[i].x += Wx.x;
+  vxZ[i].y += Wx.y;
+  vyZ[i].x += Wy.x;
+  vyZ[i].y += Wy.y;
+}
+
 
 __global__ void updateParticlesQuasi2D(particlesincell* pc, 
 				       int* errorKernel,
