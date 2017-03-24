@@ -276,13 +276,18 @@ __global__ void kernelSpreadThermalDriftQuasi2D(const double* rxcellGPU,
 						const double* rycellGPU, 
 						cufftDoubleComplex* vxZ,
 						cufftDoubleComplex* vyZ,
-						double *dRand){
+						const double *dRand,
+						const double* rxboundaryGPU,  // q^{} to interpolate
+						const double* ryboundaryGPU, 
+						const int offset){
   
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if(i>=(npGPU)) return;   
   
-  double rx = fetch_double(texrxboundaryGPU,nboundaryGPU+i);
-  double ry = fetch_double(texryboundaryGPU,nboundaryGPU+i);
+  // double rx = fetch_double(texrxboundaryGPU,nboundaryGPU+i);
+  // double ry = fetch_double(texryboundaryGPU,nboundaryGPU+i);
+  double rx = rxboundaryGPU[i];
+  double ry = ryboundaryGPU[i];
     
   double r2;
   int icel;
@@ -306,39 +311,38 @@ __global__ void kernelSpreadThermalDriftQuasi2D(const double* rxcellGPU,
     double rx_distance_p, ry_distance_p, rx_distance_m, ry_distance_m;
     double norm;
     int kx, ky, kx_neigh, ky_neigh, icel_neigh;
-    int nModes = ncellsGPU + mxGPU + myGPU;
     ky = icel / mxGPU;
     kx = icel % mxGPU;
     for(int ix=-kernelWidthGPU; ix<=kernelWidthGPU; ix++){
       kx_neigh = (kx + ix + mxGPU) % mxGPU;
 
-      rx_distance_p = (rx + 0.5*deltaRFDGPU*dRand[4*nModes+i]) - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
+      rx_distance_p = (rx + 0.5*deltaRFDGPU*dRand[offset+i]) - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
       rx_distance_p = rx_distance_p - int(rx_distance_p*invlxGPU + 0.5*((rx_distance_p>0)-(rx_distance_p<0)))*lxGPU;
-      rx_distance_m = (rx - 0.5*deltaRFDGPU*dRand[4*nModes+i]) - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
+      rx_distance_m = (rx - 0.5*deltaRFDGPU*dRand[offset+i]) - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
       rx_distance_m = rx_distance_m - int(rx_distance_m*invlxGPU + 0.5*((rx_distance_m>0)-(rx_distance_m<0)))*lxGPU;
 
       for(int iy=-kernelWidthGPU; iy<=kernelWidthGPU; iy++){
 	ky_neigh = (ky + iy + myGPU) % myGPU;
 	icel_neigh = kx_neigh + ky_neigh * mxGPU;
 
-	ry_distance_p = (ry + 0.5*deltaRFDGPU*dRand[4*nModes+npGPU+i]) - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
+	ry_distance_p = (ry + 0.5*deltaRFDGPU*dRand[offset+npGPU+i]) - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
 	ry_distance_p = ry_distance_p - int(ry_distance_p*invlyGPU + 0.5*((ry_distance_p>0)-(ry_distance_p<0)))*lyGPU;
-	ry_distance_m = (ry - 0.5*deltaRFDGPU*dRand[4*nModes+npGPU+i]) - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
+	ry_distance_m = (ry - 0.5*deltaRFDGPU*dRand[offset+npGPU+i]) - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
 	ry_distance_m = ry_distance_m - int(ry_distance_m*invlyGPU + 0.5*((ry_distance_m>0)-(ry_distance_m<0)))*lyGPU;
 
 	// Spread drift kT*S(q+0.5*delta*W)*W
 	r2 = rx_distance_p*rx_distance_p + ry_distance_p*ry_distance_p;
 	norm = GaussianKernel2DGPU(r2, GaussianVarianceGPU) * temperatureGPU / deltaRFDGPU;
 
-	atomicAdd(&vxZ[icel_neigh].x, norm * dRand[4*nModes + i]);
-	atomicAdd(&vyZ[icel_neigh].x, norm * dRand[4*nModes + npGPU + i]);
+	atomicAdd(&vxZ[icel_neigh].x, norm * dRand[offset + i]);
+	atomicAdd(&vyZ[icel_neigh].x, norm * dRand[offset + npGPU + i]);
 
 	// Spread drift -kT*S(q-0.5*delta*W)*W
 	r2 = rx_distance_m*rx_distance_m + ry_distance_m*ry_distance_m;
 	norm = GaussianKernel2DGPU(r2, GaussianVarianceGPU) * temperatureGPU / deltaRFDGPU;
 
-	atomicAdd(&vxZ[icel_neigh].x, -norm * dRand[4*nModes + i]);
-	atomicAdd(&vyZ[icel_neigh].x, -norm * dRand[4*nModes + npGPU + i]);
+	atomicAdd(&vxZ[icel_neigh].x, -norm * dRand[offset + i]);
+	atomicAdd(&vyZ[icel_neigh].x, -norm * dRand[offset + npGPU + i]);
       }
     }
   } 
@@ -509,7 +513,11 @@ __global__ void addStochasticVelocityQuasi2D(cufftDoubleComplex *vxZ, cufftDoubl
 }
 
 
-__global__ void addStochasticVelocityRPYQuasi2D(cufftDoubleComplex *vxZ, cufftDoubleComplex *vyZ, const double *dRand){
+__global__ void addStochasticVelocityRPYQuasi2D(cufftDoubleComplex *vxZ, 
+						cufftDoubleComplex *vyZ, 
+						const double *dRand, 
+						const double factorScheme,
+						const bool secondNoise){
 
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if(i>=ncellsGPU) return;   
@@ -545,7 +553,7 @@ __global__ void addStochasticVelocityRPYQuasi2D(cufftDoubleComplex *vxZ, cufftDo
   double k = sqrt(kx*kx + ky*ky);
   double k3half_inv = rsqrt(k * k * k);
   cufftDoubleComplex Wx, Wy;
-  double prefactor = fact1GPU;
+  double prefactor = fact1GPU * factorScheme;
 
   double f_half, g_half;
   double sigma = sqrt(GaussianVarianceGPU);
@@ -564,9 +572,16 @@ __global__ void addStochasticVelocityRPYQuasi2D(cufftDoubleComplex *vxZ, cufftDo
 
     Wx.x = prefactor * k3half_inv * (g_half *   ky  * dRand[           index] + f_half * kx * dRand[nModes   + index]);
     Wy.x = prefactor * k3half_inv * (g_half * (-kx) * dRand[           index] + f_half * ky * dRand[nModes   + index]);
-  
     Wx.y = prefactor * k3half_inv * (g_half *   ky  * dRand[nModes*2 + index] + f_half * kx * dRand[nModes*3 + index]);
     Wy.y = prefactor * k3half_inv * (g_half * (-kx) * dRand[nModes*2 + index] + f_half * ky * dRand[nModes*3 + index]); 
+    
+    if(secondNoise){
+      Wx.x += prefactor * k3half_inv * (g_half *   ky  * dRand[nModes*4 + index] + f_half * kx * dRand[nModes*5 + index]);
+      Wy.x += prefactor * k3half_inv * (g_half * (-kx) * dRand[nModes*4 + index] + f_half * ky * dRand[nModes*5 + index]);
+      Wx.y += prefactor * k3half_inv * (g_half *   ky  * dRand[nModes*6 + index] + f_half * kx * dRand[nModes*7 + index]);
+      Wy.y += prefactor * k3half_inv * (g_half * (-kx) * dRand[nModes*6 + index] + f_half * ky * dRand[nModes*7 + index]); 
+    }
+
   }
 
   if((fx < 0) or (fx == 0 and fy < 0)){
