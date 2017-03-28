@@ -65,6 +65,7 @@ EXTERN_GLOBAL string fileCheckVelocity;
 EXTERN_GLOBAL bool setSaveVTK;
 EXTERN_GLOBAL bool computeNonBondedForces;
 EXTERN_GLOBAL double hydrodynamicRadius;
+EXTERN_GLOBAL int nDrift;
 
 bool loadDataMain(int argc, char* argv[]);
 bool writeDataMain();

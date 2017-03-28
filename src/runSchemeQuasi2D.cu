@@ -18,7 +18,7 @@
 // along with Fluam. If not, see <http://www.gnu.org/licenses/>.
 
 
-bool runSchemeQuasi2(){
+bool runSchemeQuasi2D(){
   int threadsPerBlock = 512;
   if((ncells/threadsPerBlock) < 512) threadsPerBlock = 256;
   if((ncells/threadsPerBlock) < 256) threadsPerBlock = 128;
@@ -54,7 +54,7 @@ bool runSchemeQuasi2(){
   step = -numstepsRelaxation;
 
   // Initialize random numbers
-  size_t numberRandom = 4 * (ncells + mx + my) + 2 * np;
+  size_t numberRandom = 4 * (ncells + mx + my) + 2 * np * nDrift;
   if (numberRandom % 2){
     numberRandom += 1;
   }
@@ -240,6 +240,7 @@ bool runSchemeQuasi2(){
 
 
 bool runSchemeQuasi2D_twoStokesSolve(){
+// bool runSchemeQuasi2D(){
   int threadsPerBlock = 512;
   if((ncells/threadsPerBlock) < 512) threadsPerBlock = 256;
   if((ncells/threadsPerBlock) < 256) threadsPerBlock = 128;
@@ -350,6 +351,16 @@ bool runSchemeQuasi2D_twoStokesSolve(){
 										       vyZ,
 										       bFV);
 
+    // Spread thermal drift
+    kernelSpreadThermalDriftQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
+										     rycellGPU,
+										     vxZ,
+										     vyZ,
+										     dRand,
+										     rxboundaryGPU,
+										     ryboundaryGPU,
+										     8 * (ncells + mx + my));
+
     // Transform force density field to Fourier space
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_FORWARD);
     cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_FORWARD);
@@ -414,8 +425,8 @@ bool runSchemeQuasi2D_twoStokesSolve(){
 										     vxZ,
 										     vyZ,
 										     dRand,
-										     rxboundaryGPU,
-										     ryboundaryGPU,
+										     rxboundaryPredictionGPU,
+										     ryboundaryPredictionGPU,
 										     8 * (ncells + mx + my));
 
     // Transform force density field to Fourier space

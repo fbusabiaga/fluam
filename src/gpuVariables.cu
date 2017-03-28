@@ -363,5 +363,5 @@ double *ryFixedPointGPU;
 double *rzFixedPointGPU;
 __constant__ bool particlesWallGPU;
 __constant__ bool computeNonBondedForcesGPU;
-__constant__ int kernelWidthGPU;
+__constant__ int kernelWidthGPU, nDriftGPU;
 __constant__ double GaussianVarianceGPU, deltaRFDGPU;

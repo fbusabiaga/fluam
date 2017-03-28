@@ -65,6 +65,7 @@ bool createCellsQuasi2DGPU(){
   cutilSafeCall(cudaMemcpyToSymbol(kernelWidthGPU,&kernelWidth,sizeof(int)));
   double deltaRFD = 1e-05 * hydrodynamicRadius;
   cutilSafeCall(cudaMemcpyToSymbol(deltaRFDGPU,&deltaRFD,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(nDriftGPU,&nDrift,sizeof(int)));
 
   cutilSafeCall(cudaMalloc((void**)&vxGPU,ncells*sizeof(double)));
   cutilSafeCall(cudaMalloc((void**)&vyGPU,ncells*sizeof(double)));

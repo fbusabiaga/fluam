@@ -127,6 +127,7 @@ const string wquasiNeutrallyBuoyant4pt2D="quasiNeutrallyBuoyant4pt2D";
 //quasi2D Begins
 const string wquasi2D="quasi2D";
 const string whydrodynamicRadius="hydrodynamicRadius";
+const string wnDrift="nDrift";
 //quasi2D Ends
 //IMEX-RK Begins
 const string wIMEXRK="IMEXRK";
@@ -245,6 +246,7 @@ bool loadDataMain(int argc, char* argv[]){
   //quasi2D Begins
   quasi2D = 0;
   hydrodynamicRadius = 1.0;
+  nDrift = 1;
   //quasi2D Ends
 
   //particlesWall Begins
@@ -534,6 +536,9 @@ bool loadDataMain(int argc, char* argv[]){
     }
     else if(word == whydrodynamicRadius){
       fileinput >> hydrodynamicRadius;
+    }
+    else if(word == wnDrift){
+      fileinput >> nDrift;
     }
     //quasi2D Ends
     //IMEXRK Begins
