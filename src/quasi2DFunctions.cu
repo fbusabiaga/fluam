@@ -66,6 +66,40 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
   // fz = -0.01*rz;
 
 
+  // for(int particle=npGPU;particle<npGPU;particle++){
+  //   if(i==particle) continue;
+
+  //   double rxij =  (rx - fetch_double(texrxboundaryGPU,particle));
+  //   rxij =  (rxij - int(rxij*invlxGPU + 0.5*((rxij>0)-(rxij<0)))*lxGPU);
+  //   double ryij =  (ry - fetch_double(texryboundaryGPU,particle));
+  //   ryij =  (ryij - int(ryij*invlyGPU + 0.5*((ryij>0)-(ryij<0)))*lyGPU);
+  //   double r2 = rxij*rxij + ryij*ryij ;
+    
+  //   double pi = 3.1415926535897932385;
+  //   double pi_half = sqrt(pi);
+  //   double sigma = sqrt(GaussianVarianceGPU);
+  //   double r = sqrt(r2);
+  //   double r_normalized = r / sigma;
+    
+  //   f = (1.0 / (6 * pi * shearviscosityGPU * pi_half * sigma)) * 
+  //     temperatureGPU * 0.125 * (pi * erf(0.5 * r_normalized) * r2 + 6.0 * pi_half * sigma * exp(-0.25 * r_normalized * r_normalized) * r -
+  //   				6 * erf(0.5 * r_normalized) * pi * GaussianVarianceGPU) / (r2 * r2 * r * pi * pi);
+    
+  //   // if(r < 2){
+  //   //   f = 3.0 / (32.0 * (r+1e-18));
+  //   // }
+  //   // else{
+  //   //   f = 0.75 * (r2 - 2) / (r2 * r2 * r);
+  //   // }
+  //   // f = (1.0 / (6 * pi * shearviscosityGPU * pi_half * sigma)) * f;
+
+  //   fx += f * rxij;
+  //   fy += f * ryij;    
+    
+  //   }
+
+
+
   // NEW bonded forces
   if(bondedForcesGPU){
     // call function for bonded forces particle-particle
@@ -307,8 +341,49 @@ __global__ void kernelSpreadThermalDriftQuasi2D(const double* rxcellGPU,
 
 
   // Loop over neighbor cells
-  for(int iDrift=0; iDrift < nDriftGPU; iDrift++){
-    int offsetDrift = offset + 2 * npGPU * iDrift;
+  // for(int iDrift=0; iDrift < nDriftGPU; iDrift++){
+  //   int offsetDrift = offset + 2 * npGPU * iDrift;
+  //   double rx_distance_p, ry_distance_p, rx_distance_m, ry_distance_m;
+  //   double norm;
+  //   int kx, ky, kx_neigh, ky_neigh, icel_neigh;
+  //   ky = icel / mxGPU;
+  //   kx = icel % mxGPU;
+  //   for(int ix=-kernelWidthGPU; ix<=kernelWidthGPU; ix++){
+  //     kx_neigh = (kx + ix + mxGPU) % mxGPU;
+
+  //     rx_distance_p = (rx + 0.5*deltaRFDGPU*dRand[offsetDrift+i]) - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
+  //     rx_distance_p = rx_distance_p - int(rx_distance_p*invlxGPU + 0.5*((rx_distance_p>0)-(rx_distance_p<0)))*lxGPU;
+  //     rx_distance_m = (rx - 0.5*deltaRFDGPU*dRand[offsetDrift+i]) - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
+  //     rx_distance_m = rx_distance_m - int(rx_distance_m*invlxGPU + 0.5*((rx_distance_m>0)-(rx_distance_m<0)))*lxGPU;
+
+  //     for(int iy=-kernelWidthGPU; iy<=kernelWidthGPU; iy++){
+  // 	ky_neigh = (ky + iy + myGPU) % myGPU;
+  // 	icel_neigh = kx_neigh + ky_neigh * mxGPU;
+
+  // 	ry_distance_p = (ry + 0.5*deltaRFDGPU*dRand[offsetDrift+npGPU+i]) - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
+  // 	ry_distance_p = ry_distance_p - int(ry_distance_p*invlyGPU + 0.5*((ry_distance_p>0)-(ry_distance_p<0)))*lyGPU;
+  // 	ry_distance_m = (ry - 0.5*deltaRFDGPU*dRand[offsetDrift+npGPU+i]) - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
+  // 	ry_distance_m = ry_distance_m - int(ry_distance_m*invlyGPU + 0.5*((ry_distance_m>0)-(ry_distance_m<0)))*lyGPU;
+
+  // 	// Spread drift kT*S(q+0.5*delta*W)*W
+  // 	r2 = rx_distance_p*rx_distance_p + ry_distance_p*ry_distance_p;
+  // 	norm = GaussianKernel2DGPU(r2, GaussianVarianceGPU) * temperatureGPU / (nDriftGPU * deltaRFDGPU);
+
+  // 	atomicAdd(&vxZ[icel_neigh].x, norm * dRand[offsetDrift + i]);
+  // 	atomicAdd(&vyZ[icel_neigh].x, norm * dRand[offsetDrift + npGPU + i]);
+	
+  // 	// Spread drift -kT*S(q-0.5*delta*W)*W
+  // 	r2 = rx_distance_m*rx_distance_m + ry_distance_m*ry_distance_m;
+  // 	norm = GaussianKernel2DGPU(r2, GaussianVarianceGPU) * temperatureGPU / (nDriftGPU * deltaRFDGPU);
+	
+  // 	atomicAdd(&vxZ[icel_neigh].x, -norm * dRand[offsetDrift + i]);
+  // 	atomicAdd(&vyZ[icel_neigh].x, -norm * dRand[offsetDrift + npGPU + i]);       
+  //     }
+  //   }
+  // } 
+
+
+  { // Deterministic spreading
     double rx_distance_p, ry_distance_p, rx_distance_m, ry_distance_m;
     double norm;
     int kx, ky, kx_neigh, ky_neigh, icel_neigh;
@@ -317,36 +392,25 @@ __global__ void kernelSpreadThermalDriftQuasi2D(const double* rxcellGPU,
     for(int ix=-kernelWidthGPU; ix<=kernelWidthGPU; ix++){
       kx_neigh = (kx + ix + mxGPU) % mxGPU;
 
-      rx_distance_p = (rx + 0.5*deltaRFDGPU*dRand[offsetDrift+i]) - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
+      rx_distance_p = rx  - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
       rx_distance_p = rx_distance_p - int(rx_distance_p*invlxGPU + 0.5*((rx_distance_p>0)-(rx_distance_p<0)))*lxGPU;
-      rx_distance_m = (rx - 0.5*deltaRFDGPU*dRand[offsetDrift+i]) - (kx_neigh * lxGPU / mxGPU) + lxGPU * 0.5;
-      rx_distance_m = rx_distance_m - int(rx_distance_m*invlxGPU + 0.5*((rx_distance_m>0)-(rx_distance_m<0)))*lxGPU;
 
       for(int iy=-kernelWidthGPU; iy<=kernelWidthGPU; iy++){
-	ky_neigh = (ky + iy + myGPU) % myGPU;
-	icel_neigh = kx_neigh + ky_neigh * mxGPU;
+  	ky_neigh = (ky + iy + myGPU) % myGPU;
+  	icel_neigh = kx_neigh + ky_neigh * mxGPU;
 
-	ry_distance_p = (ry + 0.5*deltaRFDGPU*dRand[offsetDrift+npGPU+i]) - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
-	ry_distance_p = ry_distance_p - int(ry_distance_p*invlyGPU + 0.5*((ry_distance_p>0)-(ry_distance_p<0)))*lyGPU;
-	ry_distance_m = (ry - 0.5*deltaRFDGPU*dRand[offsetDrift+npGPU+i]) - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
-	ry_distance_m = ry_distance_m - int(ry_distance_m*invlyGPU + 0.5*((ry_distance_m>0)-(ry_distance_m<0)))*lyGPU;
+  	ry_distance_p = ry - (ky_neigh * lyGPU / myGPU) + lyGPU * 0.5;
+  	ry_distance_p = ry_distance_p - int(ry_distance_p*invlyGPU + 0.5*((ry_distance_p>0)-(ry_distance_p<0)))*lyGPU;
 
-	// Spread drift kT*S(q+0.5*delta*W)*W
-	r2 = rx_distance_p*rx_distance_p + ry_distance_p*ry_distance_p;
-	norm = GaussianKernel2DGPU(r2, GaussianVarianceGPU) * temperatureGPU / (nDriftGPU * deltaRFDGPU);
-
-	atomicAdd(&vxZ[icel_neigh].x, norm * dRand[offsetDrift + i]);
-	atomicAdd(&vyZ[icel_neigh].x, norm * dRand[offsetDrift + npGPU + i]);
-
-	// Spread drift -kT*S(q-0.5*delta*W)*W
-	r2 = rx_distance_m*rx_distance_m + ry_distance_m*ry_distance_m;
-	norm = GaussianKernel2DGPU(r2, GaussianVarianceGPU) * temperatureGPU / deltaRFDGPU;
-
-	atomicAdd(&vxZ[icel_neigh].x, -norm * dRand[offsetDrift + i]);
-	atomicAdd(&vyZ[icel_neigh].x, -norm * dRand[offsetDrift + npGPU + i]);
+  	// Spread drift 
+  	r2 = rx_distance_p*rx_distance_p + ry_distance_p*ry_distance_p;
+  	norm = GaussianKernel2DGPU(r2, GaussianVarianceGPU) * temperatureGPU / GaussianVarianceGPU;
+	
+  	atomicAdd(&vxZ[icel_neigh].x, -norm * rx_distance_p);
+  	atomicAdd(&vyZ[icel_neigh].x, -norm * ry_distance_p);
       }
     }
-  } 
+  }
 }
 
 
