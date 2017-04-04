@@ -66,40 +66,6 @@ __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU,
   // fz = -0.01*rz;
 
 
-  // for(int particle=npGPU;particle<npGPU;particle++){
-  //   if(i==particle) continue;
-
-  //   double rxij =  (rx - fetch_double(texrxboundaryGPU,particle));
-  //   rxij =  (rxij - int(rxij*invlxGPU + 0.5*((rxij>0)-(rxij<0)))*lxGPU);
-  //   double ryij =  (ry - fetch_double(texryboundaryGPU,particle));
-  //   ryij =  (ryij - int(ryij*invlyGPU + 0.5*((ryij>0)-(ryij<0)))*lyGPU);
-  //   double r2 = rxij*rxij + ryij*ryij ;
-    
-  //   double pi = 3.1415926535897932385;
-  //   double pi_half = sqrt(pi);
-  //   double sigma = sqrt(GaussianVarianceGPU);
-  //   double r = sqrt(r2);
-  //   double r_normalized = r / sigma;
-    
-  //   f = (1.0 / (6 * pi * shearviscosityGPU * pi_half * sigma)) * 
-  //     temperatureGPU * 0.125 * (pi * erf(0.5 * r_normalized) * r2 + 6.0 * pi_half * sigma * exp(-0.25 * r_normalized * r_normalized) * r -
-  //   				6 * erf(0.5 * r_normalized) * pi * GaussianVarianceGPU) / (r2 * r2 * r * pi * pi);
-    
-  //   // if(r < 2){
-  //   //   f = 3.0 / (32.0 * (r+1e-18));
-  //   // }
-  //   // else{
-  //   //   f = 0.75 * (r2 - 2) / (r2 * r2 * r);
-  //   // }
-  //   // f = (1.0 / (6 * pi * shearviscosityGPU * pi_half * sigma)) * f;
-
-  //   fx += f * rxij;
-  //   fy += f * ryij;    
-    
-  //   }
-
-
-
   // NEW bonded forces
   if(bondedForcesGPU){
     // call function for bonded forces particle-particle
@@ -639,7 +605,7 @@ __global__ void addStochasticVelocityRPYQuasi2D(cufftDoubleComplex *vxZ,
     Wy.x = prefactor * k3half_inv * (g_half * (-kx) * dRand[           index] + f_half * ky * dRand[nModes   + index]);
     Wx.y = prefactor * k3half_inv * (g_half *   ky  * dRand[nModes*2 + index] + f_half * kx * dRand[nModes*3 + index]);
     Wy.y = prefactor * k3half_inv * (g_half * (-kx) * dRand[nModes*2 + index] + f_half * ky * dRand[nModes*3 + index]); 
-    
+
     if(secondNoise){
       Wx.x += prefactor * k3half_inv * (g_half *   ky  * dRand[nModes*4 + index] + f_half * kx * dRand[nModes*5 + index]);
       Wy.x += prefactor * k3half_inv * (g_half * (-kx) * dRand[nModes*4 + index] + f_half * ky * dRand[nModes*5 + index]);
@@ -798,6 +764,74 @@ __global__ void kernelUpdateVIncompressibleSpectral2D(cufftDoubleComplex *vxZ,
     vyZ[i].x = (WyZ[i].x + ky * GW.x / L) / denominator;
     vyZ[i].y = (WyZ[i].y + ky * GW.y / L) / denominator;
   }
+}
+
+
+
+__global__ void addStochasticVelocitySpectral2D(cufftDoubleComplex *vxZ, cufftDoubleComplex *vyZ, const double *dRand){
+
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=ncellsGPU) return;   
+
+  //Find mode
+  int wx, wy, fx, fy, shift;
+  int nModes = (ncellsGPU + mxGPU + myGPU);
+  wy = i / mxGPU;
+  wx = i % mxGPU;
+  fx = wx;
+  fy = wy;
+  shift = 0;
+
+  if(wx > mxGPU / 2){
+    fx = wx - mxGPU;
+    wx = mxGPU - wx;
+  }
+  if(wy > myGPU / 2){
+    fy = wy - myGPU;
+    wy = myGPU - wy;
+  }
+
+  double pi = 3.1415926535897932385;
+  double kx = wx * 2 * pi / lxGPU;
+  double ky = wy * 2 * pi / lyGPU;
+  if(fx * fy < 0){
+    shift = nModes / 2;
+    kx *= -1.0;
+  }
+
+  int index = wy * mxGPU + wx + shift;
+  double k2_inv = 1.0 / (kx*kx + ky*ky);
+  cufftDoubleComplex Wx, Wy;
+  double prefactor = fact1GPU * rsqrt(2.0);
+  // double prefactor = fact1GPU;
+
+  if(((mxGPU % 2) == 0 && (wx == mxGPU / 2)) || ((myGPU % 2) == 0 && (wy == myGPU / 2)) || (i == 0)){
+    Wx.x = 0;
+    Wx.y = 0;
+    Wy.x = 0;
+    Wy.y = 0;
+  }
+  else{
+    Wx.x = prefactor * k2_inv * (ky    * dRand[           index]);
+    Wy.x = prefactor * k2_inv * ((-kx) * dRand[           index]);   
+    Wx.y = prefactor * k2_inv * (ky    * dRand[nModes*2 + index]);
+    Wy.y = prefactor * k2_inv * ((-kx) * dRand[nModes*2 + index]);
+
+    // Wx.x = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[           index] + 0.5 * kx * dRand[nModes   + index]);
+    // Wy.x = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[           index] + 0.5 * ky * dRand[nModes   + index]);
+    // Wx.y = prefactor * k3half_inv * (sqrtTwo_inv *   ky  * dRand[nModes*2 + index] + 0.5 * kx * dRand[nModes*3 + index]);
+    // Wy.y = prefactor * k3half_inv * (sqrtTwo_inv * (-kx) * dRand[nModes*2 + index] + 0.5 * ky * dRand[nModes*3 + index]); 
+  }
+
+  if((fx < 0) or (fx == 0 and fy < 0)){
+    Wx.y *= -1.0;
+    Wy.y *= -1.0;
+  }
+
+  vxZ[i].x += Wx.x;
+  vxZ[i].y += Wx.y;
+  vyZ[i].x += Wy.x;
+  vyZ[i].y += Wy.y;
 }
 
 

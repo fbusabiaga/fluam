@@ -155,6 +155,7 @@ bool runSchemeQuasi2D(){
 
     // Add stochastic velocity
     addStochasticVelocityRPYQuasi2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ,dRand,1.0,0);
+    // addStochasticVelocitySpectral2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ,dRand);
 
     // Transform velocity field to real space
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_INVERSE);

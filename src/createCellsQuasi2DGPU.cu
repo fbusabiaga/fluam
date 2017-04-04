@@ -46,12 +46,10 @@ bool createCellsQuasi2DGPU(){
   // Radius and kernel
   // For 3D
   // double GaussianVariance = pow(hydrodynamicRadius / (1.0 * sqrt(3.1415926535897932385)), 2);
-  // int kernelWidth = int(3.0 * hydrodynamicRadius * mx / lx) + 1;
   // For 2D
-  // double GaussianVariance = pow(hydrodynamicRadius * 0.6523, 2);
+  // double GaussianVariance = pow(hydrodynamicRadius * 0.66556976637237890625, 2);
   // For quasi-2D disks
   // double GaussianVariance = pow(hydrodynamicRadius * 9.0*sqrt(3.1415926535897932385)/16.0, 2);
-  // int kernelWidth = int(5.0 * hydrodynamicRadius * mx / lx) + 1;
   // For quasi-2D spheres
   double GaussianVariance = pow(hydrodynamicRadius / sqrt(3.1415926535897932385), 2);
   int kernelWidth = int(3.0 * hydrodynamicRadius * mx / lx) + 1;
