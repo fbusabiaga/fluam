@@ -802,8 +802,7 @@ __global__ void addStochasticVelocitySpectral2D(cufftDoubleComplex *vxZ, cufftDo
   int index = wy * mxGPU + wx + shift;
   double k2_inv = 1.0 / (kx*kx + ky*ky);
   cufftDoubleComplex Wx, Wy;
-  double prefactor = fact1GPU * rsqrt(2.0);
-  // double prefactor = fact1GPU;
+  double prefactor = fact1GPU;
 
   if(((mxGPU % 2) == 0 && (wx == mxGPU / 2)) || ((myGPU % 2) == 0 && (wy == myGPU / 2)) || (i == 0)){
     Wx.x = 0;
