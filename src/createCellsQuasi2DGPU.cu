@@ -44,16 +44,21 @@ bool createCellsQuasi2DGPU(){
   cutilSafeCall(cudaMemcpyToSymbol(densfluidGPU,&densfluid,sizeof(double)));
 
   // Radius and kernel
+  double GaussianVariance;
   // For 3D
   // double GaussianVariance = pow(hydrodynamicRadius / (1.0 * sqrt(3.1415926535897932385)), 2);
   // For 2D
-  // double GaussianVariance = pow(hydrodynamicRadius * 0.66556976637237890625, 2);
+  if(stokesLimit2D){
+    GaussianVariance = pow(hydrodynamicRadius * 0.66556976637237890625, 2);
+  }
   // For quasi-2D disks
   // double GaussianVariance = pow(hydrodynamicRadius * 9.0*sqrt(3.1415926535897932385)/16.0, 2);
   // For quasi-2D spheres
-  double GaussianVariance = pow(hydrodynamicRadius / sqrt(3.1415926535897932385), 2);
+  if(quasi2D){
+    GaussianVariance = pow(hydrodynamicRadius / sqrt(3.1415926535897932385), 2);
+  }
+  
   int kernelWidth = int(3.0 * hydrodynamicRadius * mx / lx) + 1;
-
   cutilSafeCall(cudaMemcpyToSymbol(GaussianVarianceGPU,&GaussianVariance,sizeof(double)));
   if (kernelWidth > mx/2){
     kernelWidth = mx/2;
@@ -73,7 +78,7 @@ bool createCellsQuasi2DGPU(){
   cutilSafeCall(cudaMalloc((void**)&rycellGPU,ncells*sizeof(double)));
   cutilSafeCall(cudaMalloc((void**)&rzcellGPU,ncells*sizeof(double)));
 
-  // FACT1 for quasi-2D
+  // FACT1 for quasi-2D or stokesLimit2D
   double fact1 = sqrt(1.0 * temperature  / (shearviscosity * dt * lx * ly)) * ncells;
   cutilSafeCall(cudaMemcpyToSymbol(fact1GPU,&fact1,sizeof(double)));
 

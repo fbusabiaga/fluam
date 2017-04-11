@@ -96,7 +96,12 @@ bool runSchemeQuasi2D(){
 
   while(step<numsteps){
     if(!(step%samplefreq)&&(step>=0)){
-      cout << "Quasi 2D " << step << endl;
+      if(quasi2D){
+	cout << "Quasi 2D " << step << endl;
+      }
+      else if(stokesLimit2D){
+	cout << "stokesLimit 2D " << step << endl;
+      }
       if(!gpuToHostStokesLimit()) return 0;
       if(!saveFunctionsSchemeStokesLimit(1,step)) return 0;
     }
@@ -144,18 +149,18 @@ bool runSchemeQuasi2D(){
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_FORWARD);
     cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_FORWARD);
 
-    // Compute deterministic fluid velocity
-    kernelUpdateVRPYQuasi2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ);
-    /*{
-      kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,-1);
-      kernelUpdateVIncompressibleStokes2D<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxZ,vyZ,vzZ,pF); 
-      kernelShift<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,pF,1);
-      }*/
-    // kernelUpdateVIncompressibleSpectral2D<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxZ,vyZ,vzZ,pF); 
-
-    // Add stochastic velocity
-    addStochasticVelocityRPYQuasi2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ,dRand,1.0,0);
-    // addStochasticVelocitySpectral2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ,dRand);
+    if(quasi2D){
+      // Compute deterministic fluid velocity
+      kernelUpdateVRPYQuasi2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ);
+      // Add stochastic velocity
+      addStochasticVelocityRPYQuasi2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ,dRand,1.0,0);
+    }
+    else if(stokesLimit2D){
+      // Compute deterministic fluid velocity
+      kernelUpdateVIncompressibleSpectral2D<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxZ,vyZ,vzZ,pF); 
+      // Add stochastic velocity
+      addStochasticVelocitySpectral2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ,dRand);
+    }
 
     // Transform velocity field to real space
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_INVERSE);
@@ -467,7 +472,12 @@ bool runSchemeQuasi2D_twoStokesSolve(){
   }
 
   if(!(step%samplefreq)&&(step>0)){
-    cout << "Quasi 2D " << step << endl;
+    if(quasi2D){
+      cout << "Quasi 2D " << step << endl;
+    }
+    else if(stokesLimit2D){
+      cout << "stokesLimit 2D " << step << endl;
+    }
     if(!gpuToHostStokesLimit()) return 0;
     if(!saveFunctionsSchemeStokesLimit(1,step)) return 0;
   }

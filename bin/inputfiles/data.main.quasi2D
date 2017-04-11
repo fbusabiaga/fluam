@@ -3,10 +3,9 @@
 # setDevice 0
 
 # Chose scheme
-# thermostat
-# freeEnergyCompressibleParticles
-# quasiNeutrallyBuoyant2D
+# quasi2D or stokesLimit2D for strictly 2D hydrodynamics
 quasi2D
+# stokesLimit2D
 particles		1
 
 # Number of particles

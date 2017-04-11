@@ -88,7 +88,7 @@ int main(int argc, char* argv[]){
   else if(quasiNeutrallyBuoyant4pt2D){
     if(!schemeQuasiNeutrallyBuoyant4pt2D()) return 0;
   }
-  else if(quasi2D){
+  else if(quasi2D or stokesLimit2D){
     if(!schemeQuasi2D()) return 0;
   }
   else if(stokesLimitFirstOrder==1){

@@ -81,6 +81,7 @@ EXTERN_OTHER_FLUID_V bool quasiNeutrallyBuoyant4pt2D;
 
 //quasi2D Begins
 EXTERN_OTHER_FLUID_V bool quasi2D;
+EXTERN_OTHER_FLUID_V bool stokesLimit2D;
 //quasi2D Ends
 
 //IMEXRK Begins
