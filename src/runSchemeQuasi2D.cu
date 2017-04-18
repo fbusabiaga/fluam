@@ -115,24 +115,26 @@ bool runSchemeQuasi2D(){
     // Set field to zero
     setFieldToZeroInput<<<numBlocks, threadsPerBlock>>>(vxZ, vyZ, vzZ);
 
-    // Fill neighbor lists
-    findNeighborListsQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>
-      (pc, 
-       errorKernel,
-       rxcellGPU,
-       rycellGPU,
-       rzcellGPU,
-       rxboundaryGPU,  // q^{n}
-       ryboundaryGPU, 
-       rzboundaryGPU);
-
-    // Compute and Spread forces 
-    // f = S*F
-    kernelSpreadParticlesForceQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
-										       rycellGPU,
-										       vxZ,
-										       vyZ,
-										       bFV);    
+    if(computeNonBondedForces){
+      // Fill neighbor lists
+      findNeighborListsQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>
+	(pc, 
+	 errorKernel,
+	 rxcellGPU,
+	 rycellGPU,
+	 rzcellGPU,
+	 rxboundaryGPU,  // q^{n}
+	 ryboundaryGPU, 
+	 rzboundaryGPU);
+    
+      // Compute and Spread forces 
+      // f = S*F
+      kernelSpreadParticlesForceQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
+											 rycellGPU,
+											 vxZ,
+											 vyZ,
+											 bFV);    
+    }
 
     // Spread thermal drift
     kernelSpreadThermalDriftQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,

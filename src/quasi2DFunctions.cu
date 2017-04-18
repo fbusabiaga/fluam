@@ -32,8 +32,6 @@ __global__ void findNeighborListsQuasi2D(particlesincell* pc,
     return;
   }
   pc->partInCellNonBonded[mNeighborsGPU*np+icel] = i;
-
-  // printf("np = %i,  icel = %i \n", np, icel);
 }
 
 
