@@ -170,46 +170,48 @@ bool runSchemeQuasi2D(){
     doubleComplexToDoubleNormalized<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ,vzZ,vxGPU,vyGPU,vzGPU);
 
     // Update particles half-time step
-    updateParticlesQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>
-      (pc, 
-       errorKernel,
-       rxcellGPU,
-       rycellGPU,
-       rxboundaryGPU,  // q^{} to interpolate
-       ryboundaryGPU, 
-       rxboundaryPredictionGPU,  // q^{updated}
-       ryboundaryPredictionGPU, 
-       vxGPU,
-       vyGPU,
-       0.5 * dt);    
-    
-    // Update particles one time step
-    updateParticlesQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>
-      (pc, 
-       errorKernel,
-       rxcellGPU,
-       rycellGPU,
-       rxboundaryPredictionGPU,  // q^{} to interpolate
-       ryboundaryPredictionGPU, 
-       rxboundaryGPU,  // q^{updated}
-       ryboundaryGPU, 
-       vxGPU,
-       vyGPU,
-       dt);
-    /*{// Forward Euler
+    if(predictorCorrector){
       updateParticlesQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>
-      (pc, 
-       errorKernel,
-       rxcellGPU,
-       rycellGPU,
-       rxboundaryGPU,  // q^{} to interpolate
-       ryboundaryGPU, 
-       rxboundaryGPU,  // q^{updated}
-       ryboundaryGPU, 
-       vxGPU,
-       vyGPU,
-       dt);    
-       }*/
+	(pc, 
+	 errorKernel,
+	 rxcellGPU,
+	 rycellGPU,
+	 rxboundaryGPU,  // q^{} to interpolate
+	 ryboundaryGPU, 
+	 rxboundaryPredictionGPU,  // q^{updated}
+	 ryboundaryPredictionGPU, 
+	 vxGPU,
+	 vyGPU,
+	 0.5 * dt);    
+      
+      // Update particles one time step
+      updateParticlesQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>
+	(pc, 
+	 errorKernel,
+	 rxcellGPU,
+	 rycellGPU,
+	 rxboundaryPredictionGPU,  // q^{} to interpolate
+	 ryboundaryPredictionGPU, 
+	 rxboundaryGPU,  // q^{updated}
+	 ryboundaryGPU, 
+	 vxGPU,
+	 vyGPU,
+	 dt);
+    }
+    else{// Forward Euler
+      updateParticlesQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>
+	(pc, 
+	 errorKernel,
+	 rxcellGPU,
+	 rycellGPU,
+	 rxboundaryGPU,  // q^{} to interpolate
+	 ryboundaryGPU, 
+	 rxboundaryGPU,  // q^{updated}
+	 ryboundaryGPU, 
+	 vxGPU,
+	 vyGPU,
+	 dt);    
+    }
 								    
     step++;
   }

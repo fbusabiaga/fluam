@@ -348,7 +348,7 @@ __global__ void kernelSpreadThermalDriftQuasi2D(const double* rxcellGPU,
 
 
   { // Deterministic spreading
-    double rx_distance_p, ry_distance_p, rx_distance_m, ry_distance_m;
+    double rx_distance_p, ry_distance_p;
     double norm;
     int kx, ky, kx_neigh, ky_neigh, icel_neigh;
     ky = icel / mxGPU;

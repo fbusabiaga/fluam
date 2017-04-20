@@ -129,6 +129,7 @@ const string wquasi2D="quasi2D";
 const string whydrodynamicRadius="hydrodynamicRadius";
 const string wnDrift="nDrift";
 const string wstokesLimit2D="stokesLimit2D";
+const string wpredictorCorrector="predictorCorrector";
 //quasi2D Ends
 //IMEX-RK Begins
 const string wIMEXRK="IMEXRK";
@@ -249,6 +250,7 @@ bool loadDataMain(int argc, char* argv[]){
   hydrodynamicRadius = 1.0;
   nDrift = 1;
   stokesLimit2D = 0;
+  predictorCorrector = 0;
   //quasi2D Ends
 
   //particlesWall Begins
@@ -544,6 +546,9 @@ bool loadDataMain(int argc, char* argv[]){
     }
     else if(word==wstokesLimit2D){
       stokesLimit2D=1;
+    }
+    else if(word==wpredictorCorrector){
+      fileinput >> predictorCorrector;
     }
     //quasi2D Ends
     //IMEXRK Begins

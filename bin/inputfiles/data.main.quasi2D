@@ -8,6 +8,12 @@ quasi2D
 # stokesLimit2D
 particles		1
 
+# Default integrator is Forward-Euler, to
+# use predictor-corrector as in Eq. 34-35
+# in Delong et al. 2014 (doi:10.1063/1.4869866)
+# set the next variable to 1
+predictorCorrector	0
+
 # Number of particles
 numberparticles		1304
 mass			0
