@@ -82,11 +82,11 @@ bool runSchemeQuasi2D(){
     numBlocksdim = (mz-1)/threadsPerBlockdim + 1;
   }
   initializePrefactorFourierSpace_1<<<1,1>>>(gradKx,
-					     gradKy,
-					     gradKz,
-					     expKx,
-					     expKy,
-					     expKz,pF);
+                                             gradKy,
+                                             gradKz,
+                                             expKx,
+                                             expKy,
+                                             expKz,pF);
   
   initializePrefactorFourierSpace_2<<<numBlocksdim,threadsPerBlockdim>>>(pF);
 
@@ -95,15 +95,28 @@ bool runSchemeQuasi2D(){
 
 
   while(step<numsteps){
-    if(!(step%samplefreq)&&(step>=0)){
-      if(quasi2D){
-	cout << "Quasi 2D " << step << endl;
-      }
-      else if(stokesLimit2D){
-	cout << "stokesLimit 2D " << step << endl;
-      }
+    if(((step % samplefreq == 0) or (step % sampleHydroGrid) or (step % savefreq)) and (step>=0)){
       if(!gpuToHostStokesLimit()) return 0;
-      if(!saveFunctionsSchemeStokesLimit(1,step)) return 0;
+      if(step % samplefreq == 0){
+        // Save particle positions
+        if(quasi2D){
+          cout << "Quasi 2D " << step << endl;
+        }
+        else if(stokesLimit2D){
+          cout << "stokesLimit 2D " << step << endl;
+        }
+        if(!saveFunctionsSchemeStokesLimit(1,step)) return 0;
+      }
+      if(step % sampleHydroGrid == 0){
+        // Update Hydrogrid
+        if(!saveFunctionsSchemeStokesLimit(3,step)) return 0;
+      }
+      if(savefreq > 0){
+        if(step % savefreq == 0){
+          // Save Hydrogrid
+          if(!saveFunctionsSchemeStokesLimit(4,step)) return 0;
+        }
+      }
     }
 
     // Generate random numbers
@@ -118,33 +131,33 @@ bool runSchemeQuasi2D(){
     if(computeNonBondedForces){
       // Fill neighbor lists
       findNeighborListsQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>
-	(pc, 
-	 errorKernel,
-	 rxcellGPU,
-	 rycellGPU,
-	 rzcellGPU,
-	 rxboundaryGPU,  // q^{n}
-	 ryboundaryGPU, 
-	 rzboundaryGPU);
+        (pc, 
+         errorKernel,
+         rxcellGPU,
+         rycellGPU,
+         rzcellGPU,
+         rxboundaryGPU,  // q^{n}
+         ryboundaryGPU, 
+         rzboundaryGPU);
     
       // Compute and Spread forces 
       // f = S*F
       kernelSpreadParticlesForceQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
-											 rycellGPU,
-											 vxZ,
-											 vyZ,
-											 bFV);    
+                                                                                         rycellGPU,
+                                                                                         vxZ,
+                                                                                         vyZ,
+                                                                                         bFV);    
     }
 
     // Spread thermal drift
     kernelSpreadThermalDriftQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
-										     rycellGPU,
-										     vxZ,
-										     vyZ,
-										     dRand,
-										     rxboundaryGPU,
-										     ryboundaryGPU,
-										     4 * (ncells + mx + my));
+                                                                                     rycellGPU,
+                                                                                     vxZ,
+                                                                                     vyZ,
+                                                                                     dRand,
+                                                                                     rxboundaryGPU,
+                                                                                     ryboundaryGPU,
+                                                                                     4 * (ncells + mx + my));
 
     // cout << endl;
     // Transform force density field to Fourier space
@@ -172,54 +185,70 @@ bool runSchemeQuasi2D(){
     // Update particles half-time step
     if(predictorCorrector){
       updateParticlesQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>
-	(pc, 
-	 errorKernel,
-	 rxcellGPU,
-	 rycellGPU,
-	 rxboundaryGPU,  // q^{} to interpolate
-	 ryboundaryGPU, 
-	 rxboundaryPredictionGPU,  // q^{updated}
-	 ryboundaryPredictionGPU, 
-	 vxGPU,
-	 vyGPU,
-	 0.5 * dt);    
+        (pc, 
+         errorKernel,
+         rxcellGPU,
+         rycellGPU,
+         rxboundaryGPU,  // q^{} to interpolate
+         ryboundaryGPU, 
+         rxboundaryPredictionGPU,  // q^{updated}
+         ryboundaryPredictionGPU, 
+         vxGPU,
+         vyGPU,
+         0.5 * dt);    
       
       // Update particles one time step
       updateParticlesQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>
-	(pc, 
-	 errorKernel,
-	 rxcellGPU,
-	 rycellGPU,
-	 rxboundaryPredictionGPU,  // q^{} to interpolate
-	 ryboundaryPredictionGPU, 
-	 rxboundaryGPU,  // q^{updated}
-	 ryboundaryGPU, 
-	 vxGPU,
-	 vyGPU,
-	 dt);
+        (pc, 
+         errorKernel,
+         rxcellGPU,
+         rycellGPU,
+         rxboundaryPredictionGPU,  // q^{} to interpolate
+         ryboundaryPredictionGPU, 
+         rxboundaryGPU,  // q^{updated}
+         ryboundaryGPU, 
+         vxGPU,
+         vyGPU,
+         dt);
     }
     else{// Forward Euler
       updateParticlesQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>
-	(pc, 
-	 errorKernel,
-	 rxcellGPU,
-	 rycellGPU,
-	 rxboundaryGPU,  // q^{} to interpolate
-	 ryboundaryGPU, 
-	 rxboundaryGPU,  // q^{updated}
-	 ryboundaryGPU, 
-	 vxGPU,
-	 vyGPU,
-	 dt);    
+        (pc, 
+         errorKernel,
+         rxcellGPU,
+         rycellGPU,
+         rxboundaryGPU,  // q^{} to interpolate
+         ryboundaryGPU, 
+         rxboundaryGPU,  // q^{updated}
+         ryboundaryGPU, 
+         vxGPU,
+         vyGPU,
+         dt);    
     }
 								    
     step++;
   }
 
-  if(!(step%samplefreq)&&(step>0)){
-    cout << "Quasi 2D " << step << endl;
+
+  if(((step % samplefreq == 0) or (step % sampleHydroGrid) or (step % savefreq)) and (step>=0)){
     if(!gpuToHostStokesLimit()) return 0;
-    if(!saveFunctionsSchemeStokesLimit(1,step)) return 0;
+    if(step % samplefreq == 0){
+      if(quasi2D){
+        cout << "Quasi 2D " << step << endl;
+      }
+      else if(stokesLimit2D){
+        cout << "stokesLimit 2D " << step << endl;
+      }
+      if(!saveFunctionsSchemeStokesLimit(1,step)) return 0;
+    }
+    if(step % sampleHydroGrid == 0){
+      if(!saveFunctionsSchemeStokesLimit(3,step)) return 0;
+    }
+    if(savefreq > 0){
+      if(step % savefreq == 0){
+        if(!saveFunctionsSchemeStokesLimit(4,step)) return 0;
+      }
+    }
   }
 
   // Free FFT
@@ -314,11 +343,11 @@ bool runSchemeQuasi2D_twoStokesSolve(){
     numBlocksdim = (mz-1)/threadsPerBlockdim + 1;
   }
   initializePrefactorFourierSpace_1<<<1,1>>>(gradKx,
-					     gradKy,
-					     gradKz,
-					     expKx,
-					     expKy,
-					     expKz,pF);
+                                             gradKy,
+                                             gradKz,
+                                             expKx,
+                                             expKy,
+                                             expKz,pF);
   
   initializePrefactorFourierSpace_2<<<numBlocksdim,threadsPerBlockdim>>>(pF);
 
@@ -356,20 +385,20 @@ bool runSchemeQuasi2D_twoStokesSolve(){
     // Compute and Spread forces 
     // f = S*F
     kernelSpreadParticlesForceQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
-										       rycellGPU,
-										       vxZ,
-										       vyZ,
-										       bFV);
+                                                                                       rycellGPU,
+                                                                                       vxZ,
+                                                                                       vyZ,
+                                                                                       bFV);
 
     // Spread thermal drift
     kernelSpreadThermalDriftQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
-										     rycellGPU,
-										     vxZ,
-										     vyZ,
-										     dRand,
-										     rxboundaryGPU,
-										     ryboundaryGPU,
-										     8 * (ncells + mx + my));
+                                                                                     rycellGPU,
+                                                                                     vxZ,
+                                                                                     vyZ,
+                                                                                     dRand,
+                                                                                     rxboundaryGPU,
+                                                                                     ryboundaryGPU,
+                                                                                     8 * (ncells + mx + my));
 
     // Transform force density field to Fourier space
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_FORWARD);
@@ -424,20 +453,20 @@ bool runSchemeQuasi2D_twoStokesSolve(){
     // Compute and Spread forces 
     // f = S*F
     kernelSpreadParticlesForceQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
-										       rycellGPU,
-										       vxZ,
-										       vyZ,
-										       bFV);
+                                                                                       rycellGPU,
+                                                                                       vxZ,
+                                                                                       vyZ,
+                                                                                       bFV);
 
     // Spread thermal drift
     kernelSpreadThermalDriftQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
-										     rycellGPU,
-										     vxZ,
-										     vyZ,
-										     dRand,
-										     rxboundaryPredictionGPU,
-										     ryboundaryPredictionGPU,
-										     8 * (ncells + mx + my));
+                                                                                     rycellGPU,
+                                                                                     vxZ,
+                                                                                     vyZ,
+                                                                                     dRand,
+                                                                                     rxboundaryPredictionGPU,
+                                                                                     ryboundaryPredictionGPU,
+                                                                                     8 * (ncells + mx + my));
 
     // Transform force density field to Fourier space
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_FORWARD);

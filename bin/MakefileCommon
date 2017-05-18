@@ -84,7 +84,6 @@ schemeContinuousGradient.o \
 saveFluidFinalConfiguration.o \
 saveFluidVTK.o \
 
-
 #
 #
 #If we have HydroGrid add some more functions
@@ -94,7 +93,8 @@ ifneq ($(SRC_HYDROLIB),)
       hydroAnalysisGhost.o \
       hydroAnalysisIncompressible.o \
       hydroAnalysisIncompressibleBinaryMixture.o \
-      hydroAnalysisParticlesWall.o 
+      hydroAnalysisParticlesWall.o \
+      calculateConcentration.o 
 endif
 
 #
@@ -103,7 +103,6 @@ endif
 ifneq ($(SRC_HYDROLIB),)
       OBJS += \
       Precision.o \
-      RNG.o \
       Random.o \
       RNGs.o \
       visit_writer.o \
@@ -316,8 +315,6 @@ $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 schemeContinuousGradient.o: schemeContinuousGradient.cu header.h cells.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
-
-
 #
 #
 #If we have HydroGrid
@@ -341,6 +338,9 @@ hydroAnalysisIncompressibleBinaryMixture.o: hydroAnalysisIncompressibleBinaryMix
 hydroAnalysis.h cells.h \
 header.h fluid.h headerOtherFluidVariables.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  $(HydroAnalisysINCL) -c $<
+
+calculateConcentration.o: calculateConcentration.cpp header.h particles.h headerOtherFluidVariables.h ; \
+$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HydroAnalisysINCL) $(HDRS) -c $<
 
 endif
 
@@ -413,7 +413,7 @@ createCellsQuasi2DGPU.cu createBoundariesQuasi2DGPU.cu freeBoundariesQuasi2DGPU.
 #
 #If we have HydroGrid
 ifneq ($(SRC_HYDROLIB)),)
-#HydroAnalisis from Aleks
+
 Precision.o: Precision.f90 ; \
 	$(FC) $(FCFLAGS) -c $<
 
@@ -422,9 +422,6 @@ RNG.o: RNG.f90 Random.o ; \
 
 Random.o: Random.f90 Precision.o ; \
 	$(FC) $(FCFLAGS) -c $<
-
-RNGs.o: RNGs.c ; \
-	$(NVCC) $(NVCCFLAGS) -c -DBL_FORT_USE_UNDERSCORE $<
 
 visit_writer.o: visit_writer.c ; \
 	$(NVCC) $(NVCCFLAGS) -c $<

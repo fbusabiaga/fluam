@@ -130,6 +130,8 @@ const string whydrodynamicRadius="hydrodynamicRadius";
 const string wnDrift="nDrift";
 const string wstokesLimit2D="stokesLimit2D";
 const string wpredictorCorrector="predictorCorrector";
+const string wsampleHydroGrid="sampleHydroGrid";
+const string wcellsHydroGrid = "cellsHydroGrid";
 //quasi2D Ends
 //IMEX-RK Begins
 const string wIMEXRK="IMEXRK";
@@ -251,6 +253,9 @@ bool loadDataMain(int argc, char* argv[]){
   nDrift = 1;
   stokesLimit2D = 0;
   predictorCorrector = 0;
+  sampleHydroGrid = 1;
+  mxHydroGrid = 16;
+  myHydroGrid = 16;
   //quasi2D Ends
 
   //particlesWall Begins
@@ -549,6 +554,12 @@ bool loadDataMain(int argc, char* argv[]){
     }
     else if(word==wpredictorCorrector){
       fileinput >> predictorCorrector;
+    }
+    else if(word==wsampleHydroGrid){
+      fileinput >> sampleHydroGrid;
+    }
+    else if(word==wcellsHydroGrid){
+      fileinput >> mxHydroGrid >> myHydroGrid;
     }
     //quasi2D Ends
     //IMEXRK Begins

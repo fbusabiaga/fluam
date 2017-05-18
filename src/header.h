@@ -41,7 +41,7 @@ EXTERN_GLOBAL bool thermostat;
 EXTERN_GLOBAL double dt;
 EXTERN_GLOBAL long long numsteps;
 EXTERN_GLOBAL long long numstepsRelaxation;
-EXTERN_GLOBAL int samplefreq, savefreq;
+EXTERN_GLOBAL int samplefreq, savefreq, sampleHydroGrid;
 EXTERN_GLOBAL string outputname;
 EXTERN_GLOBAL bool savedensity;
 EXTERN_GLOBAL int nsavedensity;
@@ -308,5 +308,6 @@ bool runSchemeStokesLimit();
 bool createCellsStokesLimitGPU();
 bool freeCellsStokesLimitGPU();
 
-
+// quasi2D
+bool calculateConcentration(int index, long long step);
 

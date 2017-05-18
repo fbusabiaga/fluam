@@ -7,7 +7,7 @@ SRC_FLUAM=../src/
 #
 #Path to HydroGrid
 #Uncomment if you have HydroGrid
-#SRC_HYDROLIB=../../HydroGrid/
+# SRC_HYDROLIB=../../HydroGrid/
 
 
 #
@@ -74,8 +74,8 @@ HydroAnalisysINCL = -I$(SRC_HYDROLIB)
 #
 #
 #Libraries -lfftw3 -lfftw3f
-LIBRARIES = -L/usr/local/cuda/lib64 -lcurand -L/usr/lib64/ -L./ -lgfortran -lcufft -lm 
-STATIC_LIBRARIES = 
+LIBRARIES = -L/usr/local/cuda/lib64 -lcurand -L/usr/lib64/ -L./ -lgfortran -lcufft -lm -lfftw3 -lfftw3f
+STATIC_LIBRARIES =  # -L../../HydroGrid/ -lHydroAnalysis
 
 #
 #

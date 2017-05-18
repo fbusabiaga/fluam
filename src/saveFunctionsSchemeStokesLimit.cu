@@ -25,25 +25,37 @@ bool saveFunctionsSchemeStokesLimit(int index, long long step){
     if(!saveSeed()) return 0;
     if(setparticles)
       if(!saveParticles(index,step)) return 0;
+    if(quasi2D or stokesLimit2D)
+      if(!calculateConcentration(0, step)) return 0;
     if(!saveTime(index)) return 0;
   }
-  //Use save functions
+  // Use save functions
   else if(index==1){
     if(setparticles)
       if(!saveParticles(index,step)) return 0;
   }
-  //Close save functions
+  // Close save functions
   else if(index==2){
     if(!saveTime(index)) return 0;
     if(setparticles)
       if(!saveParticles(index,step)) return 0;
+    if(quasi2D or stokesLimit2D)
+      if(!calculateConcentration(2, step)) return 0;
+  }
+  // Update HydroGrid
+  else if(index==3){
+    if(quasi2D or stokesLimit2D)
+      if(!calculateConcentration(1, step)) return 0;
+  }
+  // Print HydroGrid
+  else if(index==4){
+    if(quasi2D or stokesLimit2D)
+      if(!calculateConcentration(3, step)) return 0;
   }
   else{
     cout << "SAVE FUNCTIONS ERROR, INDEX !=0,1,2 " << endl;
     return 0;
   }
   
-
-
   return 1;
 }
