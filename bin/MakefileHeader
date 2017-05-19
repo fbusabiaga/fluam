@@ -5,8 +5,8 @@ SRC_FLUAM=../src/
 
 #
 #
-#Path to HydroGrid
-#Uncomment if you have HydroGrid
+# Path to HydroGrid
+# Uncomment if you have HydroGrid
 # SRC_HYDROLIB=../../HydroGrid/
 
 
