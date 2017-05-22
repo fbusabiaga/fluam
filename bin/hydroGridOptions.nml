@@ -1,35 +1,31 @@
-&hydroAnalysisOptions ! HydroGridModule.f90
-   staggeredVelocities = 0 ! Are velocities on a staggered grid or not, (0, +1, or -1)*h/2
+! Numbering of variables is:
+! 1=rho (total density), 2-4 (unused = vx, vy, temperature), 5=rho_green, 6=rho_red
+
+&hydroAnalysisOptions ! This first namelist corresponds to the whole 2D grid
 
    writeSnapshotVTK=F ! Save snapshots of the instantaneous fields
 
-   ! Means file: column 1=y, 2=rho, 3=v_x, 4=v_y, 5=T, 6=c
+   ! Means file: column 1=y, 2=rho, 3=v_x, 4=v_y, 5=T, 6=rho_green, 7=rho_red
    storeConserved = F ! Leave at F
    writeMeansVTK = F ! Write the means to a VTK file
 
    ! Variances
    writeVariancesVTK = T ! Should we save a VTK file
    nVariances = 4 ! How many co-variances to calculate and save
-   ! correlationCell = 5 5 1 ! The index of the special cell, if calculating correlations in real space
-   ! If so, then use a negative integer for the first variable in variancePairs
-   ! By default correlationCell is the cell in the center of the domain
-   ! 1=vx-vx, 2=vy-vy, 3=vx-vy, 4=rho-rho, 5=rho-vx
    variancePairs = "0 1 0 1, 0 5 0 5, 0 6 0 6, 0 5 0 6"
-   ! species1 variable1 species2 variable2
    
    ! Static structure factors
    writeSpectrumVTK = T
-   writeAbsValue = F ! Only write absolute values of complex values to VTK file?
-   writeTheory = -1 ! Write the theoretical prediction (0 or 1) or project discretely (-1)
+   writeAbsValue = T ! Only write absolute values of complex values to VTK file?
    nStructureFactors = 4
-   ! 1=vx-vx, 2=vy-vy, 3=vx-vy, 4=rho-rho, 5=rho-vx
-   structureFactorPairs = "0 1 0 1, 0 5 0 5, 0 6 0 6, 0 5 0 6"
+   ! Compute rho-rho structure factor
+   structureFactorPairs = "0 1 0 1, 0 5 0 5, 0 6 0 6, 0 5 0 6" ! The zeros have to be here but mean nothing to us
    
    ! Dynamic structure factors:
-   nWavenumbers=0
-   ! Shape (2,nWavenumbers) if 2D (Nz=1), or (3,nWavenumbers):
-   selectedWavenumbers="1 1, 2 2, 4 4"
-   nSavedSnapshots=100
+   nWavenumbers=-1 ! Negative value means specify a range of wavenumbers
+   ! Specify range of wavenumbers to output, here index kx=-2 2, ky=-2 2
+   selectedWavenumbers="-4 4, 0 4"
+   nSavedSnapshots=100 ! How many snapshots to compute time-correlation functions for
    
    outputFolder = "./"
    filePrefix = "run" ! Prefix for all file names
@@ -37,5 +33,34 @@
    periodic = T ! Is the system periodic along the y axes
 /
 
+&hydroAnalysisOptions ! This corresponds to the projection along the y axes, which is a 1D grid
 
+   writeSnapshotVTK=F ! Save snapshots of the instantaneous fields
+
+   ! Means file: column 1=y, 2=rho, 3=v_x, 4=v_y, 5=T, 6=rho_green, 7=rho_red
+   storeConserved = F ! Leave at F
+   writeMeansVTK = F ! Write the means to a VTK file
+
+   ! Variances
+   writeVariancesVTK = F ! Should we save a VTK file
+   nVariances = 0 ! How many co-variances to calculate and save
+   variancePairs = ""
+   
+   ! Static structure factors
+   writeSpectrumVTK = F
+   writeAbsValue = F ! Only write absolute values of complex values to VTK file?
+   nStructureFactors = 4
+   ! 1=rho-rho, 2=green-green, 3=red-red, 4=red-green
+   structureFactorPairs = "0 1 0 1, 0 5 0 5, 0 6 0 6, 0 5 0 6"
+   
+   ! Dynamic structure factors:
+   nWavenumbers=-1
+   selectedWavenumbers="1 16, 0 0"
+   nSavedSnapshots=100
+   
+   outputFolder = "./"
+   filePrefix = "run_proj" ! Prefix for all file names
+   axisToPrint = 1 ! 1=x, 2=y, 3=z axis
+   periodic = T ! Is the system periodic along the y axes
+/
 

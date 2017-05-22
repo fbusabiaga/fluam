@@ -95,7 +95,7 @@ bool runSchemeQuasi2D(){
 
 
   while(step<numsteps){
-    if(((step % samplefreq == 0) or (step % sampleHydroGrid) or (step % savefreq)) and (step>=0)){
+    if(((step % samplefreq == 0) or (step % sampleHydroGrid)) and (step>=0)){
       if(!gpuToHostStokesLimit()) return 0;
       if(step % samplefreq == 0){
         // Save particle positions
@@ -111,11 +111,11 @@ bool runSchemeQuasi2D(){
         // Update Hydrogrid
         if(!saveFunctionsSchemeStokesLimit(3,step)) return 0;
       }
-      if(savefreq > 0){
-        if(step % savefreq == 0){
-          // Save Hydrogrid
-          if(!saveFunctionsSchemeStokesLimit(4,step)) return 0;
-        }
+    }
+    if(savefreq > 0){
+      if(step % savefreq == 0){
+        // Save Hydrogrid
+        if(!saveFunctionsSchemeStokesLimit(4,step)) return 0;
       }
     }
 
@@ -230,7 +230,7 @@ bool runSchemeQuasi2D(){
   }
 
 
-  if(((step % samplefreq == 0) or (step % sampleHydroGrid) or (step % savefreq)) and (step>=0)){
+  if(((step % samplefreq == 0) or (step % sampleHydroGrid)) and (step>=0)){
     if(!gpuToHostStokesLimit()) return 0;
     if(step % samplefreq == 0){
       if(quasi2D){
@@ -244,13 +244,13 @@ bool runSchemeQuasi2D(){
     if(step % sampleHydroGrid == 0){
       if(!saveFunctionsSchemeStokesLimit(3,step)) return 0;
     }
-    if(savefreq > 0){
-      if(step % savefreq == 0){
-        if(!saveFunctionsSchemeStokesLimit(4,step)) return 0;
-      }
+  }
+  if(savefreq > 0){
+    if(step % savefreq == 0){
+      // Save Hydrogrid
+      if(!saveFunctionsSchemeStokesLimit(4,step)) return 0;
     }
   }
-
   // Free FFT
   cufftDestroy(FFT);
   freeRandomNumbersGPU();

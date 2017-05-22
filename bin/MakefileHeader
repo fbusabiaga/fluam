@@ -7,7 +7,7 @@ SRC_FLUAM=../src/
 #
 # Path to HydroGrid
 # Uncomment if you have HydroGrid
-# SRC_HYDROLIB=../../HydroGrid/
+SRC_HYDROLIB=../../sfw/HydroGrid/src/
 
 
 #
@@ -29,8 +29,8 @@ NVCC = nvcc
 
 #
 #
-#Cuda flags
-NVCCFLAGS = -O -arch=sm_20 --compiler-bindir /usr/bin/gcc $(CUDALIB)
+# Cuda flags --compiler-bindir /usr/bin/gcc --compiler-bindir /usr/local/pkg/gcc/4.7.2/bin/gcc
+NVCCFLAGS = -O -arch=sm_20 $(CUDALIB) 
 
 #
 #
@@ -68,14 +68,21 @@ NVCCINCLS +=
 
 #
 #
-#Includes to HydroGrid
-HydroAnalisysINCL = -I$(SRC_HYDROLIB)
+#Libraries -lfftw3 -lfftw3f
+LIBRARIES = -L/usr/local/cuda/lib64 -lcurand -L/usr/lib64/ -L./ -lgfortran -lcufft -lm -lfftw3 -lfftw3f
+STATIC_LIBRARIES = 
 
 #
 #
-#Libraries -lfftw3 -lfftw3f
-LIBRARIES = -L/usr/local/cuda/lib64 -lcurand -L/usr/lib64/ -L./ -lgfortran -lcufft -lm -lfftw3 -lfftw3f
-STATIC_LIBRARIES =  # -L../../HydroGrid/ -lHydroAnalysis
+#If we have HydroGrid
+ifneq ($(SRC_HYDROLIB),)
+HydroAnalisysINCL = -I$(SRC_HYDROLIB)
+STATIC_LIBRARIES += -L$(SRC_HYDROLIB) -lCallHydroGrid -L$(SRC_HYDROLIB) -lHydroAnalysis
+
+
+BOOST_LIB = /usr/lib64/boost
+LIBRARIES += -L$(BOOST_LIB) -lboost_python 
+endif
 
 #
 #

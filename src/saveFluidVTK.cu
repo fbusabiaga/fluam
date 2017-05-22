@@ -25,7 +25,7 @@
 #include "cells.h"
 #include "particles.h"
 #include "visit_writer.h"
-#include "visit_writer.c"
+// #include "visit_writer.c"
 #include "hydroAnalysis.h"
 
 

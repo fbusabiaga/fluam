@@ -8,10 +8,10 @@ vpath %.h $(SRC_FLUAM)
 #
 #
 #If we have HydroGrid add some more sources
-ifneq ($(SRC_HYDROLIB),)
-      vpath %.c $(SRC_HYDROLIB)
-      vpath %.h $(SRC_HYDROLIB)
-      vpath %.f90 $(SRC_HYDROLIB)
+ifneq ($(SRC_HYDROLIB_OLD),)
+      vpath %.c $(SRC_HYDROLIB_OLD)
+      vpath %.h $(SRC_HYDROLIB_OLD)
+      vpath %.f90 $(SRC_HYDROLIB_OLD)
 endif
 
 
@@ -87,20 +87,19 @@ saveFluidVTK.o \
 #
 #
 #If we have HydroGrid add some more functions
-ifneq ($(SRC_HYDROLIB),)
+ifneq ($(SRC_HYDROLIB_OLD),)
       OBJS += \
       hydroAnalysis.o \
       hydroAnalysisGhost.o \
       hydroAnalysisIncompressible.o \
       hydroAnalysisIncompressibleBinaryMixture.o \
-      hydroAnalysisParticlesWall.o \
-      calculateConcentration.o 
+      hydroAnalysisParticlesWall.o 
 endif
 
 #
 #
 #Add HydroGrid if you have the code
-ifneq ($(SRC_HYDROLIB),)
+ifneq ($(SRC_HYDROLIB_OLD),)
       OBJS += \
       Precision.o \
       Random.o \
@@ -111,9 +110,6 @@ ifneq ($(SRC_HYDROLIB),)
       HydroGridModule.o \
       HydroGridCInterface.o 
 endif
-
-
-
 
 
 all : $(OBJS) ; $(NVCC) $(NVCCFLAGS) -o  $(EFILE) $(OBJS) $(STATIC_LIBRARIES) $(LIBRARIES) 
@@ -318,7 +314,7 @@ $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 #
 #
 #If we have HydroGrid
-ifneq ($(SRC_HYDROLIB),)
+ifneq ($(SRC_HYDROLIB_OLD),)
 hydroAnalysisGhost.o: hydroAnalysisGhost.cu hydroAnalysis.h cells.h header.h \
 fluid.h headerOtherFluidVariables.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  $(HydroAnalisysINCL) -c $<
@@ -339,8 +335,8 @@ hydroAnalysis.h cells.h \
 header.h fluid.h headerOtherFluidVariables.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  $(HydroAnalisysINCL) -c $<
 
-calculateConcentration.o: calculateConcentration.cpp header.h particles.h headerOtherFluidVariables.h ; \
-$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HydroAnalisysINCL) $(HDRS) -c $<
+# calculateConcentration.o: calculateConcentration.cpp header.h particles.h headerOtherFluidVariables.h ; \
+# $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HydroAnalisysINCL) $(HDRS) -c $<
 
 endif
 
@@ -404,7 +400,7 @@ boundaryParticlesFunctionStokesLimit.cu stokesLimitFunctions.cu createCellsStoke
 freeCellsStokesLimitGPU.cu schemeStokesLimitFirstOrder.cu runSchemeStokesLimitFirstOrder.cu \
 boundaryParticlesFunctionStokesLimitFirstOrder.cu quasi2DFunctions.cu freeCellsQuasi2DGPU.cu \
 createCellsQuasi2DGPU.cu createBoundariesQuasi2DGPU.cu freeBoundariesQuasi2DGPU.cu texturesCellsQuasi2D.cu ; \
-	$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
+	$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HydroAnalisysINCL) $(HDRS) -c $<
 
 
 
@@ -412,7 +408,7 @@ createCellsQuasi2DGPU.cu createBoundariesQuasi2DGPU.cu freeBoundariesQuasi2DGPU.
 #
 #
 #If we have HydroGrid
-ifneq ($(SRC_HYDROLIB)),)
+ifneq ($(SRC_HYDROLIB_OLD)),)
 
 Precision.o: Precision.f90 ; \
 	$(FC) $(FCFLAGS) -c $<

@@ -132,6 +132,7 @@ const string wstokesLimit2D="stokesLimit2D";
 const string wpredictorCorrector="predictorCorrector";
 const string wsampleHydroGrid="sampleHydroGrid";
 const string wcellsHydroGrid = "cellsHydroGrid";
+const string wgreenParticles = "greenParticles";
 //quasi2D Ends
 //IMEX-RK Begins
 const string wIMEXRK="IMEXRK";
@@ -256,6 +257,8 @@ bool loadDataMain(int argc, char* argv[]){
   sampleHydroGrid = 1;
   mxHydroGrid = 16;
   myHydroGrid = 16;
+  greenStart = 0;
+  greenEnd = 0;
   //quasi2D Ends
 
   //particlesWall Begins
@@ -560,6 +563,9 @@ bool loadDataMain(int argc, char* argv[]){
     }
     else if(word==wcellsHydroGrid){
       fileinput >> mxHydroGrid >> myHydroGrid;
+    }
+    else if(word==wgreenParticles){
+      fileinput >> greenStart >> greenEnd;
     }
     //quasi2D Ends
     //IMEXRK Begins
