@@ -112,8 +112,9 @@ bool runSchemeQuasi2D(){
         if(!saveFunctionsSchemeStokesLimit(3,step)) return 0;
       }
     }
-    if(savefreq > 0){
+    if((savefreq > 0) and (step>=0)){
       if(step % savefreq == 0){
+        if(!gpuToHostStokesLimit()) return 0;
         // Save Hydrogrid
         if(!saveFunctionsSchemeStokesLimit(4,step)) return 0;
       }
@@ -247,6 +248,7 @@ bool runSchemeQuasi2D(){
   }
   if(savefreq > 0){
     if(step % savefreq == 0){
+      if(!gpuToHostStokesLimit()) return 0;
       // Save Hydrogrid
       if(!saveFunctionsSchemeStokesLimit(4,step)) return 0;
     }
