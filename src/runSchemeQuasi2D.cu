@@ -95,7 +95,7 @@ bool runSchemeQuasi2D(){
 
 
   while(step<numsteps){
-    if(((step % samplefreq == 0) or (step % sampleHydroGrid)) and (step>=0)){
+    if(((step % samplefreq == 0) or (step % sampleHydroGrid == 0)) and (step>=0)){
       if(!gpuToHostStokesLimit()) return 0;
       if(step % samplefreq == 0){
         // Save particle positions
@@ -231,7 +231,7 @@ bool runSchemeQuasi2D(){
   }
 
 
-  if(((step % samplefreq == 0) or (step % sampleHydroGrid)) and (step>=0)){
+  if(((step % samplefreq == 0) or (step % sampleHydroGrid == 0)) and (step>=0)){
     if(!gpuToHostStokesLimit()) return 0;
     if(step % samplefreq == 0){
       if(quasi2D){
