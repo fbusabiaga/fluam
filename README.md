@@ -6,9 +6,9 @@
 2. Use
 3. Contact
 4. License and Copyright
+5. Acknowledgments
 
-
-##0. Introduction
+##1. Introduction
 **fluam** is a code for fluctuating hydrodynamics with immersed structures based
 on the immersed boundary method. It offers fluid solvers for the compressible and
 incompressible Navier-Stokes equations,
@@ -24,7 +24,7 @@ and particle solvers for regimes ranging from the acoustic time scales to the St
 [DOI](https://dx.doi.org/10.1063/1.4869866) [arXiv](http://arxiv.org/abs/1401.4198)
 
 
-##1. Installation instructions
+##2. Installation instructions
 a) You will need a NVIDIA GPU with compute capability 1.3
 or higher to use **fluam**. You don't need any GPU to compile 
 and modify the code.
@@ -44,7 +44,7 @@ make
 
 e) To speed up the compilation process see fluam/work/README
 
-##2. Use
+##3. Use
 To run **fluam** type
 fluam data.main
 
@@ -52,12 +52,12 @@ data.main is a file with the option for the simulation, look
 fluam/bin/data.main for the options.
 
 
-##3. Contact
+##4. Contact
 If you find problems contact the owner of the project
 https://github.com/fbusabiaga/fluam
 
 
-##4. License and Copyright
+##5. License and Copyright
 Source code is available at: https://github.com/fbusabiaga/fluam
 
 **fluam** is released under the terms of the GNU General Public License. See
@@ -65,4 +65,9 @@ Source code is available at: https://github.com/fbusabiaga/fluam
 
 The source files included with this release are copyrighted by their
 authors. See each file for more information.
+
+##6. Acknowledgments 
+**fluam** has been developed at the Departmento de Física Teorica de la Materia
+Condensada of Universidad Autónoma de Madrid (UAM), partially funded by Spanish
+MINECO projects **FIS2010-22047-C05-01** and **FIS2013- 47350-C05-1-R**.
 
