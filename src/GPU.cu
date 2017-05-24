@@ -27,7 +27,6 @@
 #include "hydroAnalysis.h"
 
 #define cutilSafeCall(i) __cutilSafeCall(i, __FILE__, __LINE__)
-
 inline void __cutilSafeCall(cudaError_t i, const char *file, const int line ){
   if(i!=cudaSuccess){
     printf("Error in %s at line %d with error code \"%s\"\n", file, line, cudaGetErrorString(i));
@@ -36,9 +35,29 @@ inline void __cutilSafeCall(cudaError_t i, const char *file, const int line ){
   return;
 }
 
+__device__ double atomicAdd(double* address, double val);
+#if !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 600
+#else 
+__device__ double atomicAdd(double* address, double val){
+  unsigned long long int* address_as_ull =
+    (unsigned long long int*)address;
+  unsigned long long int old = *address_as_ull, assumed;
+  do {
+    assumed = old;
+    old = atomicCAS(address_as_ull, assumed,
+		    __double_as_longlong(val +
+					 __longlong_as_double(assumed)));
+  } while (assumed != old);
+  return __longlong_as_double(old);
+}
+#endif
 
-//GPU staff
-//#include <cutil_inline.h>
+static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
+  int2 v = tex1Dfetch(t,i);
+  return __hiloint2double(v.y,v.x);
+}
+
+// GPU staff
 #include <cufft.h>
 #include "curand.h"
 #include "curand_kernel.h"
@@ -47,12 +66,6 @@ inline void __cutilSafeCall(cudaError_t i, const char *file, const int line ){
 #include "texturesCells.cu"
 #include "initGhostIndexGPU.cu"
 #include "pressureGPU.cu"
-
-
-static __inline__ __device__ double fetch_double(texture<int2,1> t, int i){
-  int2 v = tex1Dfetch(t,i);
-  return __hiloint2double(v.y,v.x);
-}
 
 //schmeRK3
 #include "initializeVecinosGPU.cu"

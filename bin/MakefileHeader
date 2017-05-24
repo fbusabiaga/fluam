@@ -28,9 +28,11 @@ NVCC = nvcc
 #CUDALIB=-L/usr/local/cuda-5.0/lib64 -lcurand
 
 #
-#
-#Cuda flags
-NVCCFLAGS = -O -arch=sm_20 --compiler-bindir /usr/bin/gcc $(CUDALIB)
+# Cuda flags, some possible options are:
+# Set optimization: (default) -O3
+# Use a specific c++ compiler: --compiler-bindir /usr/bin/gcc
+# Compile for a given architecture, for example 2.0: -arch=sm_2
+NVCCFLAGS = -arch=sm_20 --compiler-bindir /usr/bin/gcc $(CUDALIB)
 
 #
 #
