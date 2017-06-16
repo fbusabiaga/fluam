@@ -49,7 +49,7 @@ bool saveFunctionsSchemeStokesLimit(int index, long long step){
     if(setparticles)
       if(!saveParticles(index,step)) return 0;
 #ifdef HydroGrid
-    if(quasi2D or stokesLimit2D){
+    if((quasi2D or stokesLimit2D) and sampleHydroGrid > 0){
       calculateConcentration(outputname,
                              lx,                   // Domain x length
                              ly,                   // Domain y length
@@ -78,7 +78,7 @@ bool saveFunctionsSchemeStokesLimit(int index, long long step){
     if(setparticles)
       if(!saveParticles(index,step)) return 0;
 #ifdef HydroGrid
-    if(quasi2D or stokesLimit2D){
+    if((quasi2D or stokesLimit2D) and sampleHydroGrid > 0){
       calculateConcentration(outputname,
                              lx,                   // Domain x length
                              ly,                   // Domain y length
@@ -98,7 +98,7 @@ bool saveFunctionsSchemeStokesLimit(int index, long long step){
   // Update HydroGrid
   else if(index==3){
 #ifdef HydroGrid
-    if(quasi2D or stokesLimit2D){
+    if((quasi2D or stokesLimit2D) and sampleHydroGrid > 0){
       calculateConcentration(outputname,
                              lx,                   // Domain x length
                              ly,                   // Domain y length
@@ -118,7 +118,7 @@ bool saveFunctionsSchemeStokesLimit(int index, long long step){
   // Print HydroGrid
   else if(index==4){
 #ifdef HydroGrid
-    if(quasi2D or stokesLimit2D){
+    if((quasi2D or stokesLimit2D) and sampleHydroGrid > 0){
       calculateConcentration(outputname,
                              lx,                   // Domain x length
                              ly,                   // Domain y length
