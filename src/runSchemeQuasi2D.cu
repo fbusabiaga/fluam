@@ -151,16 +151,17 @@ bool runSchemeQuasi2D(){
     }
 
     // Spread thermal drift
-    kernelSpreadThermalDriftQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
-                                                                                     rycellGPU,
-                                                                                     vxZ,
-                                                                                     vyZ,
-                                                                                     dRand,
-                                                                                     rxboundaryGPU,
-                                                                                     ryboundaryGPU,
-                                                                                     4 * (ncells + mx + my));
-
-    // cout << endl;
+    if(use_RFD){
+      kernelSpreadThermalDriftQuasi2D<<<numBlocksParticles,threadsPerBlockParticles>>>(rxcellGPU,
+                                                                                       rycellGPU,
+                                                                                       vxZ,
+                                                                                       vyZ,
+                                                                                       dRand,
+                                                                                       rxboundaryGPU,
+                                                                                       ryboundaryGPU,
+                                                                                       4 * (ncells + mx + my));
+    }
+      
     // Transform force density field to Fourier space
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_FORWARD);
     cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_FORWARD);

@@ -128,6 +128,7 @@ const string wquasiNeutrallyBuoyant4pt2D="quasiNeutrallyBuoyant4pt2D";
 const string wquasi2D="quasi2D";
 const string whydrodynamicRadius="hydrodynamicRadius";
 const string wnDrift="nDrift";
+const string wuse_RFD="use_RFD";
 const string wstokesLimit2D="stokesLimit2D";
 const string wpredictorCorrector="predictorCorrector";
 const string wsampleHydroGrid="sampleHydroGrid";
@@ -259,6 +260,7 @@ bool loadDataMain(int argc, char* argv[]){
   myHydroGrid = 16;
   greenStart = 0;
   greenEnd = 0;
+  use_RFD = 1;
   //quasi2D Ends
 
   //particlesWall Begins
@@ -566,6 +568,9 @@ bool loadDataMain(int argc, char* argv[]){
     }
     else if(word==wgreenParticles){
       fileinput >> greenStart >> greenEnd;
+    }
+    else if(word==wuse_RFD){
+      fileinput >> use_RFD;
     }
     //quasi2D Ends
     //IMEXRK Begins

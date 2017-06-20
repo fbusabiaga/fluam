@@ -63,7 +63,7 @@ EXTERN_GLOBAL bool setGhost;
 EXTERN_GLOBAL bool setboundary;
 EXTERN_GLOBAL string fileCheckVelocity;
 EXTERN_GLOBAL bool setSaveVTK;
-EXTERN_GLOBAL bool computeNonBondedForces;
+EXTERN_GLOBAL bool computeNonBondedForces, use_RFD;
 EXTERN_GLOBAL double hydrodynamicRadius;
 EXTERN_GLOBAL int nDrift;
 
