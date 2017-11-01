@@ -99,6 +99,35 @@ bool saveFunctionsSchemeStokesLimit(int index, long long step){
   else if(index==3){
 #ifdef HydroGrid
     if((quasi2D or stokesLimit2D) and sampleHydroGrid > 0){
+      // The first step is special, because correlations
+      if(step == 0){
+        calculateConcentration(outputname,
+                               lx,                   // Domain x length
+                               ly,                   // Domain y length
+                               greenStart,           // Start of "green" particles
+                               greenEnd,             // End of "green" particles
+                               mxHydroGrid,          // Grid size x
+                               myHydroGrid,          // Grid size y
+                               step,                 // Step of simulation
+                               dt * sampleHydroGrid, // Time interval between successive snapshots (calls to updateHydroGrid)
+                               np,                   // Number of particles
+                               1,                    // option = 0 (initialize), 1 (update), 2 (save), 3 (finalize)
+                               rxParticle, 
+                               ryParticle); 
+        calculateConcentration(outputname,
+                               lx,                   // Domain x length
+                               ly,                   // Domain y length
+                               greenStart,           // Start of "green" particles
+                               greenEnd,             // End of "green" particles
+                               mxHydroGrid,          // Grid size x
+                               myHydroGrid,          // Grid size y
+                               step,                 // Step of simulation
+                               dt * sampleHydroGrid, // Time interval between successive snapshots (calls to updateHydroGrid)
+                               np,                   // Number of particles
+                               2,                    // option = 0 (initialize), 1 (update), 2 (save), 3 (finalize)
+                               rxParticle, 
+                               ryParticle); 
+      }
       calculateConcentration(outputname,
                              lx,                   // Domain x length
                              ly,                   // Domain y length

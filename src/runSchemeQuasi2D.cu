@@ -97,7 +97,7 @@ bool runSchemeQuasi2D(){
   while(step<numsteps){
     if(((step % samplefreq == 0) or (step % sampleHydroGrid == 0)) and (step>=0)){
       if(!gpuToHostStokesLimit()) return 0;
-      if(step % samplefreq == 0){
+      if((step % samplefreq == 0) and (samplefreq > 0)){
         // Save particle positions
         if(quasi2D){
           cout << "Quasi 2D " << step << endl;
