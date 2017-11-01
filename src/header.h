@@ -303,7 +303,7 @@ bool runSchemeStokesLimitFirstOrder();
 
 //stokesLimit
 bool schemeStokesLimit();
-bool saveFunctionsSchemeStokesLimit(int index, long long step);
+bool saveFunctionsSchemeStokesLimit(int index, long long step, int samplefreq);
 bool runSchemeStokesLimit();
 bool createCellsStokesLimitGPU();
 bool freeCellsStokesLimitGPU();

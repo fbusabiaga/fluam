@@ -280,7 +280,7 @@ bool runSchemeStokesLimit(){
     if(!(step%samplefreq)&&(step>0)){
       cout << "Stokes Limit  " << step << endl;
       if(!gpuToHostStokesLimit()) return 0;
-      if(!saveFunctionsSchemeStokesLimit(1,step)) return 0;
+      if(!saveFunctionsSchemeStokesLimit(1,step, samplefreq)) return 0;
     }
     
   }

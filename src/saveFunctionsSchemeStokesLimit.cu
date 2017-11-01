@@ -42,12 +42,14 @@ void calculateConcentration(string outputname,
                             double *y_array);
 #endif
 
-bool saveFunctionsSchemeStokesLimit(int index, long long step){
+bool saveFunctionsSchemeStokesLimit(int index, long long step, int samplefreq){
 
   if(index==0){
     if(!saveSeed()) return 0;
     if(setparticles)
-      if(!saveParticles(index,step)) return 0;
+      if(samplefreq > 0){
+        if(!saveParticles(index,step)) return 0;
+      }
 #ifdef HydroGrid
     if((quasi2D or stokesLimit2D) and sampleHydroGrid > 0){
       calculateConcentration(outputname,
@@ -70,13 +72,17 @@ bool saveFunctionsSchemeStokesLimit(int index, long long step){
   // Use save functions
   else if(index==1){
     if(setparticles)
-      if(!saveParticles(index,step)) return 0;
+      if(samplefreq > 0){
+        if(!saveParticles(index,step)) return 0;
+      }
   }
   // Close save functions
   else if(index==2){
     if(!saveTime(index)) return 0;
     if(setparticles)
-      if(!saveParticles(index,step)) return 0;
+      if(samplefreq > 0){
+        if(!saveParticles(index,step)) return 0;
+      }
 #ifdef HydroGrid
     if((quasi2D or stokesLimit2D) and sampleHydroGrid > 0){
       calculateConcentration(outputname,

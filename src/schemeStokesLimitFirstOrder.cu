@@ -58,7 +58,7 @@ bool schemeStokesLimitFirstOrder(){
     if(!createBondedForcesGPU()) return 0;
 
   //Initialize save functions
-  if(!saveFunctionsSchemeStokesLimit(0,0)) return 0;
+  if(!saveFunctionsSchemeStokesLimit(0,0, samplefreq)) return 0;
 
 
   //Run the simulation
@@ -66,7 +66,7 @@ bool schemeStokesLimitFirstOrder(){
     
 
   //Close save functions
-  if(!saveFunctionsSchemeStokesLimit(2,0)) return 0;
+  if(!saveFunctionsSchemeStokesLimit(2,0, samplefreq)) return 0;
 
   //New bonded forces
   if(bondedForces)

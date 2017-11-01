@@ -97,7 +97,7 @@ bool runSchemeQuasi2D(){
   while(step<numsteps){
     if(((step % samplefreq == 0) or (step % sampleHydroGrid == 0)) and (step>=0)){
       if(!gpuToHostStokesLimit()) return 0;
-      if((step % samplefreq == 0) and (samplefreq > 0)){
+      if(step % samplefreq == 0){
         // Save particle positions
         if(quasi2D){
           cout << "Quasi 2D " << step << endl;
@@ -105,18 +105,18 @@ bool runSchemeQuasi2D(){
         else if(stokesLimit2D){
           cout << "stokesLimit 2D " << step << endl;
         }
-        if(!saveFunctionsSchemeStokesLimit(1,step)) return 0;
+        if(!saveFunctionsSchemeStokesLimit(1,step, samplefreq)) return 0;
       }
       if(step % sampleHydroGrid == 0){
         // Update Hydrogrid
-        if(!saveFunctionsSchemeStokesLimit(3,step)) return 0;
+        if(!saveFunctionsSchemeStokesLimit(3,step, samplefreq)) return 0;
       }
     }
     if((savefreq > 0) and (step>=0)){
       if(step % savefreq == 0){
         if(!gpuToHostStokesLimit()) return 0;
         // Save Hydrogrid
-        if(!saveFunctionsSchemeStokesLimit(4,step)) return 0;
+        if(!saveFunctionsSchemeStokesLimit(4,step, samplefreq)) return 0;
       }
     }
 
@@ -241,17 +241,17 @@ bool runSchemeQuasi2D(){
       else if(stokesLimit2D){
         cout << "stokesLimit 2D " << step << endl;
       }
-      if(!saveFunctionsSchemeStokesLimit(1,step)) return 0;
+      if(!saveFunctionsSchemeStokesLimit(1,step, samplefreq)) return 0;
     }
     if(step % sampleHydroGrid == 0){
-      if(!saveFunctionsSchemeStokesLimit(3,step)) return 0;
+      if(!saveFunctionsSchemeStokesLimit(3,step, samplefreq)) return 0;
     }
   }
   if(savefreq > 0){
     if(step % savefreq == 0){
       if(!gpuToHostStokesLimit()) return 0;
       // Save Hydrogrid
-      if(!saveFunctionsSchemeStokesLimit(4,step)) return 0;
+      if(!saveFunctionsSchemeStokesLimit(4,step, samplefreq)) return 0;
     }
   }
   // Free FFT
@@ -362,7 +362,7 @@ bool runSchemeQuasi2D_twoStokesSolve(){
     if(!(step%samplefreq)&&(step>=0)){
       cout << "Quasi 2D " << step << endl;
       if(!gpuToHostStokesLimit()) return 0;
-      if(!saveFunctionsSchemeStokesLimit(1,step)) return 0;
+      if(!saveFunctionsSchemeStokesLimit(1,step, samplefreq)) return 0;
     }
 
     // Generate random numbers
@@ -515,7 +515,7 @@ bool runSchemeQuasi2D_twoStokesSolve(){
       cout << "stokesLimit 2D " << step << endl;
     }
     if(!gpuToHostStokesLimit()) return 0;
-    if(!saveFunctionsSchemeStokesLimit(1,step)) return 0;
+    if(!saveFunctionsSchemeStokesLimit(1,step, samplefreq)) return 0;
   }
 
   // Free FFT
