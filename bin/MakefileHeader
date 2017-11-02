@@ -7,7 +7,7 @@ SRC_FLUAM=../src/
 #
 # Path to HydroGrid
 # Uncomment if you have HydroGrid
-SRC_HYDROLIB=../../sfw/HydroGrid/src/
+SRC_HYDROLIB=../../HydroGrid/src/
 
 
 #
@@ -33,7 +33,7 @@ NVCC = nvcc
 # Set optimization: (default) -O3
 # Use a specific c++ compiler: --compiler-bindir /usr/bin/gcc
 # Compile for a given architecture, for example 2.0: -arch=sm_20
-NVCCFLAGS = -arch=sm_20 $(CUDALIB) 
+NVCCFLAGS = -arch=sm_32 $(CUDALIB) 
 
 #
 #
@@ -82,6 +82,9 @@ ifneq ($(SRC_HYDROLIB),)
 HydroAnalisysINCL = -I$(SRC_HYDROLIB)
 STATIC_LIBRARIES += -L$(SRC_HYDROLIB) -lCallHydroGrid -L$(SRC_HYDROLIB) -lHydroAnalysis
 
+# Add python
+STATIC_LIBRARIES += -lpython2.7
+# STATIC_LIBRARIES += -lutil -L/usr/local/stow/python-2.7/lib/python2.7/config/ -lpython2.7
 
 BOOST_LIB = /usr/lib64/boost
 LIBRARIES += -L$(BOOST_LIB) -lboost_python 

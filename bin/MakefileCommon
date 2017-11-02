@@ -5,21 +5,6 @@ vpath %.cpp $(SRC_FLUAM)
 vpath %.h $(SRC_FLUAM)
 
 
-#
-#
-#If we have HydroGrid add some more sources
-ifneq ($(SRC_HYDROLIB_OLD),)
-      vpath %.c $(SRC_HYDROLIB_OLD)
-      vpath %.h $(SRC_HYDROLIB_OLD)
-      vpath %.f90 $(SRC_HYDROLIB_OLD)
-endif
-
-
-
-
-###NVCCSOURCES += main.cu
-
-
 
 OBJS = main.o \
 cudaDevice.o \
@@ -84,32 +69,6 @@ schemeContinuousGradient.o \
 saveFluidFinalConfiguration.o \
 saveFluidVTK.o \
 
-#
-#
-#If we have HydroGrid add some more functions
-ifneq ($(SRC_HYDROLIB_OLD),)
-      OBJS += \
-      hydroAnalysis.o \
-      hydroAnalysisGhost.o \
-      hydroAnalysisIncompressible.o \
-      hydroAnalysisIncompressibleBinaryMixture.o \
-      hydroAnalysisParticlesWall.o 
-endif
-
-#
-#
-#Add HydroGrid if you have the code
-ifneq ($(SRC_HYDROLIB_OLD),)
-      OBJS += \
-      Precision.o \
-      Random.o \
-      RNGs.o \
-      visit_writer.o \
-      FFTW.o \
-      VisitWriter.o \
-      HydroGridModule.o \
-      HydroGridCInterface.o 
-endif
 
 
 all : $(OBJS) ; $(NVCC) $(NVCCFLAGS) -o  $(EFILE) $(OBJS) $(STATIC_LIBRARIES) $(LIBRARIES) 
@@ -311,34 +270,6 @@ $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 schemeContinuousGradient.o: schemeContinuousGradient.cu header.h cells.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
-#
-#
-#If we have HydroGrid
-ifneq ($(SRC_HYDROLIB_OLD),)
-hydroAnalysisGhost.o: hydroAnalysisGhost.cu hydroAnalysis.h cells.h header.h \
-fluid.h headerOtherFluidVariables.h ; \
-$(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  $(HydroAnalisysINCL) -c $<
-
-hydroAnalysisParticlesWall.o: hydroAnalysisParticlesWall.cu hydroAnalysis.h cells.h header.h \
-fluid.h headerOtherFluidVariables.h ; \
-$(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  $(HydroAnalisysINCL) -c $<
-
-hydroAnalysis.o: hydroAnalysis.cu hydroAnalysis.h cells.h header.h fluid.h headerOtherFluidVariables.h ; \
-$(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  $(HydroAnalisysINCL) -c $<
-
-hydroAnalysisIncompressible.o: hydroAnalysisIncompressible.cu hydroAnalysis.h cells.h \
-header.h fluid.h headerOtherFluidVariables.h ; \
-$(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  $(HydroAnalisysINCL) -c $<
-
-hydroAnalysisIncompressibleBinaryMixture.o: hydroAnalysisIncompressibleBinaryMixture.cu \
-hydroAnalysis.h cells.h \
-header.h fluid.h headerOtherFluidVariables.h ; \
-$(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  $(HydroAnalisysINCL) -c $<
-
-# calculateConcentration.o: calculateConcentration.cpp header.h particles.h headerOtherFluidVariables.h ; \
-# $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HydroAnalisysINCL) $(HDRS) -c $<
-
-endif
 
 
 
@@ -405,35 +336,6 @@ createCellsQuasi2DGPU.cu createBoundariesQuasi2DGPU.cu freeBoundariesQuasi2DGPU.
 
 
 
-#
-#
-#If we have HydroGrid
-ifneq ($(SRC_HYDROLIB_OLD)),)
-
-Precision.o: Precision.f90 ; \
-	$(FC) $(FCFLAGS) -c $<
-
-RNG.o: RNG.f90 Random.o ; \
-	$(FC) $(FCFLAGS) -c $<
-
-Random.o: Random.f90 Precision.o ; \
-	$(FC) $(FCFLAGS) -c $<
-
-visit_writer.o: visit_writer.c ; \
-	$(NVCC) $(NVCCFLAGS) -c $<
-
-FFTW.o: FFTW.f90 Precision.o ; \
-	$(FC) $(FCFLAGS) -c $<
-
-VisitWriter.o: VisitWriter.f90 ; \
-	$(FC) $(FCFLAGS) -c $<
-
-HydroGridModule.o: HydroGridModule.f90 FFTW.o VisitWriter.o ; \
-	$(FC) $(FCFLAGS) -c $<
-
-HydroGridCInterface.o: HydroGridCInterface.f90 HydroGridModule.o ; \
-	$(FC) $(FCFLAGS) -c $<
-endif
 
 clean:	; rm -f $(OBJS) $(EFILE) *.mod *.o
 
