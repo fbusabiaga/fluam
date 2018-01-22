@@ -16,11 +16,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Fluam. If not, see <http://www.gnu.org/licenses/>.
-#include <thrust/transform.h>
-#include <thrust/functional.h>
-#include <thrust/iterator/zip_iterator.h>
-#include <thrust/iterator/counting_iterator.h>
-#include <thrust/device_ptr.h>
 bool runSchemeQuasi2D(){
   int threadsPerBlock = 512;
   if((ncells/threadsPerBlock) < 512) threadsPerBlock = 256;
