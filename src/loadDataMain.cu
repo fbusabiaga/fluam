@@ -86,6 +86,10 @@ const string wsaveVTK="saveVTK";
 const string wbondedForces="bondedForces";
 const string wbondedForcesVersion="bondedForcesVersion";
 const string wcomputeNonBondedForces="computeNonBondedForces";
+//Raul added, a saffman cut off wave number is now a possible input for quasi2D, which will change the kernel to 1/(k*(k+kc)). Also added viscosity measure amplitude (amplitude of the sinusoidal perturbation). Also add layer width for PBC saffman correction
+const string wsaffmanCutOffWaveNumber="saffmanCutOffWaveNumber";
+const string wviscosityMeasureAmplitude="viscosityMeasureAmplitude";
+const string wsaffmanLayerWidth="saffmanLayerWidth";
 
 const string wGhost="ghost";
 //Other Fluid Variables
@@ -202,6 +206,10 @@ bool loadDataMain(int argc, char* argv[]){
   bondedForcesVersion=0;
   computeNonBondedForces=1;
   setVolumeParticle=0;
+  //Raul Added. Default value of saffman cut off, makes the code behave as normal. Also added viscosity measure amp
+  saffmanCutOffWaveNumber=0.0;
+  viscosityMeasureAmplitude = 0.0;
+  saffmanLayerWidth = 0.0;
   //DEFAULT PARAMETERS 
 
   //OTHER FLUID VARIABLES
@@ -318,6 +326,18 @@ bool loadDataMain(int argc, char* argv[]){
       fileinput >> setparticles;
     }
     //NEW_PARAMETER
+    //Raul added, processing of saffman cut off, layer width and viscosity measure input
+    else if(word==wsaffmanCutOffWaveNumber){
+      fileinput >> saffmanCutOffWaveNumber;
+    }
+    else if(word==wsaffmanLayerWidth){
+      fileinput >> saffmanLayerWidth;
+    }
+
+    else if(word==wviscosityMeasureAmplitude){
+      fileinput >> viscosityMeasureAmplitude;
+    }
+    
     else if(word==widentity_prefactor){
       fileinput >> identity_prefactor;
     }

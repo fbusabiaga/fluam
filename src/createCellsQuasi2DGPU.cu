@@ -22,6 +22,10 @@
 
 
 bool createCellsQuasi2DGPU(){
+  //Raul added. Upload saffman variables to gpu
+  cutilSafeCall(cudaMemcpyToSymbol(saffmanCutOffWaveNumberGPU,&saffmanCutOffWaveNumber, sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(saffmanLayerWidthGPU,&saffmanLayerWidth, sizeof(double)));
+
   cutilSafeCall(cudaMemcpyToSymbol(mxGPU,&mx,sizeof(int)));
   cutilSafeCall(cudaMemcpyToSymbol(myGPU,&my,sizeof(int)));
   cutilSafeCall(cudaMemcpyToSymbol(mzGPU,&mz,sizeof(int)));

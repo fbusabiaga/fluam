@@ -1,3 +1,18 @@
+
+//Raul added, a kernel to add a shear flow to the fluid. A sinusoidal force is added to each fluid cell. This shear flow is intended to be used for viscosity measurements.
+__global__ void addShearFlowQuasi2D(cufftDoubleComplex *vxZ,
+				    cufftDoubleComplex *vyZ,
+				    double viscosityMeasureAmplitude){
+  const int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=ncellsGPU) return;
+  const int ix = i%mxGPU;
+	
+  const double pi2 = 2.0*3.1415926535897932385;
+  
+  vyZ[i].x += viscosityMeasureAmplitude*sin(pi2*(ix/(double)mxGPU));
+}
+				   
+
 __global__ void findNeighborListsQuasi2D(particlesincell* pc, 
 					 int* errorKernel,
 					 const double* rxcellGPU,
@@ -33,7 +48,6 @@ __global__ void findNeighborListsQuasi2D(particlesincell* pc,
   }
   pc->partInCellNonBonded[mNeighborsGPU*np+icel] = i;
 }
-
 
 
 __global__ void kernelSpreadParticlesForceQuasi2D(const double* rxcellGPU, 
@@ -789,9 +803,23 @@ __global__ void kernelUpdateVIncompressibleSpectral2D(cufftDoubleComplex *vxZ,
   // Construct L
   double L;
   L = -(kx * kx) - (ky * ky);
+
   
-  // Construct denominator
-  double denominator = -shearviscosityGPU * L;
+
+    // Raul added. The kernel is now modified to 1/(k*(k+kc)) if a saffman cut off wavenumber is provided. kc=0 falls back to the original code
+    // Construct denominator
+  double denominator;
+
+  if(saffmanCutOffWaveNumberGPU != 0.0){
+    double kmod = sqrt(-L);
+    double PBCcorr=1.0;
+    if(saffmanLayerWidthGPU != 0.0)
+      PBCcorr = tanh(kmod*saffmanLayerWidthGPU);
+    denominator = shearviscosityGPU*(kmod*(kmod+saffmanCutOffWaveNumberGPU*PBCcorr));
+  }
+  else
+    denominator = -shearviscosityGPU * L;
+
   
   // Construct GW
   cufftDoubleComplex GW;
@@ -854,7 +882,21 @@ __global__ void addStochasticVelocitySpectral2D(cufftDoubleComplex *vxZ, cufftDo
   }
 
   int index = wy * mxGPU + wx + shift;
-  double k2_inv = 1.0 / (kx*kx + ky*ky);
+
+
+  //Raul Added, Saffman correction to stochastic velocity
+  double sqrtgk;
+  if(saffmanCutOffWaveNumberGPU != 0.0){
+    double kmod2 = (kx*kx+ky*ky);
+    double kmod  = sqrt(kmod2);
+    double PBCcorr=1.0;
+    if(saffmanLayerWidthGPU != 0.0)
+      PBCcorr = tanh(kmod*saffmanLayerWidthGPU);
+    sqrtgk = rsqrt(kmod*kmod2*(kmod+saffmanCutOffWaveNumberGPU*PBCcorr));
+  }
+  else
+    sqrtgk = 1.0 / (kx*kx + ky*ky);
+    
   cufftDoubleComplex Wx, Wy;
   double prefactor = fact1GPU;
 
@@ -865,16 +907,16 @@ __global__ void addStochasticVelocitySpectral2D(cufftDoubleComplex *vxZ, cufftDo
     Wy.y = 0;
   }
   else if((xHalf and wy==0) || (yHalf and wx==0) || (xHalf and yHalf)){
-    Wx.x = sqrt(2.0) * prefactor * k2_inv * (ky    * dRand[           index]);
-    Wy.x = sqrt(2.0) * prefactor * k2_inv * ((-kx) * dRand[           index]);   
+    Wx.x = sqrt(2.0) * prefactor * sqrtgk * (ky    * dRand[           index]);
+    Wy.x = sqrt(2.0) * prefactor * sqrtgk * ((-kx) * dRand[           index]);   
     Wx.y = 0; 
     Wy.y = 0; 
   }
   else{
-    Wx.x = prefactor * k2_inv * (ky    * dRand[           index]);
-    Wy.x = prefactor * k2_inv * ((-kx) * dRand[           index]);   
-    Wx.y = prefactor * k2_inv * (ky    * dRand[nModes*2 + index]);
-    Wy.y = prefactor * k2_inv * ((-kx) * dRand[nModes*2 + index]);
+    Wx.x = prefactor * sqrtgk * (ky    * dRand[           index]);
+    Wy.x = prefactor * sqrtgk * ((-kx) * dRand[           index]);   
+    Wx.y = prefactor * sqrtgk * (ky    * dRand[nModes*2 + index]);
+    Wy.y = prefactor * sqrtgk * ((-kx) * dRand[nModes*2 + index]);
   }
 
   if((fx < 0) or (fx == 0 and fy < 0)){

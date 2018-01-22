@@ -16,8 +16,11 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Fluam. If not, see <http://www.gnu.org/licenses/>.
-
-
+#include <thrust/transform.h>
+#include <thrust/functional.h>
+#include <thrust/iterator/zip_iterator.h>
+#include <thrust/iterator/counting_iterator.h>
+#include <thrust/device_ptr.h>
 bool runSchemeQuasi2D(){
   int threadsPerBlock = 512;
   if((ncells/threadsPerBlock) < 512) threadsPerBlock = 256;
@@ -161,7 +164,41 @@ bool runSchemeQuasi2D(){
                                                                                        ryboundaryGPU,
                                                                                        4 * (ncells + mx + my));
     }
+
+
+    //Add external forces
+    //Raul added, call to shear flow kernel, this sums a sinusoidal force to each fluid cell.
+    if(viscosityMeasureAmplitude != 0.0){
+
+      addShearFlowQuasi2D<<<numBlocks, threadsPerBlock>>>(vxZ, vyZ, viscosityMeasureAmplitude);
+      /* Only with CUDA 8.0+
+      using vZType = typename remove_pointer<decltype(vyZ)>::type;
+      using vTuple = thrust::tuple<vZType, int>;
       
+      thrust::device_ptr<vZType> d_vy(vyZ);
+      
+      auto first = thrust::make_zip_iterator(thrust::make_tuple(d_vy, thrust::counting_iterator<int>(0)));
+
+      double viscosityMeasureAmplitudeGPU = viscosityMeasureAmplitude;
+      auto velocityModifier = [viscosityMeasureAmplitudeGPU] __device__  (vTuple v)->vTuple {		
+	double& vy = thrust::get<1>(v).x;
+	const int i = thrust::get<2>(v);
+	const int ix = i%mxGPU;
+	
+	constexpr double pi2 = 2.0*3.1415926535897932385;
+	vy += viscosityMeasureAmplitudeGPU*sin(pi2*(ix/(double)mxGPU));
+	
+	return v;
+      };
+
+      thrust::transform(first,
+		        first+ncells,
+			first,
+			velocityModifier
+			);
+      */
+    }
+    
     // Transform force density field to Fourier space
     cufftExecZ2Z(FFT,vxZ,vxZ,CUFFT_FORWARD);
     cufftExecZ2Z(FFT,vyZ,vyZ,CUFFT_FORWARD);
