@@ -803,23 +803,9 @@ __global__ void kernelUpdateVIncompressibleSpectral2D(cufftDoubleComplex *vxZ,
   // Construct L
   double L;
   L = -(kx * kx) - (ky * ky);
-
   
-
-    // Raul added. The kernel is now modified to 1/(k*(k+kc)) if a saffman cut off wavenumber is provided. kc=0 falls back to the original code
-    // Construct denominator
-  double denominator;
-
-  if(saffmanCutOffWaveNumberGPU != 0.0){
-    double kmod = sqrt(-L);
-    double PBCcorr=1.0;
-    if(saffmanLayerWidthGPU != 0.0)
-      PBCcorr = tanh(kmod*saffmanLayerWidthGPU);
-    denominator = shearviscosityGPU*(kmod*(kmod+saffmanCutOffWaveNumberGPU*PBCcorr));
-  }
-  else
-    denominator = -shearviscosityGPU * L;
-
+  // Construct denominator
+  double denominator = -shearviscosityGPU * L;
   
   // Construct GW
   cufftDoubleComplex GW;
@@ -839,8 +825,6 @@ __global__ void kernelUpdateVIncompressibleSpectral2D(cufftDoubleComplex *vxZ,
     vyZ[i].y = (WyZ[i].y + ky * GW.y / L) / denominator;
   }
 }
-
-
 
 __global__ void addStochasticVelocitySpectral2D(cufftDoubleComplex *vxZ, cufftDoubleComplex *vyZ, const double *dRand){
 
@@ -882,21 +866,7 @@ __global__ void addStochasticVelocitySpectral2D(cufftDoubleComplex *vxZ, cufftDo
   }
 
   int index = wy * mxGPU + wx + shift;
-
-
-  //Raul Added, Saffman correction to stochastic velocity
-  double sqrtgk;
-  if(saffmanCutOffWaveNumberGPU != 0.0){
-    double kmod2 = (kx*kx+ky*ky);
-    double kmod  = sqrt(kmod2);
-    double PBCcorr=1.0;
-    if(saffmanLayerWidthGPU != 0.0)
-      PBCcorr = tanh(kmod*saffmanLayerWidthGPU);
-    sqrtgk = rsqrt(kmod*kmod2*(kmod+saffmanCutOffWaveNumberGPU*PBCcorr));
-  }
-  else
-    sqrtgk = 1.0 / (kx*kx + ky*ky);
-    
+  double k2_inv = 1.0 / (kx*kx + ky*ky);
   cufftDoubleComplex Wx, Wy;
   double prefactor = fact1GPU;
 
@@ -907,16 +877,16 @@ __global__ void addStochasticVelocitySpectral2D(cufftDoubleComplex *vxZ, cufftDo
     Wy.y = 0;
   }
   else if((xHalf and wy==0) || (yHalf and wx==0) || (xHalf and yHalf)){
-    Wx.x = sqrt(2.0) * prefactor * sqrtgk * (ky    * dRand[           index]);
-    Wy.x = sqrt(2.0) * prefactor * sqrtgk * ((-kx) * dRand[           index]);   
+    Wx.x = sqrt(2.0) * prefactor * k2_inv * (ky    * dRand[           index]);
+    Wy.x = sqrt(2.0) * prefactor * k2_inv * ((-kx) * dRand[           index]);   
     Wx.y = 0; 
     Wy.y = 0; 
   }
   else{
-    Wx.x = prefactor * sqrtgk * (ky    * dRand[           index]);
-    Wy.x = prefactor * sqrtgk * ((-kx) * dRand[           index]);   
-    Wx.y = prefactor * sqrtgk * (ky    * dRand[nModes*2 + index]);
-    Wy.y = prefactor * sqrtgk * ((-kx) * dRand[nModes*2 + index]);
+    Wx.x = prefactor * k2_inv * (ky    * dRand[           index]);
+    Wy.x = prefactor * k2_inv * ((-kx) * dRand[           index]);   
+    Wx.y = prefactor * k2_inv * (ky    * dRand[nModes*2 + index]);
+    Wy.y = prefactor * k2_inv * ((-kx) * dRand[nModes*2 + index]);
   }
 
   if((fx < 0) or (fx == 0 and fy < 0)){
@@ -987,4 +957,163 @@ __global__ void kernelUpdateVIncompressibleStokes2D(cufftDoubleComplex *vxZ,
   
 }
 
+
+
+
+
+//Raul Added. Saffman kernel cuda kernels.
+
+__global__ void kernelUpdateVIncompressibleSaffman2D(cufftDoubleComplex *vxZ, 
+						      cufftDoubleComplex *vyZ,
+						      cufftDoubleComplex *vzZ, 
+						      cufftDoubleComplex *WxZ, 
+						      cufftDoubleComplex *WyZ, 
+						      cufftDoubleComplex *WzZ, 
+						      prefactorsFourier *pF){
+  
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=ncellsGPU) return;   
+
+  // Find mode
+  int wx, wy;
+  wy = i / mxGPU;
+  wx = i % mxGPU;
+
+  if(wx > mxGPU / 2){
+    wx -= mxGPU;
+  }
+  if(wy > myGPU / 2){
+    wy -= myGPU;
+  }
+
+  bool xHalf = (mxGPU % 2) == 0 && (wx == mxGPU / 2);
+  bool yHalf = (myGPU % 2) == 0 && (wy == myGPU / 2);
+  if(xHalf and wy < 0){
+    wx *= -1;
+  }
+  else if(yHalf and wx < 0){
+    wy *= -1;
+  }
+
+  double pi = 3.1415926535897932385;
+  double kx = wx * 2.0 * pi / lxGPU;
+  double ky = wy * 2.0 * pi / lyGPU;
+  
+  // Construct L
+  double L = -(kx * kx) - (ky * ky);
+
+  
+
+    // Raul added. The kernel is now modified to 1/(k*(k+kc)) if a saffman cut off wavenumber is provided. kc=0 falls back to the original code
+    // Construct denominator
+  double kmod = sqrt(-L);
+  double PBCcorr=1.0;
+  if(saffmanLayerWidthGPU != 0.0)
+    PBCcorr = tanh(kmod*saffmanLayerWidthGPU);
+  double denominator = shearviscosityGPU*(kmod*(kmod+saffmanCutOffWaveNumberGPU*PBCcorr));
+
+  
+  // Construct GW
+  cufftDoubleComplex GW;
+  GW.x = kx * WxZ[i].x + ky * WyZ[i].x ;
+  GW.y = kx * WxZ[i].y + ky * WyZ[i].y ;
+  
+  if(i == 0){
+    vxZ[i].x = 0; 
+    vxZ[i].y = 0; 
+    vyZ[i].x = 0; 
+    vyZ[i].y = 0; 
+  }
+  else{
+    vxZ[i].x = (WxZ[i].x + kx * GW.x / L) / denominator;
+    vxZ[i].y = (WxZ[i].y + kx * GW.y / L) / denominator;
+    vyZ[i].x = (WyZ[i].x + ky * GW.x / L) / denominator;
+    vyZ[i].y = (WyZ[i].y + ky * GW.y / L) / denominator;
+  }
+}
+
+
+
+__global__ void addStochasticVelocitySaffman2D(cufftDoubleComplex *vxZ, cufftDoubleComplex *vyZ, const double *dRand){
+
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=ncellsGPU) return;   
+
+  //Find mode
+  int wx, wy, fx, fy, shift;
+  int nModes = (ncellsGPU + mxGPU + myGPU);
+  wy = i / mxGPU;
+  wx = i % mxGPU;
+  fx = wx;
+  fy = wy;
+  shift = 0;
+
+  if(wx > mxGPU / 2){
+    fx = wx - mxGPU;
+    wx = mxGPU - wx;
+  }
+  if(wy > myGPU / 2){
+    fy = wy - myGPU;
+    wy = myGPU - wy;
+  }
+  bool xHalf = (mxGPU % 2) == 0 && (wx == mxGPU / 2);
+  bool yHalf = (myGPU % 2) == 0 && (wy == myGPU / 2);
+  if(xHalf and fy < 0){
+    fx *= -1;
+  }
+  else if(yHalf and fx < 0){
+    fy *= -1;
+  }
+
+  double pi = 3.1415926535897932385;
+  double kx = wx * 2 * pi / lxGPU;
+  double ky = wy * 2 * pi / lyGPU;
+  if(fx * fy < 0){
+    shift = nModes / 2;
+    kx *= -1.0;
+  }
+
+  int index = wy * mxGPU + wx + shift;
+
+
+  //Raul Added, Saffman correction to stochastic velocity
+  double kmod2 = (kx*kx+ky*ky);
+  double kmod  = sqrt(kmod2);
+  double PBCcorr=1.0;
+  if(saffmanLayerWidthGPU != 0.0)
+    PBCcorr = tanh(kmod*saffmanLayerWidthGPU);
+  double sqrtgk = rsqrt(kmod*kmod2*(kmod+saffmanCutOffWaveNumberGPU*PBCcorr));
+    
+  cufftDoubleComplex Wx, Wy;
+  double prefactor = fact1GPU;
+
+  if(((mxGPU % 2) == 0 && (wx == mxGPU / 2)) || ((myGPU % 2) == 0 && (wy == myGPU / 2)) || (i == 0)){
+    Wx.x = 0;
+    Wx.y = 0;
+    Wy.x = 0;
+    Wy.y = 0;
+  }
+  else if((xHalf and wy==0) || (yHalf and wx==0) || (xHalf and yHalf)){
+    Wx.x = sqrt(2.0) * prefactor * sqrtgk * (ky    * dRand[           index]);
+    Wy.x = sqrt(2.0) * prefactor * sqrtgk * ((-kx) * dRand[           index]);   
+    Wx.y = 0; 
+    Wy.y = 0; 
+  }
+  else{
+    Wx.x = prefactor * sqrtgk * (ky    * dRand[           index]);
+    Wy.x = prefactor * sqrtgk * ((-kx) * dRand[           index]);   
+    Wx.y = prefactor * sqrtgk * (ky    * dRand[nModes*2 + index]);
+    Wy.y = prefactor * sqrtgk * ((-kx) * dRand[nModes*2 + index]);
+  }
+
+  if((fx < 0) or (fx == 0 and fy < 0)){
+    Wx.y *= -1.0;
+    Wy.y *= -1.0;
+  }
+
+  vxZ[i].x += Wx.x;
+  vxZ[i].y += Wx.y;
+  vyZ[i].x += Wy.x;
+  vyZ[i].y += Wy.y;
+}
 

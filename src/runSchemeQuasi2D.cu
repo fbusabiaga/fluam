@@ -210,10 +210,20 @@ bool runSchemeQuasi2D(){
       addStochasticVelocityRPYQuasi2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ,dRand,1.0,0);
     }
     else if(stokesLimit2D){
-      // Compute deterministic fluid velocity
-      kernelUpdateVIncompressibleSpectral2D<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxZ,vyZ,vzZ,pF); 
-      // Add stochastic velocity
-      addStochasticVelocitySpectral2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ,dRand);
+      //Raul added, call Saffman kernels if Saffman mode is a Saffman cut off is provided.
+      if(saffmanCutOffWaveNumber != 0.0){
+	// Compute deterministic fluid velocity
+	kernelUpdateVIncompressibleSaffman2D<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxZ,vyZ,vzZ,pF); 
+	// Add stochastic velocity
+	addStochasticVelocitySaffman2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ,dRand);
+
+      }
+      else{
+	// Compute deterministic fluid velocity
+	kernelUpdateVIncompressibleSpectral2D<<<numBlocks,threadsPerBlock>>>(vxZ,vyZ,vzZ,vxZ,vyZ,vzZ,pF); 
+	// Add stochastic velocity
+	addStochasticVelocitySpectral2D<<<numBlocks, threadsPerBlock>>>(vxZ,vyZ,dRand);
+      }
     }
 
     // Transform velocity field to real space
