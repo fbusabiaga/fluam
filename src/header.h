@@ -26,6 +26,10 @@
 #include <math.h>
 
 using namespace std;
+namespace space_saveFluidVTK{
+  bool saveFluidVTK(int option);
+}
+using namespace space_saveFluidVTK;
 
 #ifdef GLOBAL
 #define EXTERN_GLOBAL
@@ -103,6 +107,7 @@ bool hydroAnalysisIncompressible(int counter);
 bool schemeBinaryMixtureWall();
 bool cudaDevice();
 bool saveFluidFinalConfiguration();
+// bool space_saveFluidVTK::saveFluidVTK(int option);
 bool saveFluidVTK(int option);
 
 //Functions for pseudorandom numbers

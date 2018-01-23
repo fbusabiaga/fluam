@@ -24,10 +24,12 @@
 #include "fluid.h"
 #include "cells.h"
 #include "particles.h"
-#include "visit_writer.h"
-// #include "visit_writer.c"
 #include "hydroAnalysis.h"
 
+
+namespace space_saveFluidVTK{
+#include "visit_writer.h"
+#include "visit_writer.c"
 
 bool saveFluidVTK(int option){
   
@@ -245,12 +247,6 @@ bool saveFluidVTK(int option){
   
   file.close();
     
-
-
-
-
-
-
   return 1;
-
+}
 }

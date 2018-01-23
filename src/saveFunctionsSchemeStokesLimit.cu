@@ -19,8 +19,8 @@
 
 
 // Uncomment the appropiate line to use HydroGrid
-// #undef HydroGrid 
-#define HydroGrid 1
+#undef HydroGrid 
+// #define HydroGrid 1
 
 
 #ifdef HydroGrid

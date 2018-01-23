@@ -43,7 +43,7 @@ bool saveFunctionsSchemeIncompressibleBoundary(int index, long long step){
     if(setSaveVTK)
       if((savefreq!=0))
 	if((step%savefreq)==0)
-	  if(!saveFluidVTK(0)) return 0;
+    if(!space_saveFluidVTK::saveFluidVTK(0)) return 0;
   }
   //Close save functions
   else if(index==2){
@@ -56,7 +56,7 @@ bool saveFunctionsSchemeIncompressibleBoundary(int index, long long step){
     if(setCheckVelocity==1) checkVelocity(2,0,fileCheckVelocity);
     if(!saveFluidFinalConfiguration()) return 0;
     if(setSaveVTK)
-      if(!saveFluidVTK(1)) return 0;
+      if(!space_saveFluidVTK::saveFluidVTK(1)) return 0;
   }
   else{
     cout << "SAVE FUNCTIONS ERROR, INDEX !=0,1,2 " << endl;
