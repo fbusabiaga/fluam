@@ -363,9 +363,9 @@ __global__ void kernelSpreadParticlesForce2D(const double* rxcellGPU,
 
 
 
-  //NEW bonded forces
+  // NEW bonded forces
   if(bondedForcesGPU){
-    //call function for bonded forces particle-particle
+    // call function for bonded forces particle-particle
     forceBondedParticleParticleGPU_2D(i,
 				      fx,
 				      fy,

@@ -50,6 +50,12 @@ __global__ void doubleComplexToDoubleNormalized(cufftDoubleComplex* vxUpI,
   vyGPU[j] = vyUpI[j].x / double(ncellsGPU);
   vzGPU[j] = vzUpI[j].x / double(ncellsGPU);
 
+  /*if((fabs(vxUpI[j].y) / (fabs(vxUpI[j].x) + 1e-12) > 1e-08) and (fabs(vxUpI[j].y) > 1e-12)){ 
+    printf("i = %i, vx.x = %e, vx.y = %e, r = %e \n", j, vxUpI[j].x, vxUpI[j].y, fabs(vxUpI[j].y / (fabs(vxUpI[j].x) + 1e-12)));
+  }
+  if((fabs(vyUpI[j].y) / (fabs(vyUpI[j].x) + 1e-12) > 1e-08) and (fabs(vyUpI[j].y) > 1e-12)){ 
+    printf("i = %i, vy.x = %e, vy.y = %e, r = %e \n", j, vyUpI[j].x, vyUpI[j].y, fabs(vyUpI[j].y / (fabs(vyUpI[j].x) + 1e-12)));
+  }*/
 }
 
 
@@ -602,6 +608,21 @@ __global__ void setFieldToZeroInput(double* vxGPU,
   vyGPU[i] = 0;//input;
   vzGPU[i] = 0;//input;
 
+}
+
+__global__ void setFieldToZeroInput(cufftDoubleComplex* vxZ,
+				    cufftDoubleComplex* vyZ,
+				    cufftDoubleComplex* vzZ){
+
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  if(i>=ncellsGPU) return;   
+
+  vxZ[i].x = 0;
+  vxZ[i].y = 0;
+  vyZ[i].x = 0;
+  vyZ[i].y = 0;
+  vzZ[i].x = 0;
+  vzZ[i].y = 0;
 }
 
 

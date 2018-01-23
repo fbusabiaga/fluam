@@ -29,8 +29,6 @@ bool initializeFluidGPU(){
   cutilSafeCall(cudaMemcpy(rycellGPU,cry,ncellst*sizeof(double),cudaMemcpyHostToDevice));
   cutilSafeCall(cudaMemcpy(rzcellGPU,crz,ncellst*sizeof(double),cudaMemcpyHostToDevice));
   
-
-  
   
   cout << "INITIALIZE FLUID GPU :          DONE" << endl;
 

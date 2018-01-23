@@ -50,7 +50,12 @@ bool createParticles(){
     vxParticleI = new double [np];
     vyParticleI = new double [np];
     vzParticleI = new double [np];
-    simpleCubic();
+    if(quasiNeutrallyBuoyant2D or quasiNeutrallyBuoyant4pt2D or quasi2D or stokesLimit2D){
+      simpleCubic(2);
+    }
+    else{
+      simpleCubic(3);
+    }
     double vx, vy, vz;
     vx = 0;
     vy = 0;
@@ -129,6 +134,9 @@ bool createParticles(){
     // For the 4pt kernel the particle volume should be
     // (8.0/3.0)^dimensions times the volume of a fluid cell.
     volumeParticle = 64.0 / 9.0 ; 
+  }
+  else if(quasi2D){
+    volumeParticle = 4;
   }
   else{
     volumeParticle = 8;

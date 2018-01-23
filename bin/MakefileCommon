@@ -5,21 +5,6 @@ vpath %.cpp $(SRC_FLUAM)
 vpath %.h $(SRC_FLUAM)
 
 
-#
-#
-#If we have HydroGrid add some more sources
-ifneq ($(SRC_HYDROLIB),)
-      vpath %.c $(SRC_HYDROLIB)
-      vpath %.h $(SRC_HYDROLIB)
-      vpath %.f90 $(SRC_HYDROLIB)
-endif
-
-
-
-
-###NVCCSOURCES += main.cu
-
-
 
 OBJS = main.o \
 cudaDevice.o \
@@ -43,6 +28,7 @@ schemeIncompressibleBoundary.o \
 schemeQuasiNeutrallyBuoyant.o \
 schemeQuasiNeutrallyBuoyant2D.o \
 schemeQuasiNeutrallyBuoyant4pt2D.o \
+schemeQuasi2D.o \
 schemeTestJPS.o \
 schemeStokesLimitFirstOrder.o \
 schemeStokesLimit.o \
@@ -82,37 +68,6 @@ initializeFluidGiantFluctuations.o \
 schemeContinuousGradient.o \
 saveFluidFinalConfiguration.o \
 saveFluidVTK.o \
-
-
-#
-#
-#If we have HydroGrid add some more functions
-ifneq ($(SRC_HYDROLIB),)
-      OBJS += \
-      hydroAnalysis.o \
-      hydroAnalysisGhost.o \
-      hydroAnalysisIncompressible.o \
-      hydroAnalysisIncompressibleBinaryMixture.o \
-      hydroAnalysisParticlesWall.o 
-endif
-
-#
-#
-#Add HydroGrid if you have the code
-ifneq ($(SRC_HYDROLIB),)
-      OBJS += \
-      Precision.o \
-      RNG.o \
-      Random.o \
-      RNGs.o \
-      visit_writer.o \
-      FFTW.o \
-      VisitWriter.o \
-      HydroGridModule.o \
-      HydroGridCInterface.o 
-endif
-
-
 
 
 
@@ -188,6 +143,10 @@ particles.h headerOtherFluidVariables.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
 schemeQuasiNeutrallyBuoyant.o: schemeQuasiNeutrallyBuoyant.cu header.h cells.h \
+boundary.h particles.h headerOtherFluidVariables.h ; \
+$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
+
+schemeQuasi2D.o: schemeQuasi2D.cu header.h cells.h \
 boundary.h particles.h headerOtherFluidVariables.h ; \
 $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
@@ -313,33 +272,6 @@ $(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
 
 
 
-#
-#
-#If we have HydroGrid
-ifneq ($(SRC_HYDROLIB),)
-hydroAnalysisGhost.o: hydroAnalysisGhost.cu hydroAnalysis.h cells.h header.h \
-fluid.h headerOtherFluidVariables.h ; \
-$(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  $(HydroAnalisysINCL) -c $<
-
-hydroAnalysisParticlesWall.o: hydroAnalysisParticlesWall.cu hydroAnalysis.h cells.h header.h \
-fluid.h headerOtherFluidVariables.h ; \
-$(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  $(HydroAnalisysINCL) -c $<
-
-hydroAnalysis.o: hydroAnalysis.cu hydroAnalysis.h cells.h header.h fluid.h headerOtherFluidVariables.h ; \
-$(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  $(HydroAnalisysINCL) -c $<
-
-hydroAnalysisIncompressible.o: hydroAnalysisIncompressible.cu hydroAnalysis.h cells.h \
-header.h fluid.h headerOtherFluidVariables.h ; \
-$(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  $(HydroAnalisysINCL) -c $<
-
-hydroAnalysisIncompressibleBinaryMixture.o: hydroAnalysisIncompressibleBinaryMixture.cu \
-hydroAnalysis.h cells.h \
-header.h fluid.h headerOtherFluidVariables.h ; \
-$(NVCC) $(NVCCFLAGS) $(NVCCINCLS)  $(HydroAnalisysINCL) -c $<
-
-endif
-
-
 
 
 
@@ -368,7 +300,7 @@ gpuToHostIncompressibleBoundary.cu boundaryParticlesFunctionIncompressible.cu no
 saveFunctionsSchemeIncompressibleBoundary.cu projectionDivergenceFree.cu checkVelocity.cu \
 forceIncompressibleBoundaryGPU.cu createBoundariesRK2GPU.cu createBoundaries4ptGPU.cu freeBoundariesRK2GPU.cu \
 gpuToHostIncompressibleBoundaryRK2.cu runSchemeQuasiNeutrallyBuoyant.cu runSchemeQuasiNeutrallyBuoyant2D.cu \
-runSchemeQuasiNeutrallyBuoyant4pt2D.cu kernelSpreadParticles.cu \
+runSchemeQuasiNeutrallyBuoyant4pt2D.cu runSchemeQuasi2D.cu kernelSpreadParticles.cu \
 kernelConstructWQuasiNeutrallyBuoyant.cu \
 kernelCorrectionVQuasiNeutrallyBuoyant.cu quasiNeutrallyBuoyantFunctions.cu firstStepQuasiNeutrallyBuoyant.cu \
 firstStepQuasiNeutrallyBuoyant2D.cu firstStepQuasiNeutrallyBuoyant4pt2D.cu calculateAdvectionFluid.cu \
@@ -397,44 +329,13 @@ runSchemeMomentumCoupling.cu boundaryParticlesFunctionMomentumCoupling.cu nonBon
 updateFluidMomentumCoupling.cu saveFunctionsSchemeStokesLimit.cu runSchemeStokesLimit.cu \
 boundaryParticlesFunctionStokesLimit.cu stokesLimitFunctions.cu createCellsStokesLimitGPU.cu \
 freeCellsStokesLimitGPU.cu schemeStokesLimitFirstOrder.cu runSchemeStokesLimitFirstOrder.cu \
-boundaryParticlesFunctionStokesLimitFirstOrder.cu ; \
-	$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HDRS) -c $<
+boundaryParticlesFunctionStokesLimitFirstOrder.cu quasi2DFunctions.cu freeCellsQuasi2DGPU.cu \
+createCellsQuasi2DGPU.cu createBoundariesQuasi2DGPU.cu freeBoundariesQuasi2DGPU.cu texturesCellsQuasi2D.cu ; \
+	$(NVCC) $(NVCCFLAGS) $(NVCCINCLS) $(HydroAnalisysINCL) $(HDRS) -c $<
 
 
 
 
-#
-#
-#If we have HydroGrid
-ifneq ($(SRC_HYDROLIB)),)
-#HydroAnalisis from Aleks
-Precision.o: Precision.f90 ; \
-	$(FC) $(FCFLAGS) -c $<
-
-RNG.o: RNG.f90 Random.o ; \
-	$(FC) $(FCFLAGS) -c $<
-
-Random.o: Random.f90 Precision.o ; \
-	$(FC) $(FCFLAGS) -c $<
-
-RNGs.o: RNGs.c ; \
-	$(NVCC) $(NVCCFLAGS) -c -DBL_FORT_USE_UNDERSCORE $<
-
-visit_writer.o: visit_writer.c ; \
-	$(NVCC) $(NVCCFLAGS) -c $<
-
-FFTW.o: FFTW.f90 Precision.o ; \
-	$(FC) $(FCFLAGS) -c $<
-
-VisitWriter.o: VisitWriter.f90 ; \
-	$(FC) $(FCFLAGS) -c $<
-
-HydroGridModule.o: HydroGridModule.f90 FFTW.o VisitWriter.o ; \
-	$(FC) $(FCFLAGS) -c $<
-
-HydroGridCInterface.o: HydroGridCInterface.f90 HydroGridModule.o ; \
-	$(FC) $(FCFLAGS) -c $<
-endif
 
 clean:	; rm -f $(OBJS) $(EFILE) *.mod *.o
 

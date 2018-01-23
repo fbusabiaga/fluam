@@ -27,6 +27,7 @@
 EXTERN_CELLS int mx;
 EXTERN_CELLS int my;
 EXTERN_CELLS int mz;
+EXTERN_CELLS int mxHydroGrid, myHydroGrid;
 EXTERN_CELLS int ncells;
 EXTERN_CELLS int mxt;
 EXTERN_CELLS int myt;

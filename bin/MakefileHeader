@@ -5,9 +5,9 @@ SRC_FLUAM=../src/
 
 #
 #
-#Path to HydroGrid
-#Uncomment if you have HydroGrid
-#SRC_HYDROLIB=../../HydroGrid/
+# Path to HydroGrid
+# Uncomment if you have HydroGrid
+SRC_HYDROLIB=../../HydroGrid/src/
 
 
 #
@@ -28,11 +28,12 @@ NVCC = nvcc
 #CUDALIB=-L/usr/local/cuda-5.0/lib64 -lcurand
 
 #
+#
 # Cuda flags, some possible options are:
 # Set optimization: (default) -O3
 # Use a specific c++ compiler: --compiler-bindir /usr/bin/gcc
-# Compile for a given architecture, for example 2.0: -arch=sm_2
-NVCCFLAGS = -arch=sm_20 --compiler-bindir /usr/bin/gcc $(CUDALIB)
+# Compile for a given architecture, for example 2.0: -arch=sm_20
+NVCCFLAGS = -arch=sm_32 $(CUDALIB) 
 
 #
 #
@@ -70,14 +71,24 @@ NVCCINCLS +=
 
 #
 #
-#Includes to HydroGrid
-HydroAnalisysINCL = -I$(SRC_HYDROLIB)
+#Libraries -lfftw3 -lfftw3f
+LIBRARIES = -L/usr/local/cuda/lib64 -lcurand -L/usr/lib64/ -L./ -lgfortran -lcufft -lm -lfftw3 -lfftw3f
+STATIC_LIBRARIES = 
 
 #
 #
-#Libraries -lfftw3 -lfftw3f
-LIBRARIES = -L/usr/local/cuda/lib64 -lcurand -L/usr/lib64/ -L./ -lgfortran -lcufft -lm 
-STATIC_LIBRARIES = 
+#If we have HydroGrid
+ifneq ($(SRC_HYDROLIB),)
+HydroAnalisysINCL = -I$(SRC_HYDROLIB)
+STATIC_LIBRARIES += -L$(SRC_HYDROLIB) -lCallHydroGrid -L$(SRC_HYDROLIB) -lHydroAnalysis
+
+# Add python
+STATIC_LIBRARIES += -lpython2.7
+# STATIC_LIBRARIES += -lutil -L/usr/local/stow/python-2.7/lib/python2.7/config/ -lpython2.7
+
+BOOST_LIB = /usr/lib64/boost
+LIBRARIES += -L$(BOOST_LIB) -lboost_python 
+endif
 
 #
 #

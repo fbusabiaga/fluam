@@ -1,6 +1,6 @@
 // Filename: headerOtherFluidVariables.h
 //
-// Copyright (c) 2010-2016, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2017, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -78,6 +78,12 @@ EXTERN_OTHER_FLUID_V bool quasiNeutrallyBuoyant2D;
 //quasiNeutrallyBuoyant4pt2D Begins
 EXTERN_OTHER_FLUID_V bool quasiNeutrallyBuoyant4pt2D;
 //quasiNeutrallyBuoyant4pt2D Ends
+
+//quasi2D Begins
+EXTERN_OTHER_FLUID_V bool quasi2D;
+EXTERN_OTHER_FLUID_V bool stokesLimit2D;
+EXTERN_OTHER_FLUID_V bool predictorCorrector;
+//quasi2D Ends
 
 //IMEXRK Begins
 EXTERN_OTHER_FLUID_V bool IMEXRK;

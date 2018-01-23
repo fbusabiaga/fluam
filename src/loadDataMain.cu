@@ -1,6 +1,6 @@
 // Filename: loadDataMain.cu
 //
-// Copyright (c) 2010-2016, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2017, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -86,6 +86,10 @@ const string wsaveVTK="saveVTK";
 const string wbondedForces="bondedForces";
 const string wbondedForcesVersion="bondedForcesVersion";
 const string wcomputeNonBondedForces="computeNonBondedForces";
+//Raul added, a saffman cut off wave number is now a possible input for quasi2D, which will change the kernel to 1/(k*(k+kc)). Also added viscosity measure amplitude (amplitude of the sinusoidal perturbation). Also add layer width for PBC saffman correction
+const string wsaffmanCutOffWaveNumber="saffmanCutOffWaveNumber";
+const string wviscosityMeasureAmplitude="viscosityMeasureAmplitude";
+const string wsaffmanLayerWidth="saffmanLayerWidth";
 
 const string wGhost="ghost";
 //Other Fluid Variables
@@ -121,9 +125,20 @@ const string wquasiNeutrallyBuoyant="quasiNeutrallyBuoyant";
 //quasiNeutrallyBuoyant2D Begins
 const string wquasiNeutrallyBuoyant2D="quasiNeutrallyBuoyant2D";
 //quasiNeutrallyBuoyant2D Ends
+//quasiNeutrallyBuoyant4pt2D Begins
 const string wquasiNeutrallyBuoyant4pt2D="quasiNeutrallyBuoyant4pt2D";
 //quasiNeutrallyBuoyant4pt2D Ends
-//quasiNeutrallyBuoyant4pt2D Begins
+//quasi2D Begins
+const string wquasi2D="quasi2D";
+const string whydrodynamicRadius="hydrodynamicRadius";
+const string wnDrift="nDrift";
+const string wuse_RFD="use_RFD";
+const string wstokesLimit2D="stokesLimit2D";
+const string wpredictorCorrector="predictorCorrector";
+const string wsampleHydroGrid="sampleHydroGrid";
+const string wcellsHydroGrid = "cellsHydroGrid";
+const string wgreenParticles = "greenParticles";
+//quasi2D Ends
 //IMEX-RK Begins
 const string wIMEXRK="IMEXRK";
 //IMEX-RK Ends
@@ -191,6 +206,10 @@ bool loadDataMain(int argc, char* argv[]){
   bondedForcesVersion=0;
   computeNonBondedForces=1;
   setVolumeParticle=0;
+  //Raul Added. Default value of saffman cut off, makes the code behave as normal. Also added viscosity measure amp
+  saffmanCutOffWaveNumber=0.0;
+  viscosityMeasureAmplitude = 0.0;
+  saffmanLayerWidth = 0.0;
   //DEFAULT PARAMETERS 
 
   //OTHER FLUID VARIABLES
@@ -237,6 +256,20 @@ bool loadDataMain(int argc, char* argv[]){
   //quasiNeutrallyBuoyant4pt2D Begins
   quasiNeutrallyBuoyant4pt2D = 0;
   //quasiNeutrallyBuoyant4pt2D Ends
+
+  //quasi2D Begins
+  quasi2D = 0;
+  hydrodynamicRadius = 1.0;
+  nDrift = 1;
+  stokesLimit2D = 0;
+  predictorCorrector = 0;
+  sampleHydroGrid = 1;
+  mxHydroGrid = 16;
+  myHydroGrid = 16;
+  greenStart = 0;
+  greenEnd = 0;
+  use_RFD = 1;
+  //quasi2D Ends
 
   //particlesWall Begins
   particlesWall = 0;
@@ -289,11 +322,22 @@ bool loadDataMain(int argc, char* argv[]){
 
   fileinput >> word;
   while(!fileinput.eof()){
-    
     if(word==wsetparticles){
       fileinput >> setparticles;
     }
     //NEW_PARAMETER
+    //Raul added, processing of saffman cut off, layer width and viscosity measure input
+    else if(word==wsaffmanCutOffWaveNumber){
+      fileinput >> saffmanCutOffWaveNumber;
+    }
+    else if(word==wsaffmanLayerWidth){
+      fileinput >> saffmanLayerWidth;
+    }
+
+    else if(word==wviscosityMeasureAmplitude){
+      fileinput >> viscosityMeasureAmplitude;
+    }
+    
     else if(word==widentity_prefactor){
       fileinput >> identity_prefactor;
     }
@@ -520,6 +564,35 @@ bool loadDataMain(int argc, char* argv[]){
       quasiNeutrallyBuoyant4pt2D=1;
     }
     //quasiNeutrallyBuoyant4pt2D Ends
+    //quasi2D Begins
+    else if(word==wquasi2D){
+      quasi2D=1;
+    }
+    else if(word == whydrodynamicRadius){
+      fileinput >> hydrodynamicRadius;
+    }
+    else if(word == wnDrift){
+      fileinput >> nDrift;
+    }
+    else if(word==wstokesLimit2D){
+      stokesLimit2D=1;
+    }
+    else if(word==wpredictorCorrector){
+      fileinput >> predictorCorrector;
+    }
+    else if(word==wsampleHydroGrid){
+      fileinput >> sampleHydroGrid;
+    }
+    else if(word==wcellsHydroGrid){
+      fileinput >> mxHydroGrid >> myHydroGrid;
+    }
+    else if(word==wgreenParticles){
+      fileinput >> greenStart >> greenEnd;
+    }
+    else if(word==wuse_RFD){
+      fileinput >> use_RFD;
+    }
+    //quasi2D Ends
     //IMEXRK Begins
     else if(word==wIMEXRK){
       IMEXRK=1;

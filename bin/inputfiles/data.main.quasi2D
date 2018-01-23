@@ -1,0 +1,85 @@
+# Select the GPU to run fluam
+# In general it's better not to use this option
+# setDevice 0
+
+# Chose scheme
+# quasi2D or stokesLimit2D for strictly 2D hydrodynamics
+quasi2D
+# stokesLimit2D
+particles                               1
+
+# Default integrator is Forward-Euler, to
+# use predictor-corrector as in Eq. 34-35
+# in Delong et al. 2014 (doi:10.1063/1.4869866)
+# set the next variable to 1
+predictorCorrector                      0
+
+# Number of particles
+numberparticles                         1304
+
+# Set to zero if particle-particle interactions are ignored
+computeNonBondedForces                  0
+
+# Cutoff for the particle-particle interaction
+cutoff                                  22.4492409662
+# Give file with the bonded force between particles (see fluam/bin/inputfile/README)
+# bondedForces		harmonicTrap.dat
+# Maximum number of particles in the neighbor list
+maxNumberPartInCellNonBonded            20
+maxNumberPartInCell     	              20
+
+# Fluid density
+densfluid                               1.0
+# Shear viscosity
+shearviscosity                          1.0
+# Temperature in energy units (T -> k_B*T)
+temperature                             1.0
+hydrodynamicRadius                      1.0
+
+# Number of fluid cells in the directions x, y and z
+cells		                                160 160 1
+# Dimensions of the simulation box
+celldimension                           128 128 1
+
+
+# To give an initial configuration for the particles
+# set loadparticles to 1 and provide the file for initial configuration
+# and optionally a file for the initial velocities.
+# If no file is given the particles start in simple cubic lattice.
+loadparticles		                        0
+coordinates		                          /sibm/fbalboa/fluam/bin/blobsRandom.dat
+
+
+# Seed to feed the random number generator. If no one is given 
+# fluam takes one from the computer clock. 
+# seed			                            1
+
+# Number of relaxation steps during which fluam save no data 
+numstepsRelaxation	                    0
+# Number of steps (no counting numstepsRelaxation) 
+numsteps                                100
+# Save data every samplefreq steps 
+samplefreq                              2
+# Time step
+dt                                      0.2
+
+# Prefix for the output files. The directory where the data is saved
+# should exist before running fluam
+outputname                              ../data/run
+
+
+
+
+
+
+# Variables for HydroGrid:
+# Give first and last index of green particles,
+# the rest of particles are red
+greenParticles                          0 652
+# number of cells to compute concentration
+cellsHydroGrid                          100 100 
+# Do HydroGrid analysis every "sampleHydroGrid" steps
+sampleHydroGrid                         1
+# if savefreq > 0 HydroGrid prints data every savefreq steps and it restarts
+savefreq		                            0
+

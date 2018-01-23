@@ -1,6 +1,6 @@
-// Filename: schemeStokesLimit.cu
+// Filename: schemeQuasiNeutrallyBuoyant.cu
 //
-// Copyright (c) 2010-2016, Florencio Balboa Usabiaga
+// Copyright (c) 2010-2017, Florencio Balboa Usabiaga
 //
 // This file is part of Fluam
 //
@@ -24,7 +24,7 @@
 #include "boundary.h"
 
 
-bool schemeStokesLimitFirstOrder(){
+bool schemeQuasi2D(){
   
   //Create fluid cells
   if(!createCells()) return 0;
@@ -45,27 +45,27 @@ bool schemeStokesLimitFirstOrder(){
   if(!initializeFluid()) return 0;
 
   //Create fluid cells in the GPU
-  if(!createCellsStokesLimitGPU()) return 0;
+  if(!createCellsQuasi2DGPU()) return 0;
 
   //Initialize fluid in the GPU
   if(!initializeFluidIncompressibleGPU()) return 0;
 
   //Create boundaries GPU
-  if(!createBoundariesRK2GPU()) return 0;
+  if(!createBoundariesQuasi2DGPU()) return 0;
  
   //New bonded forces
   if(bondedForces)
     if(!createBondedForcesGPU()) return 0;
 
   //Initialize save functions
+  // if(!saveFunctionsSchemeIncompressibleBoundary2D(0,0)) return 0;
   if(!saveFunctionsSchemeStokesLimit(0,0, samplefreq)) return 0;
 
-
   //Run the simulation
-  if(!runSchemeStokesLimitFirstOrder()) return 0;
-    
-
+  if(!runSchemeQuasi2D()) return 0;
+  
   //Close save functions
+  // if(!saveFunctionsSchemeIncompressibleBoundary2D(2,0)) return 0;
   if(!saveFunctionsSchemeStokesLimit(2,0, samplefreq)) return 0;
 
   //New bonded forces
@@ -77,7 +77,7 @@ bool schemeStokesLimitFirstOrder(){
     if(!freeBondedForces()) return 0;
 
   //Free Memory GPU
-  if(!freeCellsStokesLimitGPU()) return 0;
+  if(!freeCellsQuasi2DGPU()) return 0;
 
   //Free boundaries GPU
   if(!freeBoundariesRK2GPU()) return 0;
@@ -91,13 +91,12 @@ bool schemeStokesLimitFirstOrder(){
     if(!freeParticles()) return 0;
 
   //Free memory
-  if(!freeMemoryQuasiNeutrallyBuoyant()) return 0;
-  
+  if(!freeMemoryQuasi2D()) return 0;
   
   return 1;
 }
 
-bool freeMemoryStokesLimitFirstOrder(){
+bool freeMemoryQuasi2D(){
 
   delete[] cvx;
   delete[] cvy;

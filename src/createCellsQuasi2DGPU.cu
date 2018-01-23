@@ -21,7 +21,11 @@
 #define GPUVARIABLES 1
 
 
-bool createCellsIncompressibleGPU(){
+bool createCellsQuasi2DGPU(){
+  //Raul added. Upload saffman variables to gpu
+  cutilSafeCall(cudaMemcpyToSymbol(saffmanCutOffWaveNumberGPU,&saffmanCutOffWaveNumber, sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(saffmanLayerWidthGPU,&saffmanLayerWidth, sizeof(double)));
+
   cutilSafeCall(cudaMemcpyToSymbol(mxGPU,&mx,sizeof(int)));
   cutilSafeCall(cudaMemcpyToSymbol(myGPU,&my,sizeof(int)));
   cutilSafeCall(cudaMemcpyToSymbol(mzGPU,&mz,sizeof(int)));
@@ -29,8 +33,6 @@ bool createCellsIncompressibleGPU(){
   cutilSafeCall(cudaMemcpyToSymbol(mxtGPU,&mxt,sizeof(int)));
   cutilSafeCall(cudaMemcpyToSymbol(mytGPU,&myt,sizeof(int)));
   cutilSafeCall(cudaMemcpyToSymbol(mztGPU,&mzt,sizeof(int)));
-
-
 
   cutilSafeCall(cudaMemcpyToSymbol(ncellsGPU,&ncells,sizeof(int)));
   cutilSafeCall(cudaMemcpyToSymbol(ncellstGPU,&ncellst,sizeof(int)));
@@ -45,28 +47,44 @@ bool createCellsIncompressibleGPU(){
 
   cutilSafeCall(cudaMemcpyToSymbol(densfluidGPU,&densfluid,sizeof(double)));
 
+  // Radius and kernel
+  double GaussianVariance;
+  // For 3D
+  // double GaussianVariance = pow(hydrodynamicRadius / (1.0 * sqrt(3.1415926535897932385)), 2);
+  // For 2D
+  if(stokesLimit2D){
+    GaussianVariance = pow(hydrodynamicRadius * 0.66556976637237890625, 2);
+  }
+  // For quasi-2D disks
+  // double GaussianVariance = pow(hydrodynamicRadius * 9.0*sqrt(3.1415926535897932385)/16.0, 2);
+  // For quasi-2D spheres
+  if(quasi2D){
+    GaussianVariance = pow(hydrodynamicRadius / sqrt(3.1415926535897932385), 2);
+  }
+  
+  int kernelWidth = int(3.0 * hydrodynamicRadius * mx / lx) + 1;
+  cutilSafeCall(cudaMemcpyToSymbol(GaussianVarianceGPU,&GaussianVariance,sizeof(double)));
+  if (kernelWidth > mx/2){
+    kernelWidth = mx/2;
+  }
+  cout << "kernelWidth = " << kernelWidth << endl;
+  cout << "GaussianVariance = " << GaussianVariance << endl;
+  cutilSafeCall(cudaMemcpyToSymbol(kernelWidthGPU,&kernelWidth,sizeof(int)));
+  double deltaRFD = 1e-05 * hydrodynamicRadius;
+  cutilSafeCall(cudaMemcpyToSymbol(deltaRFDGPU,&deltaRFD,sizeof(double)));
+  cutilSafeCall(cudaMemcpyToSymbol(nDriftGPU,&nDrift,sizeof(int)));
+
   cutilSafeCall(cudaMalloc((void**)&vxGPU,ncells*sizeof(double)));
   cutilSafeCall(cudaMalloc((void**)&vyGPU,ncells*sizeof(double)));
   cutilSafeCall(cudaMalloc((void**)&vzGPU,ncells*sizeof(double)));
-  cutilSafeCall(cudaMalloc((void**)&vxPredictionGPU,ncells*sizeof(double)));
-  cutilSafeCall(cudaMalloc((void**)&vyPredictionGPU,ncells*sizeof(double)));
-  cutilSafeCall(cudaMalloc((void**)&vzPredictionGPU,ncells*sizeof(double)));
-
  
   cutilSafeCall(cudaMalloc((void**)&rxcellGPU,ncells*sizeof(double)));
   cutilSafeCall(cudaMalloc((void**)&rycellGPU,ncells*sizeof(double)));
   cutilSafeCall(cudaMalloc((void**)&rzcellGPU,ncells*sizeof(double)));
 
-  //FACT1 DIFFERENT FOR INCOMPRESSIBLE
-  double fact1 = sqrt((4.*temperature*shearviscosity*dt)/(cVolume*densfluid*densfluid));
-  //FACT4 DIFFERENT FOR INCOMPRESSIBLE
-  double fact4 = sqrt((2.*temperature*shearviscosity*dt)/(cVolume*densfluid*densfluid));
-  double fact5 = sqrt(1./(dt*cVolume));
-
+  // FACT1 for quasi-2D or stokesLimit2D
+  double fact1 = sqrt(1.0 * temperature  / (shearviscosity * dt * lx * ly)) * ncells;
   cutilSafeCall(cudaMemcpyToSymbol(fact1GPU,&fact1,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(fact4GPU,&fact4,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(fact5GPU,&fact5,sizeof(double)));
-
 
   fact1 = lx/double(mx);
   double fact2 = ly/double(my);
@@ -95,39 +113,9 @@ bool createCellsIncompressibleGPU(){
   cutilSafeCall(cudaMemcpyToSymbol(setparticlesGPU,&auxbool,sizeof(bool)));
   cutilSafeCall(cudaMemcpyToSymbol(setboundaryGPU,&auxbool,sizeof(bool)));
 
-
   long long auxulonglong = 0;
   cutilSafeCall(cudaMalloc((void**)&stepGPU,sizeof(long long)));
   cutilSafeCall(cudaMemcpy(stepGPU,&auxulonglong,sizeof(long long),cudaMemcpyHostToDevice));
-
-
-  cutilSafeCall(cudaMalloc((void**)&vecino0GPU,ncells*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&vecino1GPU,ncells*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&vecino2GPU,ncells*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&vecino3GPU,ncells*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&vecino4GPU,ncells*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&vecino5GPU,ncells*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&vecinopxpyGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopxmyGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopxpzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopxmzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomxpyGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomxmyGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomxpzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomxmzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopypzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopymzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomypzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomymzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopxpypzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopxpymzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopxmypzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinopxmymzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomxpypzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomxpymzGPU,ncells*sizeof(int)));
-  cutilSafeCall(cudaMalloc((void**)&vecinomxmypzGPU,ncells*sizeof(int))); 
-  cutilSafeCall(cudaMalloc((void**)&vecinomxmymzGPU,ncells*sizeof(int))); 
-
 
   //Factors for the update in fourier space
   cutilSafeCall(cudaMalloc((void**)&gradKx,     mx*sizeof(cufftDoubleComplex)));
@@ -139,24 +127,9 @@ bool createCellsIncompressibleGPU(){
 
   cutilSafeCall(cudaMalloc((void**)&pF,sizeof(prefactorsFourier)));
 
-  //cutilSafeCall(cudaMalloc((void**)&WxZ,ncells*sizeof(cufftDoubleComplex)));
-  //cutilSafeCall(cudaMalloc((void**)&WyZ,ncells*sizeof(cufftDoubleComplex)));
-  //cutilSafeCall(cudaMalloc((void**)&WzZ,ncells*sizeof(cufftDoubleComplex)));
   cutilSafeCall(cudaMalloc((void**)&vxZ,ncells*sizeof(cufftDoubleComplex)));
   cutilSafeCall(cudaMalloc((void**)&vyZ,ncells*sizeof(cufftDoubleComplex)));
   cutilSafeCall(cudaMalloc((void**)&vzZ,ncells*sizeof(cufftDoubleComplex))); 
-
-  if(quasiNeutrallyBuoyant || quasiNeutrallyBuoyant2D || quasiNeutrallyBuoyant4pt2D || quasi2D){
-    cutilSafeCall(cudaMalloc((void**)&advXGPU,ncells*sizeof(double)));
-    cutilSafeCall(cudaMalloc((void**)&advYGPU,ncells*sizeof(double)));
-    cutilSafeCall(cudaMalloc((void**)&advZGPU,ncells*sizeof(double)));
-  }
-
-  
-  cutilSafeCall(cudaMemcpyToSymbol(pressurea0GPU,&pressurea0,sizeof(double)));
-  cutilSafeCall(cudaMemcpyToSymbol(pressurea1GPU,&pressurea1,sizeof(double)));
-  //cutilSafeCall(cudaMemcpyToSymbol(pressurea2GPU,&pressurea2,sizeof(double)));
-
 
   cout << "CREATE CELLS GPU :              DONE" << endl;
 
