@@ -33,7 +33,7 @@ NVCC = nvcc
 # Set optimization: (default) -O3
 # Use a specific c++ compiler: --compiler-bindir /usr/bin/gcc
 # Compile for a given architecture, for example 2.0: -arch=sm_20
-NVCCFLAGS = -arch=sm_32 $(CUDALIB) 
+NVCCFLAGS = '-O3' '-arch=sm_52' $(CUDALIB)
 
 #
 #
